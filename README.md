@@ -14,7 +14,7 @@ The framework currently includes the following global classes:
 - **SoundManager**: Plays music and sound effects.
 - **UIManager**: Manages opening and closing of UI interfaces.
 
-Each manager comes with specific usage examples in the framework. You can also refer to my open-source demo, _ForeverUp!_, for additional insights.
+Each manager comes with specific usage examples in the framework. You can also refer to my open-source demo, [_ForeverUp!_](https://github.com/AngusK97/Game_ForeverUp_NoPaidResourceVersion), for additional insights.
 
 # Adding New Global Classes
 1. Ensure the new global class inherits from `MonoBehaviour`.
