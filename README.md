@@ -1,8 +1,10 @@
 # Framework Structure
 
+`GameCore` is the core of the entire framework, designed to access all global classes and initiate the game.
+
 <img src="Attachments/FrameworkUML.png" alt="FrameworkUML" width="370" height="502"/>
 
-`GameCore` is the core of the entire framework, designed to access all global classes and initiate the game. It is a `MonoBehaviour` script attached to a GameObject. Global classes are also `MonoBehaviour` scripts, attached to the child objects of the GameObject where `GameCore` is located.
+ `GameCore` is a `MonoBehaviour` script attached to a GameObject. Global classes are also `MonoBehaviour` scripts, attached to the child objects of the GameObject where `GameCore` is located.
 
 <img src="Attachments/Hierarchy.png" alt="Hierarchy" width="491" height="312"/>
 
