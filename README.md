@@ -6,7 +6,7 @@
 
  `GameCore` is a `MonoBehaviour` script attached to a GameObject. Global classes are also `MonoBehaviour` scripts, attached to the child objects of the GameObject where `GameCore` is located.
 
-<img src="Attachments/Hierarchy.png" alt="Hierarchy" width="491" height="312"/>
+<img src="Attachments/Hierarchy.png" alt="Hierarchy" width="567" height="360"/>
 
 # Global Classes
 The framework currently includes the following global classes:
