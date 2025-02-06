@@ -1,4 +1,4 @@
-# Framework Structure
+# 01 Framework Structure
 
 `GameCore` is the core of the entire framework, designed to access all global classes and initiate the game.
 
@@ -8,8 +8,8 @@
 
 <img src="Attachments/Hierarchy.png" alt="Hierarchy" width="642" height="408"/>
 
-# Global Classes
-The framework currently includes the following global classes:
+# 02 Global Managers
+The framework currently includes the following global managers:
 
 - **DataManager**: Handles data access and modification.
 - **EventManager**: Registers and broadcasts events.
@@ -19,13 +19,13 @@ The framework currently includes the following global classes:
 - **SoundManager**: Plays music and sound effects.
 - **UIManager**: Manages opening and closing of UI interfaces.
 
-Each manager comes with specific usage examples in the framework. You can also refer to my open-source demo, [_ForeverUp!_](https://github.com/AngusK97/Game_ForeverUp_NoPaidResourceVersion), for additional insights.
+Click [here](./Build-in%20Managers%20Usage.md) to see the usage of these build-in managers. You can also refer to my open-source demo, [_ForeverUp!_](https://github.com/AngusK97/Game_ForeverUp_NoPaidResourceVersion), for additional insights.
 
-# Adding New Global Classes
-1. Ensure the new global class inherits from `MonoBehaviour`.
-2. Create a child object under the `GameCore` GameObject and attach the new global class script to it.
-3. Add a variable for the new global class in `GameCore`.
-4. Drag and drop the global class reference to `GameCore`.
+# 03 Add A New Global Manager
+1. Ensure the new manager inherits from `MonoBehaviour`.
+2. Create a child object under the `GameCore` GameObject and attach the new manager script to it.
+3. Add a variable for the new manager in `GameCore`.
+4. Drag and drop the manager reference to `GameCore`.
 
-# Discussion
+# 04 Discussion
 If you have any questions or suggestions, feel free to reach out and discuss with me: **anguskungcn@foxmail.com**.
