@@ -1,8 +1,10 @@
 # 01 UIManager
 Firstly, every ui should has a name in `UIName.cs`
+
 <img src="Attachments/UIName.png" alt="FrameworkUML" width="270"/>
 
 Secondly, every ui should be registered at `GameCore_View.RegisterAllViewModules()`
+
 <img src="Attachments/RegisterUI.png" alt="FrameworkUML" width="870"/>
 
 Then, in logic code, we can use these APIs to control ui
@@ -26,6 +28,7 @@ GameCore.UI.TransitionFadeOut(() =>
 
 # 02 EventManager
 Every event should has a name in `EventName.cs`
+
 <img src="Attachments/EventName.png" alt="FrameworkUML" width="270"/>
 
 Then, in logic code, we can use events through these APIs:
@@ -41,12 +44,15 @@ GameCore.Event.DispatchNow(this, EventName.OnPhaseChanged);
 ```
 
 # 03 ResourceManager
+
 <img src="Attachments/ResourceManager.png" alt="FrameworkUML" width="700"/>
 
 ResourceManager registers all the resouce modules at `GameCore_Resource.cs`
+
 <img src="Attachments/RegisterEventModule.png" alt="FrameworkUML" width="550"/>
 
 Every resource module registers its own resources at its method `RecordAllResourceInfos()`
+
 <img src="Attachments/RegisterResource.png" alt="FrameworkUML" width="1000"/>
 
 Then, we can get access to resources like this:
