@@ -1,13 +1,18 @@
 # 01 UIManager
-Firstly, every ui should has a name in `UIName.cs`
 
-<img src="Attachments/UIName.png" alt="FrameworkUML" width="270"/>
+To add a new ui:
+1. create a ui script derived from `UIBase` class which provides basic lifecycle methods.
+	<img src="Attachments/UIScript.png" alt="FrameworkUML" width="430"/>
+2. create a ui prefab and attach the ui script to it.
+	<img src="Attachments/UIPrefab.png" alt="FrameworkUML" width="870"/>
+3. make sure the Addressable button on the ui prefab is toggled
+	<img src="Attachments/UISetting.png" alt="FrameworkUML" width="670"/>
+4. add a name for the new ui in `UIName.cs`
+	<img src="Attachments/UIName.png" alt="FrameworkUML" width="230"/>
+5. register the new ui at `GameCore_View.cs`
+	<img src="Attachments/RegisterUI.png" alt="FrameworkUML" width="870"/>
 
-Secondly, every ui should be registered at `GameCore_View.RegisterAllViewModules()`
-
-<img src="Attachments/RegisterUI.png" alt="FrameworkUML" width="870"/>
-
-Then, in logic code, we can use these APIs to control ui
+Then, in logic code, we can use these APIs to control the ui:
 ```
 // open Menu panel at first layer, 
 GameCore.UI.OpenUI(UILayer.First, UIName.Menu);
@@ -21,7 +26,7 @@ GameCore.UI.CloseAll();
 // fade out and fade in
 GameCore.UI.TransitionFadeOut(() =>
 {
-	// load new scene and resources, then
+	// load new scene and resources and balabala... 
 	GameCore.UI.TransitionFadeIn();
 });
 ```
