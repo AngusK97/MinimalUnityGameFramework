@@ -61,7 +61,7 @@ namespace Resource
         // Load Resources
         //-------------------------------------------------------------------------------------
 
-        public void LoadResources(Action loadedCallBack = null)
+        public void LoadResources(Action loadedCallback = null)
         {
             if (!_recordedResourceInfos)
             {
@@ -72,12 +72,12 @@ namespace Resource
             
             if (IsAllResourcesLoaded())
             {
-                loadedCallBack?.Invoke();
+                loadedCallback?.Invoke();
                 return;
             }
 
             _resources.Clear();
-            LoadResourcesByInfo(loadedCallBack);
+            LoadResourcesByInfo(loadedCallback);
         }
 
         private void LoadResourcesByInfo(Action loadedCallback = null)

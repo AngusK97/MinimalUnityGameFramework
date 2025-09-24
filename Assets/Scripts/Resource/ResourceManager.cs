@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using Resource.ResourceModules;
 using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -11,7 +12,13 @@ namespace Resource
     {
         private readonly Dictionary<ResourceModuleName, BaseResourceModule> _resourceModules = new();
 
-        public void RegisterResourceModule(BaseResourceModule baseResourceModule)
+        public void Init()
+        {
+            // todo: register all resource modules here
+            RegisterResourceModule(new MainResourceModule());
+        }
+
+        private void RegisterResourceModule(BaseResourceModule baseResourceModule)
         {
             if (baseResourceModule != null)
             {

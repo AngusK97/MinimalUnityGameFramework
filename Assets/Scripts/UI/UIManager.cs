@@ -37,7 +37,13 @@ namespace UI
         // Lifecycle
         //-----------------------------------------------------------------------------------------------
 
-        public void RegisterUiData(UIData uiData)
+        public void Init()
+        {
+            // todo: register all views here
+            RegisterUiData(new UIData(UIName.Menu, "Assets/GameResources/Prefab/UI/MenuView.prefab"));
+        }
+
+        private void RegisterUiData(UIData uiData)
         {
             var viewName = uiData.UIName;
             if (_registeredUIData.ContainsKey(viewName))

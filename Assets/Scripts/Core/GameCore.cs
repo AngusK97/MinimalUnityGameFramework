@@ -46,8 +46,9 @@ namespace Core
             Sound = soundManager;
             Resource = resourceManager;
 
-            RegisterAllViewModules();
-            RegisterAllResourceModules();
+            Resource.Init();
+            Data.Init();
+            UI.Init();
         }
 
         private void Update()
