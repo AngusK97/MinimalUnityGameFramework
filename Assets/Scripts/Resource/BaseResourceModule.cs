@@ -1,7 +1,9 @@
-﻿using Core;
+using Core;
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Resource
 {
@@ -21,33 +23,28 @@ namespace Resource
 
     public abstract class BaseResourceModule
     {
+        private sealed class LoadRequest
+        {
+            public readonly Dictionary<int, object> Resources = new();
+            public readonly List<AsyncOperationHandle> Handles = new();
+            public List<(Action Loaded, Action Failed)> Callbacks = new();
+            public int Remaining;
+            public bool Ready;
+        }
+
         private readonly List<ResourceInfo> _resourceInfos = new();
-        private readonly Dictionary<int, object> _resources = new();
-        
+        private LoadRequest _request;
         private bool _recordedResourceInfos;
+        private bool _shuttingDown;
 
         public abstract ResourceModuleName GetName();
 
-
-        //-------------------------------------------------------------------------------------
-        // Get Resource And Info
-        //-------------------------------------------------------------------------------------
-
         protected T GetResource<T>(int id)
         {
-            _resources.TryGetValue(id, out var resource);
-            return (T)resource;
+            return _request != null && _request.Ready
+                && _request.Resources.TryGetValue(id, out var resource) && resource is T value
+                ? value : default;
         }
-
-        private bool IsAllResourcesLoaded()
-        {
-            return _resourceInfos.Count == _resources.Count;
-        }
-
-
-        //-------------------------------------------------------------------------------------
-        // Record Resource Infos
-        //-------------------------------------------------------------------------------------
 
         protected abstract void RecordAllResourceInfos();
 
@@ -56,76 +53,188 @@ namespace Resource
             _resourceInfos.Add(new ResourceInfo { ResNameId = resId, ResPath = path, ResourceType = type });
         }
 
-
-        //-------------------------------------------------------------------------------------
-        // Load Resources
-        //-------------------------------------------------------------------------------------
-
-        public void LoadResources(Action loadedCallback = null)
+        public void LoadResources(Action loadedCallback = null, Action failedCallback = null)
         {
-            if (!_recordedResourceInfos)
+            if (_shuttingDown)
             {
-                _resourceInfos.Clear();
-                RecordAllResourceInfos();
-                _recordedResourceInfos = true;
-            }
-            
-            if (IsAllResourcesLoaded())
-            {
-                loadedCallback?.Invoke();
+                InvokeCallback(failedCallback);
                 return;
             }
 
-            _resources.Clear();
-            LoadResourcesByInfo(loadedCallback);
-        }
-
-        private void LoadResourcesByInfo(Action loadedCallback = null)
-        {
-            foreach (var resInfo in _resourceInfos)
+            if (_request != null)
             {
-                var type = resInfo.ResourceType;
-
-                switch (type)
-                {
-                    case ResourceType.Sprite:
-                        LoadResourceOfType<Sprite>(resInfo, loadedCallback);
-                        break;
-                    case ResourceType.AudioClip:
-                        LoadResourceOfType<AudioClip>(resInfo, loadedCallback);
-                        break;
-                    case ResourceType.GameObject:
-                        LoadResourceOfType<GameObject>(resInfo, loadedCallback);
-                        break;
-                }
+                if (_request.Ready)
+                    InvokeCallback(loadedCallback);
+                else if (loadedCallback != null || failedCallback != null)
+                    _request.Callbacks.Add((loadedCallback, failedCallback));
+                return;
             }
-        }
 
-        private void LoadResourceOfType<T>(ResourceInfo resourceInfo, Action loadedCallback = null)
-        {
-            var path = resourceInfo.ResPath;
-            var resId = resourceInfo.ResNameId;
+            var request = new LoadRequest();
+            _request = request;
+            if (loadedCallback != null || failedCallback != null)
+                request.Callbacks.Add((loadedCallback, failedCallback));
 
-            GameCore.Resource.LoadAssetAsync<T>(path).Completed += handle =>
+            try
             {
-                if (handle.Status != UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                if (!_recordedResourceInfos)
                 {
+                    _resourceInfos.Clear();
+                    RecordAllResourceInfos();
+                    var ids = new HashSet<int>();
+                    foreach (var info in _resourceInfos)
+                    {
+                        if (!ids.Add(info.ResNameId) || string.IsNullOrWhiteSpace(info.ResPath)
+                            || !Enum.IsDefined(typeof(ResourceType), info.ResourceType))
+                            throw new InvalidOperationException(
+                                $"Resource module {GetName()}: invalid definition {info.ResNameId}, {info.ResPath}");
+                    }
+                    _recordedResourceInfos = true;
+                }
+
+                if (!IsCurrent(request))
+                    return;
+
+                request.Remaining = _resourceInfos.Count;
+                if (request.Remaining == 0)
+                {
+                    request.Ready = true;
+                    CompleteCallbacks(request);
                     return;
                 }
 
-                _resources.Add(resId, handle.Result);
-                if (_resources.Count == _resourceInfos.Count)
+                foreach (var info in _resourceInfos)
                 {
-                    loadedCallback?.Invoke();
+                    if (!IsCurrent(request))
+                        break;
+
+                    switch (info.ResourceType)
+                    {
+                        case ResourceType.Sprite:
+                            LoadResource<Sprite>(request, info);
+                            break;
+                        case ResourceType.AudioClip:
+                            LoadResource<AudioClip>(request, info);
+                            break;
+                        case ResourceType.GameObject:
+                            LoadResource<GameObject>(request, info);
+                            break;
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+                CancelRequest(request);
+            }
+        }
+
+        private void LoadResource<T>(LoadRequest request, ResourceInfo info) where T : UnityEngine.Object
+        {
+            var handle = GameCore.Resource.LoadAssetAsync<T>(info.ResPath);
+            var index = request.Handles.Count;
+            request.Handles.Add(handle);
+            if (!handle.IsValid())
+                throw new InvalidOperationException($"Resource module {GetName()}: invalid handle for {info.ResPath}");
+
+            handle.Completed += completed =>
+            {
+                if (!IsCurrent(request))
+                {
+                    ReleaseHandle(request, index);
+                    return;
+                }
+
+                if (!completed.IsValid() || completed.Status != AsyncOperationStatus.Succeeded || completed.Result == null)
+                {
+                    Debug.LogError($"Resource module {GetName()}: failed to load {info.ResNameId}, {info.ResPath}. "
+                        + (completed.IsValid() ? completed.OperationException?.Message : "Invalid handle"));
+                    CancelRequest(request);
+                    return;
+                }
+
+                request.Resources.Add(info.ResNameId, completed.Result);
+                if (--request.Remaining == 0)
+                {
+                    request.Ready = true;
+                    CompleteCallbacks(request);
                 }
             };
         }
 
+        private bool IsCurrent(LoadRequest request)
+        {
+            return !_shuttingDown && ReferenceEquals(_request, request);
+        }
 
-        //-------------------------------------------------------------------------------------
-        // Unload Resources
-        //-------------------------------------------------------------------------------------
+        public virtual void UnloadResources()
+        {
+            CancelRequest(_request);
+        }
 
-        public virtual void UnloadResources() { }
+        internal void Shutdown()
+        {
+            _shuttingDown = true;
+            try
+            {
+                UnloadResources();
+            }
+            finally
+            {
+                CancelRequest(_request);
+            }
+        }
+
+        private void CancelRequest(LoadRequest request)
+        {
+            if (request == null)
+                return;
+
+            if (ReferenceEquals(_request, request))
+                _request = null;
+            request.Ready = false;
+            request.Resources.Clear();
+
+            // Pending operations retain their callback and release themselves when they finish.
+            for (var i = 0; i < request.Handles.Count; i++)
+                if (request.Handles[i].IsValid() && request.Handles[i].IsDone)
+                    ReleaseHandle(request, i);
+
+            CompleteCallbacks(request);
+        }
+
+        private static void ReleaseHandle(LoadRequest request, int index)
+        {
+            var handle = request.Handles[index];
+            request.Handles[index] = default;
+            if (handle.IsValid())
+                Addressables.Release(handle);
+        }
+
+        private void CompleteCallbacks(LoadRequest request)
+        {
+            var callbacks = request.Callbacks;
+            request.Callbacks = null;
+            if (callbacks == null)
+                return;
+
+            foreach (var callback in callbacks)
+                InvokeCallback(IsCurrent(request) && request.Ready ? callback.Loaded : callback.Failed);
+        }
+
+        private static void InvokeCallback(Action callback)
+        {
+            if (callback == null || (callback.Target is UnityEngine.Object target && target == null))
+                return;
+
+            try
+            {
+                callback();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+            }
+        }
     }
 }

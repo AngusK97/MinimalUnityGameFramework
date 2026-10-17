@@ -92,6 +92,10 @@ namespace Core
                         UI.TransitionFadeIn();
                     });
                 };
+            }, () =>
+            {
+                Debug.LogError("Startup resources failed to load or were cancelled.");
+                UI.TransitionFadeIn();
             });
         }
     }

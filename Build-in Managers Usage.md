@@ -69,7 +69,24 @@ GameCore.Event.DispatchNow(this, EventName.OnPhaseChanged);
 
 <img src="Attachments/ResourceManager.png" alt="FrameworkUML" width="700"/>
 
-ResourceManager registers all the resouce modules at `GameCore_Resource.cs`
+ResourceManager registers resource modules in `ResourceManager.Init()`.
+
+A resource module owns its group's Addressables handles; callers borrow assets until `UnloadResources()`. Concurrent `LoadResources` calls share one batch, and an already-ready module reports success synchronously. Assets are available only after the whole group succeeds. `GetRes<T>` returns the default value when unavailable or when the type does not match.
+
+The existing success callback remains valid. Supply the optional second callback to handle failure or cancellation:
+
+```csharp
+module.LoadResources(
+    loadedCallback: () => { /* use the prepared group */ },
+    failedCallback: () => { /* failed or unloaded before completion */ });
+
+// After every borrower has finished (and dependent instances are destroyed):
+module.UnloadResources();
+```
+
+Unload invalidates the batch immediately. Pending operations release their own late results without affecting a replacement batch. It cancels the whole group, not one borrower's subscription. Derived unload hooks must call `base.UnloadResources()`.
+
+Direct `LoadAssetAsync<T>` calls transfer the returned handle to the caller. Release that exact holding with `Release(handle)` after use, including failure; do not release both the asset and its handle. Handle copies do not add ownership. `InstantiateGameObjectAsync` transfers its operation to a live completion callback (including static methods); the receiver must eventually call `ReleaseInstance(handle)`. If there is no callback, or its directly bound Unity target is destroyed, the helper releases the result. A callback that throws still owns the operation; the helper logs the exception without notifying twice or releasing a handle the receiver may have retained.
 
 <img src="Attachments/RegisterEventModule.png" alt="FrameworkUML" width="550"/>
 
