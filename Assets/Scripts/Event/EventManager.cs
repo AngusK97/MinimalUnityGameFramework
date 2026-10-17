@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
 
 namespace Event
@@ -19,7 +20,9 @@ namespace Event
 
     public class EventManager : MonoBehaviour
     {
-        private readonly List<DispatchData> _dispatchDataList = new();
+        private List<DispatchData> _dispatchDataList = new();
+        private List<DispatchData> _processingDataList = new();
+        private bool _isUpdating;
         private readonly Dictionary<EventName, List<HandlerEvent>> _handlerEventDict = new();
 
         public void RegisterEvent(EventName type, HandlerEvent handle)
@@ -58,11 +61,16 @@ namespace Event
                 return;
             }
 
-            foreach (var handlerEvent in handles)
+            // Each dispatch owns its snapshot, including nested immediate dispatches.
+            foreach (var handlerEvent in handles.ToArray())
             {
-                if (handlerEvent != null)
+                try
                 {
-                    handlerEvent(sender, type, eventArgs);
+                    handlerEvent?.Invoke(sender, type, eventArgs);
+                }
+                catch (Exception exception)
+                {
+                    Debug.LogException(exception, this);
                 }
             }
         }
@@ -74,17 +82,29 @@ namespace Event
 
         public void OnUpdate(float deltaTime, float unscaledDeltaTime)
         {
-            if (_dispatchDataList.Count <= 0)
+            if (_isUpdating || _dispatchDataList.Count == 0)
             {
                 return;
             }
 
-            foreach (var dispatchData in _dispatchDataList)
-            {
-                DispatchNow(dispatchData.Sender, dispatchData.Type, dispatchData.EventArgs);
-            }
+            _isUpdating = true;
+            // Callbacks enqueue into the other buffer for the next update.
+            var pending = _dispatchDataList;
+            _dispatchDataList = _processingDataList;
+            _processingDataList = pending;
 
-            _dispatchDataList.Clear();
+            try
+            {
+                foreach (var dispatchData in _processingDataList)
+                {
+                    DispatchNow(dispatchData.Sender, dispatchData.Type, dispatchData.EventArgs);
+                }
+            }
+            finally
+            {
+                _processingDataList.Clear();
+                _isUpdating = false;
+            }
         }
     }
 }

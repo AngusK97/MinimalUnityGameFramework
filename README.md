@@ -27,5 +27,9 @@ Click [here](./Build-in%20Managers%20Usage.md) to see the usage of these build-i
 3. Add a variable for the new manager in `GameCore`.
 4. Drag and drop the manager reference to `GameCore`.
 
-# 04 Discussion
+# 04 Updates
+
+The first Stage A fix keeps the existing manager APIs and makes Unity the only per-frame driver for each UI view. Event dispatch uses listener snapshots and a double-buffered deferred queue.
+
+# 05 Discussion
 If you have any questions or suggestions, feel free to reach out and discuss with me: **anguskungcn@foxmail.com**.
