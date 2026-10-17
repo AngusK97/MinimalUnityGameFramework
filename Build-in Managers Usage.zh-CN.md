@@ -15,6 +15,8 @@
 | 播放声音 | [音频](docs/audio.zh-CN.md) |
 | 打包与排错 | [构建](docs/build.zh-CN.md) |
 
+编辑器与包版本升级见[升级到 Unity 6.6](docs/upgrading.zh-CN.md)。已有游戏可以继续固定旧框架与 Editor；下面的 API 迁移仅适用于决定采用当前框架的项目。
+
 ## 旧项目迁移
 
 | 旧版模板 | 当前方式 |

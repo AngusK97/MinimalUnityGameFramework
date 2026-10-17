@@ -8,7 +8,7 @@ Have Unity Hub, a Unity Editor and a C# editor ready. These steps assume basic U
 
 ## Run the Demo
 
-1. Clone or download this repository. In **Unity Hub → Add / Open**, select the folder containing Assets, Packages and ProjectSettings. The project records Unity 2022.3.30f1; these steps were checked on 2022.3.59f1. Wait for import and compilation to finish.
+1. Clone or download this repository. In **Unity Hub → Add / Open**, select the folder containing Assets, Packages and ProjectSettings. Choose **Unity 6.6 (6000.6.5f1)** for this baseline. Wait for package resolution, import and compilation to finish. Keep older projects on their own pinned version unless you are deliberately [upgrading a copy](upgrading.md).
 2. Before pressing Play, open **Window → Asset Management → Addressables → Groups**. Set **Play Mode Script → Use Asset Database (fastest)** so the Editor reads assets directly.
 3. In Project, open `Assets/GameContent/Demo/Scenes/DemoStart.unity`. Press Play; you should see the MINIMAL LOOP menu.
 4. Choose Start and move with WASD/arrows to GOAL. Play again restarts; Menu returns; Settings/Escape opens volume settings; Done/Escape saves and closes.
@@ -31,7 +31,7 @@ Editor/Tables/
 Scripts/
 ```
 
-In your new Scripts folder, right-click **Create → C# Script**, name it **MyMenuView**, then double-click it. Replace the **whole file** with this code, save, and return to Unity. Wait for compilation:
+In your new Scripts folder, right-click **Create → Scripting → MonoBehaviour Script**, name it **MyMenuView**, then double-click it. Replace the **whole file** with this code, save, and return to Unity. Wait for compilation:
 
 ```csharp
 using UI;
@@ -75,7 +75,7 @@ Drag **MyMenuView.prefab from Project** into that row's **Prefab** field, not th
 
 ### 4. Add your game entry
 
-Once GameUI.g.cs exists, create another C# Script in your Scripts folder, name it **MyGameEntry**, and replace its whole contents with this:
+Once GameUI.g.cs exists, use **Create → Scripting → MonoBehaviour Script** in your Scripts folder again, name it **MyGameEntry**, and replace its whole contents with this:
 
 ```csharp
 using Core;

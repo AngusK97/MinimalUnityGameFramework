@@ -10,7 +10,7 @@ Hello there ~ 我是 Angus，一名游戏开发者。
 
 > **简单即美。** 小一点，清楚一点，也容易修改一点。
 
-[开始使用](docs/quick-start.zh-CN.md) · [构建游戏](docs/build.zh-CN.md) · [旧项目迁移](Build-in%20Managers%20Usage.zh-CN.md)
+[开始使用](docs/quick-start.zh-CN.md) · [构建游戏](docs/build.zh-CN.md) · [升级到 Unity 6.6](docs/upgrading.zh-CN.md) · [旧 API 迁移](Build-in%20Managers%20Usage.zh-CN.md)
 
 ## 设计哲学
 
@@ -79,7 +79,7 @@ Assets/
 
 ## 先体验一次
 
-1. Unity Hub 打开仓库根目录，等待导入和编译完成。
+1. 在 Unity Hub 用 **Unity 6.6（6000.6.5f1）** 打开仓库根目录，等待导入和编译完成。
 2. 打开 `Assets/GameContent/Demo/Scenes/DemoStart.unity` 并点击 Play。
 3. 点击 **Start**，用 **WASD / 方向键**把蓝色方块移到 GOAL。
 
@@ -89,7 +89,9 @@ Assets/
 
 ## 环境与范围
 
-工程声明 **Unity 2022.3.30f1**、**Addressables 1.21.21**。当前使用 **Unity 2022.3.59f1** 完成验证，包含 Mac 开发构建；具体范围见[构建手册](docs/build.zh-CN.md#验证范围)。
+当前基线为 **Unity 6.6（6000.6.5f1）**、**Addressables 2.11.2**、**uGUI 2.6.0**。Unity 6.6 不是 LTS 版本。继续使用 Built-in 渲染管线与旧 Input Manager。导入、C# 编译与 13 项针对性迁移检查已通过，包括删除 Demo 和两份 macOS Mono 开发构建。完整原生输入与音频验收仍需单独完成；实际范围见[构建手册](docs/build.zh-CN.md#验证范围)。
+
+已经使用旧版的项目可以继续固定旧版。决定迁移时，再按[升级说明](docs/upgrading.zh-CN.md)在独立副本中操作。
 
 这里提供游戏开发的基础。存档、全局暂停、平台输入与发布保障，按具体项目的实际需求补充。
 

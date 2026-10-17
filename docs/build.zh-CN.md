@@ -6,7 +6,7 @@
 
 ## 构建 Demo
 
-1. 在 **File → Build Settings** 中选择已安装构建模块的目标平台；需要时执行 Switch Platform。
+1. 打开 **File → Build Profiles**，在 **Platforms** 选择已安装的目标平台；若尚未标为 Active，点击 **Switch Platform**。首次在 Mac 构建可选择 macOS。
 2. 退出 Play，生成有改动的 UI 配置表，等待编译完成。
 3. 选择 **Demo → Build Player**，再选择输出位置。
 4. 打开生成的游戏，应该能看到和编辑器里一样的 Demo 菜单，再试一次 Start → 键盘通关 → Play again → Menu → Settings → Quit。
@@ -15,13 +15,21 @@ Demo 辅助工具会构建 Addressables，并为本次构建提供 DemoStart。�
 
 ## 构建自己的游戏
 
-1. 在 **File → Build Settings** 的 **Scenes In Build** 中，将自己的 `MyGame/Scenes/Start.unity` 放在第一项。不需要只提供服务的 InitScene 时，移除其条目；保留游戏使用的其他原生场景。
-2. 生成有改动的 UI 配置表，等待编译完成。
-3. 打开 **Window → Asset Management → Addressables → Groups**，选择 **Build → New Build → Default Build Script**，等待成功。
-4. 返回 Build Settings，选择 **Build** 和输出位置。
-5. 打开生成的游戏，应看到自己的第一个界面，再试试 UI、输入、声音和转场。
+1. 打开 **File → Build Profiles**，在 **Platforms** 选择目标平台，需要时点击 **Switch Platform**；当前平台会标为 Active。
+2. 点击左侧 **Scene List**，把 Project 中自己的 `MyGame/Scenes/Start.unity` 拖进列表，移到第一项并勾选启用。不需要只提供服务的 InitScene 时移除其条目，保留游戏使用的其他原生场景。平台面板里的 **Open Scene List** 也会打开这份共享列表。
+3. 生成有改动的 UI 配置表，等待编译完成。
+4. 打开 **Window → Asset Management → Addressables → Groups**，选择 **Build → New Build → Default Build Script**，等待成功。
+5. 回到 **Platforms** 中的目标平台，点击 **Build** 并选择输出位置。
+6. 打开生成的游戏，应看到自己的第一个界面，再试试 UI、输入、声音和转场。
 
 资源或目标平台改变后，重新构建资源内容。**Use Asset Database (fastest)** 是 Editor 的 Play Mode 选项，不能代替 Player 所需的资源构建。
+
+<details>
+<summary>可选：自定义构建配置</summary>
+
+以后需要独立设置或场景列表时，再添加自定义 Build Profile。第一次构建不需要新建配置。
+
+</details>
 
 ## 遇到问题时
 
@@ -40,6 +48,14 @@ Demo 辅助工具会构建 Addressables，并为本次构建提供 DemoStart。�
 
 ## 验证范围
 
-项目声明的版本为 Unity **2022.3.30f1** 和 Addressables **1.21.21**。当前代码已使用 Unity **2022.3.59f1** 验证，包括 Mac 开发版资源内容与 Player 构建。原生 Player 的完整鼠标流程验收、其他平台和正式发布要求仍需单独检查。
+当前基线：Unity **6.6（6000.6.5f1）**、Addressables **2.11.2**、uGUI **2.6.0**。导入与 C# 编译已通过；移除临时验证脚本后，默认程序集再次编译通过。在一次性迁移工程中，**13 项针对性检查通过**：
+
+- UI 配置生成与重复生成不重写输出；Demo 公共服务、转场、设置暂停、通关、重开及返回。通关检查通过临时探针把玩家放到 GOAL，没有验证键盘移动。
+- 无 Library 缓存的新工程中，仅删除 Demo，再由独立游戏使用剩余框架。
+- Demo 与独立游戏的 **macOS Mono 开发版**资源内容/Player 构建，均为 **0 错误、0 警告**。
+
+GUI 检查确认 Demo 菜单正常渲染，Escape 可打开/关闭 Settings，删除 Demo 后独立 Player 显示自己的窗口。完整原生鼠标流程、真实键盘通关、音频可听性、其他平台及 IL2CPP/正式发布构建**尚未验收**。这些结果对应上述基线，不代表所有目标与发布配置。
+
+版本迁移步骤见[升级说明](upgrading.zh-CN.md)。Unity 参考：[Build Profiles](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profiles.html)、[Scene List](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profile-scene-list.html)。
 
 下一步：[UI 配置表恢复](ui-tables.zh-CN.md)，或[场景转场](scenes.zh-CN.md)。

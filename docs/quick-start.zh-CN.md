@@ -8,7 +8,7 @@
 
 ## 运行 Demo
 
-1. 克隆或下载仓库。在 **Unity Hub → Add / Open** 中选择同时包含 Assets、Packages、ProjectSettings 的目录。工程记录的版本是 Unity 2022.3.30f1，这些步骤在 2022.3.59f1 验证过。等待导入和编译完成。
+1. 克隆或下载仓库。在 **Unity Hub → Add / Open** 中选择同时包含 Assets、Packages、ProjectSettings 的目录。当前基线选择 **Unity 6.6（6000.6.5f1）**，等待包解析、导入和编译完成。旧项目继续使用自己固定的版本；决定[迁移副本](upgrading.zh-CN.md)时再升级。
 2. **先不要 Play**。打开 **Window → Asset Management → Addressables → Groups**，把 **Play Mode Script** 设为 **Use Asset Database (fastest)**，让编辑器直接读取资产。
 3. 在 Project 打开 `Assets/GameContent/Demo/Scenes/DemoStart.unity`，点击 Play，应看到 MINIMAL LOOP 菜单。
 4. 点击 Start，用 WASD/方向键移动到 GOAL。Play again 重开，Menu 返回；Settings/Escape 打开音量设置，Done/Escape 保存并关闭。
@@ -31,7 +31,7 @@ Editor/Tables/
 Scripts/
 ```
 
-在刚建的 Scripts 目录右键 **Create → C# Script**，命名 **MyMenuView**，双击打开。把文件的**全部内容替换**为下面的代码，保存后回到 Unity，等待编译：
+在刚建的 Scripts 目录右键 **Create → Scripting → MonoBehaviour Script**，命名 **MyMenuView**，双击打开。把文件的**全部内容替换**为下面的代码，保存后回到 Unity，等待编译：
 
 ```csharp
 using UI;
@@ -75,7 +75,7 @@ namespace MyGame
 
 ### 4. 添加游戏入口
 
-确认 GameUI.g.cs 已出现后，在自己的 Scripts 目录再建一个 C# Script，命名 **MyGameEntry**，把全部内容替换为：
+确认 GameUI.g.cs 已出现后，在自己的 Scripts 目录再次选择 **Create → Scripting → MonoBehaviour Script**，命名 **MyGameEntry**，把全部内容替换为：
 
 ```csharp
 using Core;

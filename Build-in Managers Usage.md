@@ -15,6 +15,8 @@ The usage guide now has focused pages. **Start with [Quick start](docs/quick-sta
 | Play sound | [Audio](docs/audio.md) |
 | Package or troubleshoot | [Build](docs/build.md) |
 
+For the Editor/package upgrade, see [Moving to Unity 6.6](docs/upgrading.md). Existing games can stay pinned to their older framework and Editor. The API migration below is for projects that choose to adopt the current framework.
+
 ## Migrating an older project
 
 | Earlier template | Current approach |

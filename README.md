@@ -10,7 +10,7 @@ My hope is that you can try the Demo, see how the pieces fit, and then make some
 
 > **Simple is beautiful.** Keep things small, clear, and easy to change.
 
-[Start here](docs/quick-start.md) · [Build your game](docs/build.md) · [Upgrade an older project](Build-in%20Managers%20Usage.md)
+[Start here](docs/quick-start.md) · [Build your game](docs/build.md) · [Move to Unity 6.6](docs/upgrading.md) · [Older API migration](Build-in%20Managers%20Usage.md)
 
 ## Philosophy
 
@@ -79,7 +79,7 @@ Assets/
 
 ## Try it
 
-1. Open the repository root in Unity Hub and wait for import/compilation.
+1. Open the repository root with **Unity 6.6 (6000.6.5f1)** in Unity Hub and wait for import/compilation.
 2. Open `Assets/GameContent/Demo/Scenes/DemoStart.unity` and press Play.
 3. Choose **Start**, then use **WASD / arrow keys** to move the blue cube to GOAL.
 
@@ -89,7 +89,9 @@ Then [create your own first window](docs/quick-start.md). The Demo's three readi
 
 ## Environment & scope
 
-The project declares **Unity 2022.3.30f1** and **Addressables 1.21.21**. Current validation used **Unity 2022.3.59f1**, including Mac development builds; see [build scope](docs/build.md#verification-scope).
+The current baseline is **Unity 6.6 (6000.6.5f1)**, **Addressables 2.11.2** and **uGUI 2.6.0**. Unity 6.6 is not an LTS release. Built-in rendering and the old Input Manager remain in use. Import, C# compilation and 13 focused migration checks passed, including Demo removal and two macOS Mono development builds. Full native input/audio acceptance is still separate; see the exact [verification scope](docs/build.md#verification-scope).
+
+Already using an older version? You can keep it pinned. Follow [Upgrading](docs/upgrading.md) only when you choose to migrate a separate copy.
 
 This is a foundation for a game. Saves, full-game pause, platform input and release requirements belong to each project's actual needs.
 
