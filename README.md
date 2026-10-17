@@ -1,53 +1,100 @@
-# 01 Framework Structure
+# MinimalUnityGameFramework
 
-`GameCore` owns the persistent services and their lifecycle. The internal plain C# class `MenuStartup` owns menu resource/UI preparation and startup retries, using SceneManager's controlled transition for scene loading and fades. Core creates it after initialization and keeps the existing `StartupError` / `RetryStartup()` entry points. Edit service wiring in Core and menu entry behavior in MenuStartup; no extra component or Prefab setup is required.
+English · [简体中文](README.zh-CN.md)
 
-`Awake` validates and initializes one persistent Core and its seven explicitly assigned managers. `Start` starts the existing menu flow when **Auto Start Game** is enabled (the default). Disable that option to prepare services while keeping the current scene. Access services after Core assembly, normally from consumer `Start`; wait for resource callbacks before using asynchronous content. UI initialization requires the First layer and transition CanvasGroup.
+Hello there ~ I'm Angus, a game developer.
 
-Keep the Core on a root GameObject and assign managers from its own hierarchy. Duplicate roots are rejected before they can replace the active services. Destroy the whole Core root when ending its lifetime; removing only the component does not dispose its child services. Initialization is separate from starting a new game or resetting progress.
+This is a small Unity framework I've been working on. I wanted a few familiar tools for starting a game: opening windows, loading resources, changing scenes, sending events and playing sounds.
 
-If startup fails, `core.StartupError` contains the diagnostic and the transition mask is hidden immediately. A game-specific error view can read that property and call `core.RetryStartup()`. There is no automatic retry. Accepted startup failures also appear in SceneManager's resource-independent Retry panel; its Retry action delegates to the same startup retry path.
+My hope is that you can try the Demo, see how the pieces fit, and then make something of your own.
 
-```csharp
-// core is a reference to the active GameCore component.
-if (core.StartupError != null)
-{
-    core.RetryStartup(); // true means accepted, not completed successfully
-}
+> **Simple is beautiful.** Keep things small, clear, and easy to change.
+
+[Start here](docs/quick-start.md) · [Build your game](docs/build.md) · [Upgrade an older project](Build-in%20Managers%20Usage.md)
+
+## Philosophy
+
+- **Keep the flow easy to follow.** Your startup tells the framework which windows and resources exist, then opens the first screen. You can read the calls in order.
+- **Know who cleans up.** Core keeps the services alive. UIManager loads and releases windows. A resource module keeps a group of assets until you unload it.
+- **Start with Unity's own tools.** Use familiar components and the Inspector. Add a tool when it saves repeated work.
+- **Build what your game needs.** Keep its rules and data in your game folder. Share more code when real projects give you a reason to.
+
+## The big picture
+
+Think of **GameCore** as the place to reach the five shared tools. It stays alive when scenes change. Your game and the Demo use the same calls.
+
+```mermaid
+flowchart TB
+    Game["Your game"] --> Core["GameCore · persistent entry"]
+    Demo["Demo · removable example"] --> Core
+    Core --> UI["UI"]
+    Core --> Events["Event"]
+    Core --> Resources["Resource"]
+    Core --> Scenes["Scene"]
+    Core --> Audio["Sound"]
 ```
 
-For ordinary Single scene changes, use `GameCore.Scene.TryTransition(...)`; duplicate requests are rejected while busy. See section 04 of the usage document for entry preparation, completion, ownership and error recovery. Low-level scene wrappers remain available for manual scene management and must not be mixed with the controlled operation.
+Core prepares services in `Awake()`. Your startup uses them in `Start()` after `GameCore.IsReady`:
 
-Only explicit failures can retry; calls while loading, after success, or in services-only mode are rejected. A retry prepares resources without reinitializing services, and reuses the loaded menu scene if it is still valid. It does not cancel an already submitted scene load or restart gameplay.
+**Prepare services → Register your content → Open your first screen → Run your game.**
 
-<img src="Attachments/FrameworkUML.png" alt="FrameworkUML" width="370" height="502"/>
+UI uses Resource to load windows. Scene handles scene loading and closes the previous UI at the right point.
 
- `GameCore` is a `MonoBehaviour` script attached to a GameObject. Global classes are also `MonoBehaviour` scripts, attached to the child objects of the GameObject where `GameCore` is located.
+Core checks pending UI requests and sends queued events each frame. Unity updates windows and gameplay scripts. Loading and fades use Addressables and DOTween.
 
-<img src="Attachments/Hierarchy.png" alt="Hierarchy" width="642" height="408"/>
+## Pick the module you need
 
-# 02 Global Managers
-The framework currently includes the following global managers:
+Pick the task you want to do. Each guide starts with a short example; extra notes are folded below it.
 
-- **DataManager**: Handles data access and modification.
-- **EventManager**: Registers and broadcasts events.
-- **LevelManager**: Manages specific in-level logic.
-- **ResourceManager**: Loads and releases resources.
-- **SceneManager**: Handles scene transitions.
-- **SoundManager**: Plays music and sound effects.
-- **UIManager**: Manages opening and closing of UI interfaces.
+| Guide | What it handles | Main entry |
+| --- | --- | --- |
+| [Core](docs/core.md) | Service setup and lifetime | `GameCore.IsReady` |
+| [UI](docs/ui.md) | Open, close and release windows | `GameCore.UI` |
+| [UI tables](docs/ui-tables.md) | Inspector configuration → constants and registration | `UI.asset` → `GameUI.RegisterAll()` |
+| [Events](docs/events.md) | Notify interested listeners | `GameCore.Event` |
+| [Resources](docs/resources.md) | Load a group and release its owned assets | `GameCore.Resource` |
+| [Scenes](docs/scenes.md) | Load, prepare, fade and retry a transition | `GameCore.Scene` |
+| [Audio](docs/audio.md) | Play, pause and stop by layer | `GameCore.Sound` |
 
-Click [here](./Build-in%20Managers%20Usage.md) to see the usage of these build-in managers. You can also refer to my open-source demo, [_ForeverUp!_](https://github.com/AngusK97/Game_ForeverUp_NoPaidResourceVersion), for additional insights.
+For an end-to-end first window, follow [Quick start](docs/quick-start.md). For packaging and common failures, use [Build & troubleshoot](docs/build.md).
 
-# 03 Add A New Global Manager
-1. Ensure the new manager inherits from `MonoBehaviour`.
-2. Create a child object under the `GameCore` GameObject and attach the new manager script to it.
-3. Add a variable for the new manager in `GameCore`.
-4. Drag and drop the manager reference to `GameCore`.
+## Where things belong
 
-# 04 Updates
+```text
+Assets/
+├── Scripts/                       Shared framework
+├── GameResources/                 Shared Core prefab and InitScene
+└── GameContent/
+    ├── .gitkeep                   Keeps the content root
+    ├── Demo/                      Complete, removable teaching game
+    └── MyGame/                    Your game
+        ├── Scenes/                Your entry scenes
+        ├── Content/               Runtime prefabs, scenes and audio
+        ├── Editor/Tables/         Authoring sources, starting with UI.asset
+        └── Scripts/               Startup and gameplay
+            └── Generated/         Generated UI constants and registration
+```
 
-The first Stage A fix keeps the existing manager APIs and makes Unity the only per-frame driver for each UI view. Event dispatch uses listener snapshots and a double-buffered deferred queue.
+**The framework handles common tasks. You decide how your game works.** Keep its rules, window names, settings, progress and navigation in its own folder. Demo follows the same rule. Its code, content, configuration and build helper all live inside `GameContent/Demo`, so the folder can be [deleted as a whole](docs/quick-start.md#remove-the-demo).
 
-# 05 Discussion
-If you have any questions or suggestions, feel free to reach out and discuss with me: **anguskungcn@foxmail.com**.
+## Try it
+
+1. Open the repository root in Unity Hub and wait for import/compilation.
+2. Open `Assets/GameContent/Demo/Scenes/DemoStart.unity` and press Play.
+3. Choose **Start**, then use **WASD / arrow keys** to move the blue cube to GOAL.
+
+**Play again** restarts; **Menu** returns; **Settings / Escape** opens volume settings. The shared `InitScene.unity` initializes services only; use DemoStart to see the teaching game.
+
+Then [create your own first window](docs/quick-start.md). The Demo's three reading entry points are [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs), [UI.asset](Assets/GameContent/Demo/Editor/Tables/UI.asset) and [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs).
+
+## Environment & scope
+
+The project declares **Unity 2022.3.30f1** and **Addressables 1.21.21**. Current validation used **Unity 2022.3.59f1**, including Mac development builds; see [build scope](docs/build.md#verification-scope).
+
+This is a foundation for a game. Saves, full-game pause, platform input and release requirements belong to each project's actual needs.
+
+---
+
+If you try it and get stuck, I'd like to hear where. A confusing step is something we can make clearer together.
+
+Say hello: **anguskungcn@foxmail.com**.
