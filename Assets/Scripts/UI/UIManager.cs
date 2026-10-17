@@ -1,4 +1,4 @@
-﻿using Core;
+using Core;
 using System;
 using System.Linq;
 using DG.Tweening;
@@ -30,6 +30,7 @@ namespace UI
         private readonly Dictionary<UIName, UIRequest> _requests = new();
         private readonly Queue<UIRequest> _pendingOpen = new();
         private bool _shuttingDown;
+        private int _transitionVersion;
 
         [SerializeField] private Camera uiCamera;
         [SerializeField] private GameObject[] layerObjects;
@@ -384,6 +385,7 @@ namespace UI
         private void OnDestroy()
         {
             _shuttingDown = true;
+            HideTransition();
 
             CloseAll();
         }
@@ -395,9 +397,8 @@ namespace UI
         public void OpenViewWithTransition(UIName newUIName, UIName curUIName,
             UILayer layer, object data = null, Action blackCallback = null)
         {
-            transitionCanvasGroup.alpha = 0f;
-            transitionCanvasGroup.gameObject.SetActive(true);
-            transitionCanvasGroup.DOFade(1f, fadeInTime).SetEase(fadeInType).onComplete = () =>
+            var version = _transitionVersion + 1;
+            TransitionFadeOut(() =>
             {
                 try
                 {
@@ -406,23 +407,38 @@ namespace UI
                 catch (Exception exception)
                 {
                     Debug.LogException(exception, this);
-                    TransitionFadeIn();
+
+                    if (_transitionVersion == version)
+                    {
+                        TransitionFadeIn();
+                    }
+
+                    return;
+                }
+
+                if (_transitionVersion != version)
+                {
                     return;
                 }
 
                 OpenUI(layer, newUIName, data, uiBase =>
                 {
+                    if (_transitionVersion != version)
+                    {
+                        return;
+                    }
+
                     if (uiBase != null && newUIName != curUIName && IsOpen(curUIName))
                     {
                         CloseUI(curUIName);
                     }
 
-                    transitionCanvasGroup.DOFade(0f, fadeOutTime).SetEase(fadeOutType).onComplete = () =>
+                    if (_transitionVersion == version)
                     {
-                        transitionCanvasGroup.gameObject.SetActive(false);
-                    };
+                        TransitionFadeIn();
+                    }
                 });
-            };
+            });
         }
 
         public bool IsOpen(UIName uiName)
@@ -433,37 +449,79 @@ namespace UI
 
         public void TransitionFadeOut(Action completeCallback = null)
         {
-            transitionCanvasGroup.alpha = 0f;
-            transitionCanvasGroup.gameObject.SetActive(true);
-            transitionCanvasGroup.DOFade(1f, fadeOutTime).SetEase(fadeOutType).onComplete = () =>
-            {
-                completeCallback?.Invoke();
-            };
+            FadeTransition(true, completeCallback);
         }
 
         public void TransitionFadeIn(Action completeCallback = null)
         {
-            transitionCanvasGroup.DOFade(0f, fadeInTime).SetEase(fadeInType).onComplete = () =>
+            FadeTransition(false, completeCallback);
+        }
+
+        internal Tween FadeTransition(bool covered, Action completeCallback = null)
+        {
+            if (_shuttingDown || transitionCanvasGroup == null)
             {
-                completeCallback?.Invoke();
-                transitionCanvasGroup.gameObject.SetActive(false);
-            };
+                throw new InvalidOperationException("UIManager: transition CanvasGroup is unavailable.");
+            }
+
+            var duration = covered ? fadeOutTime : fadeInTime;
+
+            if (float.IsNaN(duration) || float.IsInfinity(duration))
+            {
+                throw new InvalidOperationException("UIManager: transition duration must be finite.");
+            }
+
+            var group = transitionCanvasGroup;
+            var version = ++_transitionVersion;
+            group.DOKill(false);
+            group.blocksRaycasts = true;
+            group.gameObject.SetActive(true);
+
+            return group.DOFade(covered ? 1f : 0f, Mathf.Max(0f, duration))
+                .SetEase(covered ? fadeOutType : fadeInType)
+                .SetUpdate(true)
+                .OnComplete(() =>
+                {
+                    if (group == null || _transitionVersion != version)
+                    {
+                        return;
+                    }
+
+                    if (!covered)
+                    {
+                        group.alpha = 0f;
+                        group.gameObject.SetActive(false);
+                    }
+
+                    try
+                    {
+                        completeCallback?.Invoke();
+                    }
+                    catch (Exception exception)
+                    {
+                        Debug.LogException(exception, this);
+                    }
+                });
         }
 
         public void ShowTransition()
         {
-            if (transitionCanvasGroup == null)
+            if (_shuttingDown || transitionCanvasGroup == null)
             {
                 throw new InvalidOperationException("UIManager.ShowTransition: missing transition CanvasGroup.");
             }
 
+            ++_transitionVersion;
             transitionCanvasGroup.DOKill(false);
+            transitionCanvasGroup.blocksRaycasts = true;
             transitionCanvasGroup.gameObject.SetActive(true);
             transitionCanvasGroup.alpha = 1f;
         }
 
         public void HideTransition()
         {
+            ++_transitionVersion;
+
             if (transitionCanvasGroup == null)
             {
                 return;

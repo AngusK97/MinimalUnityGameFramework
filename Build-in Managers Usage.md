@@ -26,7 +26,11 @@ Then, in logic code, we can use these APIs to control the ui:
 // open Menu panel at first layer
 GameCore.UI.OpenUI(UILayer.First, UIName.Menu, callback: view =>
 {
-    if (view == null) return; // failed or cancelled
+    if (view == null)
+    {
+        return; // failed or cancelled
+    }
+
     // The view is initialized and shown.
 });
 
@@ -36,11 +40,11 @@ GameCore.UI.CloseUI(UIName.Menu);
 // close all panels
 GameCore.UI.CloseAll();
 
-// fade out and fade in
+// For scene changes, use GameCore.Scene.TryTransition (section 04).
+// These lower-level fades are for a separately coordinated UI operation.
 GameCore.UI.TransitionFadeOut(() =>
 {
-	// load new scene and resources and balabala... 
-	GameCore.UI.TransitionFadeIn();
+    GameCore.UI.TransitionFadeIn();
 });
 ```
 
@@ -108,17 +112,56 @@ var playerObj = Instantiate(playerPrefab);
 ```
 
 # 04 SceneManager
-```
-GameCore.Scene.LoadSceneAsync("Assets/GameResources/Scenes/MenuScene.scene").Completed += handle =>  
-{  
-    if (handle.Status != AsyncOperationStatus.Succeeded)  
+
+Use the controlled entry for ordinary scene changes. It loads a Single scene with
+automatic activation; scene loading, UI cleanup, entry preparation and fades form
+one operation. Duplicate requests return false without a callback or queued load.
+
+```csharp
+bool accepted = GameCore.Scene.TryTransition(sceneKey,
+    completed: (succeeded, error) =>
     {
-	    return;  
-    }
-    
-	// init the scene...
-};
+        if (!succeeded)
+        {
+            Debug.LogWarning(error);
+        }
+    });
 ```
+
+True means accepted, not loaded. `IsTransitioning` remains true until cleanup.
+Completion runs after the overlay is hidden and the busy flag is cleared, so it
+may start a new transition. Failed requests expose `LastError` and a built-in,
+resource-independent Retry panel; `RetryTransition()` retries the failed request.
+A completion notification exception is logged without changing its settled result.
+Directly bound callbacks on destroyed Unity objects are skipped.
+
+For asynchronous preparation under the black overlay, pass
+`enterScene: scene => PrepareScene(scene)`, where `PrepareScene` returns an
+`IEnumerator`. Nested enumerators are supported; exceptions fail the operation.
+Bind this entry to a persistent controller or static method, since Single unloads
+the old scene. Use realtime waits or callback polling when preparation must work
+at timeScale zero; the framework's fades use unscaled time, but your own
+WaitForSeconds retains Unity's normal behavior. Dispose/finally must clean up any
+work your entry owns if the manager stops.
+
+After a successful load, the manager closes the old UI request snapshot before
+running the entry. Load failure preserves the previous UI. It does not reset
+pause, unload resource modules or stop all audio. Gameplay input can consult
+`IsTransitioning`; the overlay blocks UGUI raycasts, not arbitrary input code.
+The menu startup uses the same operation, including resource and UI preparation;
+its existing `StartupError` / `RetryStartup()` API remains valid. A menu UI retry
+reuses the successfully loaded scene when it is still loaded.
+
+There is no mid-load cancel or scene rollback. If entry preparation fails after
+Single activation, the resource-independent error panel remains available.
+Disabling/destroying the manager settles its request once; a late failure still
+releases its handle and a late success does not unload the newly active scene.
+
+The existing LoadSceneAsync/UnloadSceneAsync wrappers retain their signatures.
+Use them for explicit Additive/manual activation/handle ownership; they bypass
+the controlled transition and must not be mixed with it. Low-level callers still
+release their own failed load handles and use scene unload semantics for success.
+The controlled API manages this ownership internally; it returns no scene handle.
 
 # 05 SoundManager
 

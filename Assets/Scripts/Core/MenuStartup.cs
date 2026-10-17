@@ -1,11 +1,10 @@
 using System;
+using System.Collections;
 using UI;
 using Resource;
 using Resource.ResourceModules;
+using UnityScene = UnityEngine.SceneManagement.Scene;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.ResourceManagement.ResourceProviders;
 
 namespace Core
 {
@@ -18,7 +17,7 @@ namespace Core
 
         private bool _startupStarted;
         private int _startupAttempt;
-        private UnityEngine.SceneManagement.Scene _menuScene;
+        private UnityScene _menuScene;
 
         public string StartupError { get; private set; }
 
@@ -39,7 +38,7 @@ namespace Core
             }
 
             StartGame();
-            return true;
+            return _startupStarted;
         }
 
         public void StartGame()
@@ -52,121 +51,80 @@ namespace Core
             _startupStarted = true;
             StartupError = null;
             var attempt = ++_startupAttempt;
+            var accepted = _sceneManager.TryTransition("Assets/GameResources/Scenes/MenuScene.unity",
+                _menuScene, () => PrepareResources(attempt), scene => OpenMenu(scene, attempt),
+                (succeeded, error) =>
+                {
+                    if (!succeeded)
+                    {
+                        FailStartup(attempt, error);
+                    }
+                }, RetryStartup);
+
+            if (!accepted)
+            {
+                FailStartup(attempt, "Startup transition could not be accepted; check Core/UI or an active transition.");
+            }
+        }
+
+        private IEnumerator PrepareResources(int attempt)
+        {
+            var main = _resourceManager.GetResourceModule<MainResourceModule>(ResourceModuleName.Main);
+
+            if (main == null)
+            {
+                throw new InvalidOperationException("Startup resource module is not registered.");
+            }
+
+            var finished = false;
+            var succeeded = false;
+            main.LoadResources(() =>
+            {
+                succeeded = true;
+                finished = true;
+            }, () => finished = true);
+
+            while (!finished && IsCurrentStartup(attempt))
+            {
+                yield return null;
+            }
+
+            if (!IsCurrentStartup(attempt) || !succeeded)
+            {
+                throw new InvalidOperationException("Startup resources failed to load or were cancelled.");
+            }
+        }
+
+        private IEnumerator OpenMenu(UnityScene scene, int attempt)
+        {
+            _menuScene = scene;
+            var finished = false;
+            UIBase view = null;
 
             try
             {
-                _uiManager.ShowTransition();
-
-                if (!IsCurrentStartup(attempt))
+                _uiManager.OpenUI(UILayer.First, UIName.Menu, callback: result =>
                 {
-                    return;
+                    view = result;
+                    finished = true;
+                });
+
+                while (!finished && IsCurrentStartup(attempt))
+                {
+                    yield return null;
                 }
 
-                var main = _resourceManager.GetResourceModule<MainResourceModule>(ResourceModuleName.Main);
-
-                if (main == null)
+                if (!IsCurrentStartup(attempt) || view == null)
                 {
-                    FailStartup(attempt, "Startup resource module is not registered.");
-                    return;
+                    throw new InvalidOperationException("Startup menu failed to open or was cancelled.");
                 }
-
-                main.LoadResources(() => LoadMenuScene(attempt),
-                    () => FailStartup(attempt, "Startup resources failed to load or were cancelled."));
             }
-            catch (Exception exception)
+            finally
             {
-                FailStartup(attempt, $"Startup failed: {exception}");
-            }
-        }
-
-        private void LoadMenuScene(int attempt)
-        {
-            if (!IsCurrentStartup(attempt))
-            {
-                return;
-            }
-
-            if (_menuScene.IsValid() && _menuScene.isLoaded)
-            {
-                OpenMenu(attempt);
-                return;
-            }
-
-            try
-            {
-                _sceneManager.LoadSceneAsync("Assets/GameResources/Scenes/MenuScene.unity")
-                    .Completed += handle => OnMenuSceneLoaded(handle, attempt);
-            }
-            catch (Exception exception)
-            {
-                FailStartup(attempt, $"Startup menu scene failed to load: {exception}");
-            }
-        }
-
-        private void OnMenuSceneLoaded(AsyncOperationHandle<SceneInstance> handle, int attempt)
-        {
-            if (!handle.IsValid())
-            {
-                FailStartup(attempt, "Startup menu scene returned an invalid handle.");
-                return;
-            }
-
-            if (handle.Status != AsyncOperationStatus.Succeeded)
-            {
-                var reason = handle.OperationException?.Message;
-                Addressables.Release(handle);
-                FailStartup(attempt, $"Startup menu scene failed to load: {reason}");
-                return;
-            }
-
-            // Successful scenes remain tracked by Addressables until the scene is actually unloaded.
-            if (!IsCurrentStartup(attempt))
-            {
-                return;
-            }
-
-            _menuScene = handle.Result.Scene;
-            OpenMenu(attempt);
-        }
-
-        private void OpenMenu(int attempt)
-        {
-            if (!IsCurrentStartup(attempt))
-            {
-                return;
-            }
-
-            try
-            {
-                _uiManager.OpenUI(UILayer.First, UIName.Menu,
-                    callback: view => OnMenuOpened(view, attempt));
-            }
-            catch (Exception exception)
-            {
-                FailStartup(attempt, $"Startup menu failed to open: {exception}");
-            }
-        }
-
-        private void OnMenuOpened(UIBase view, int attempt)
-        {
-            if (!IsCurrentStartup(attempt))
-            {
-                return;
-            }
-
-            if (view == null)
-            {
-                FailStartup(attempt, "Startup menu failed to open or was cancelled.");
-                return;
-            }
-
-            try
-            {
-                _uiManager.TransitionFadeIn();
-            }
-            catch (Exception exception)
-            {
-                FailStartup(attempt, $"Startup transition failed: {exception}");
+                if (!finished && _uiManager != null)
+                {
+                    _uiManager.CloseUI(UIName.Menu);
+                }
             }
         }
 
@@ -177,12 +135,8 @@ namespace Core
                 return;
             }
 
-            // Finish old visual cleanup before a log listener or UI can request another attempt.
-            _uiManager.HideTransition();
-
             StartupError = message;
             _startupStarted = false;
-
             Debug.LogError(message, _owner);
         }
 
