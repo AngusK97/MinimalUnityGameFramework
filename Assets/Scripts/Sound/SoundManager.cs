@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -17,15 +17,7 @@ namespace Sound
 
         public void PlaySound(SoundLayer layer, AudioClip clip)
         {
-            if (clip == null)
-            {
-                return;
-            }
-
-            var agent = GetSourceAgent(layer);
-            var audioSource = agent.GetAudioSource();
-            audioSource.clip = clip;
-            audioSource.Play();
+            Play(layer, clip, 1f);
         }
 
         public void Play(SoundLayer layer, AudioClip clip, float volume, float pitch = 1f, bool isLoop = false)
@@ -36,42 +28,57 @@ namespace Sound
             }
 
             var agent = GetSourceAgent(layer);
-            var audioSource = agent.GetAudioSource();
-            audioSource.loop = isLoop;
-            audioSource.pitch = pitch;
-            audioSource.volume = volume;
-            audioSource.clip = clip;
-            audioSource.Play();
+
+            if (agent != null)
+            {
+                agent.Play(clip, volume, pitch, isLoop);
+            }
         }
 
         public void StopSound(SoundLayer layer)
         {
             var agent = GetSourceAgent(layer);
-            agent.StopAllSound();
+
+            if (agent != null)
+            {
+                agent.StopAllSound();
+            }
         }
 
         public void PauseSound(SoundLayer layer)
         {
             var agent = GetSourceAgent(layer);
-            agent.PauseAllSound();
+
+            if (agent != null)
+            {
+                agent.PauseAllSound();
+            }
         }
 
         public void UnPauseSound(SoundLayer layer)
         {
             var agent = GetSourceAgent(layer);
-            agent.UnpauseAllSound();
+
+            if (agent != null)
+            {
+                agent.UnpauseAllSound();
+            }
         }
 
         private SourceAgent GetSourceAgent(SoundLayer layer)
         {
-            foreach (var agentInfo in agents)
+            if (agents != null)
             {
-                if (agentInfo.layer == layer)
+                foreach (var agentInfo in agents)
                 {
-                    return agentInfo.agent;
+                    if (agentInfo != null && agentInfo.layer == layer && agentInfo.agent != null)
+                    {
+                        return agentInfo.agent;
+                    }
                 }
             }
 
+            Debug.LogWarning($"SoundManager: no SourceAgent configured for layer {layer}.", this);
             return null;
         }
     }

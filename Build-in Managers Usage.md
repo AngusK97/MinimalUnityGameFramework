@@ -121,10 +121,53 @@ GameCore.Scene.LoadSceneAsync("Assets/GameResources/Scenes/MenuScene.scene").Com
 ```
 
 # 05 SoundManager
-```
-// play a AudioClip at Background layer, with volume = bgmVolume, pitch = 1f and isLoop = true
+
+Use `SoundLayer` from the `Sound` namespace. Call these after GameCore has prepared its services.
+
+```csharp
+// A one-shot sound: volume = 1, pitch = 1, loop = false.
+GameCore.Sound.PlaySound(SoundLayer.UI, clickClip);
+
+// Looping music must be explicit; source settings are not inherited from a prior play.
 GameCore.Sound.Play(SoundLayer.Background, bgmClip, bgmVolume, 1f, true);
 
-// stop all sounds in a layer
+GameCore.Sound.PauseSound(SoundLayer.Background);
+// New requests on this paused layer are dropped, not queued.
+GameCore.Sound.PlaySound(SoundLayer.Background, anotherClip);
+GameCore.Sound.UnPauseSound(SoundLayer.Background);
+
+// Stops all current voices and clears their clip references.
 GameCore.Sound.StopSound(SoundLayer.Background);
 ```
+
+Each SourceAgent has a `Max Sources` setting, default 16. Existing sources remain;
+this limit controls dynamic expansion. Busy or paused layers drop new requests
+without stealing voices. `StopSound` preserves the layer's pause state; call
+`UnPauseSound` to allow future playback again. Pausing gameplay layers does not
+pause the UI layer automatically.
+
+Reused sources reset clip, loop, pitch and volume. Expanded sources copy the first
+valid source's mixer, spatial and listener configuration. During
+`AudioListener.pause`, only sources with `ignoreListenerPause` can be used or
+expanded from. Missing layer configuration logs a warning and skips the operation.
+
+Prefer the layer API. The existing low-level `GetAudioSource()` may return null:
+
+```csharp
+var source = sourceAgent.GetAudioSource();
+
+if (source != null)
+{
+    source.clip = clip;
+    source.volume = 0.5f;
+    source.Play();
+}
+```
+
+Use a borrowed source immediately; it is not a reserved or persistent playback
+handle. Direct native Pause, PlayDelayed and PlayScheduled bypass the layer's
+pause guarantees. For direct agent usage, `sourceAgent.Play(clip)` returns whether
+the request was accepted, not whether it was audible on the output device.
+AudioClip loading and release remain the caller/resource module's responsibility:
+stop its playback before releasing the owning resource module. This API does not
+automatically stop a layer on scene changes or persist user volume settings.
