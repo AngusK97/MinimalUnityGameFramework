@@ -37,7 +37,7 @@ namespace Resource
         private bool _recordedResourceInfos;
         private bool _shuttingDown;
 
-        public abstract ResourceModuleName GetName();
+        public abstract string GetName();
 
         protected T GetResource<T>(int id)
         {
@@ -64,16 +64,24 @@ namespace Resource
             if (_request != null)
             {
                 if (_request.Ready)
+                {
                     InvokeCallback(loadedCallback);
+                }
                 else if (loadedCallback != null || failedCallback != null)
+                {
                     _request.Callbacks.Add((loadedCallback, failedCallback));
+                }
+
                 return;
             }
 
             var request = new LoadRequest();
             _request = request;
+
             if (loadedCallback != null || failedCallback != null)
+            {
                 request.Callbacks.Add((loadedCallback, failedCallback));
+            }
 
             try
             {
@@ -82,20 +90,27 @@ namespace Resource
                     _resourceInfos.Clear();
                     RecordAllResourceInfos();
                     var ids = new HashSet<int>();
+
                     foreach (var info in _resourceInfos)
                     {
                         if (!ids.Add(info.ResNameId) || string.IsNullOrWhiteSpace(info.ResPath)
                             || !Enum.IsDefined(typeof(ResourceType), info.ResourceType))
+                        {
                             throw new InvalidOperationException(
                                 $"Resource module {GetName()}: invalid definition {info.ResNameId}, {info.ResPath}");
+                        }
                     }
+
                     _recordedResourceInfos = true;
                 }
 
                 if (!IsCurrent(request))
+                {
                     return;
+                }
 
                 request.Remaining = _resourceInfos.Count;
+
                 if (request.Remaining == 0)
                 {
                     request.Ready = true;
@@ -106,7 +121,9 @@ namespace Resource
                 foreach (var info in _resourceInfos)
                 {
                     if (!IsCurrent(request))
+                    {
                         break;
+                    }
 
                     switch (info.ResourceType)
                     {
@@ -134,8 +151,11 @@ namespace Resource
             var handle = GameCore.Resource.LoadAssetAsync<T>(info.ResPath);
             var index = request.Handles.Count;
             request.Handles.Add(handle);
+
             if (!handle.IsValid())
+            {
                 throw new InvalidOperationException($"Resource module {GetName()}: invalid handle for {info.ResPath}");
+            }
 
             handle.Completed += completed =>
             {
@@ -154,6 +174,7 @@ namespace Resource
                 }
 
                 request.Resources.Add(info.ResNameId, completed.Result);
+
                 if (--request.Remaining == 0)
                 {
                     request.Ready = true;
@@ -175,6 +196,7 @@ namespace Resource
         internal void Shutdown()
         {
             _shuttingDown = true;
+
             try
             {
                 UnloadResources();
@@ -188,17 +210,26 @@ namespace Resource
         private void CancelRequest(LoadRequest request)
         {
             if (request == null)
+            {
                 return;
+            }
 
             if (ReferenceEquals(_request, request))
+            {
                 _request = null;
+            }
+
             request.Ready = false;
             request.Resources.Clear();
 
             // Pending operations retain their callback and release themselves when they finish.
             for (var i = 0; i < request.Handles.Count; i++)
+            {
                 if (request.Handles[i].IsValid() && request.Handles[i].IsDone)
+                {
                     ReleaseHandle(request, i);
+                }
+            }
 
             CompleteCallbacks(request);
         }
@@ -207,25 +238,35 @@ namespace Resource
         {
             var handle = request.Handles[index];
             request.Handles[index] = default;
+
             if (handle.IsValid())
+            {
                 Addressables.Release(handle);
+            }
         }
 
         private void CompleteCallbacks(LoadRequest request)
         {
             var callbacks = request.Callbacks;
             request.Callbacks = null;
+
             if (callbacks == null)
+            {
                 return;
+            }
 
             foreach (var callback in callbacks)
+            {
                 InvokeCallback(IsCurrent(request) && request.Ready ? callback.Loaded : callback.Failed);
+            }
         }
 
         private static void InvokeCallback(Action callback)
         {
             if (callback == null || (callback.Target is UnityEngine.Object target && target == null))
+            {
                 return;
+            }
 
             try
             {

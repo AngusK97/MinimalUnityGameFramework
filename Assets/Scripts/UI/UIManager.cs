@@ -15,7 +15,7 @@ namespace UI
 
         private sealed class UIRequest
         {
-            public UIName Name;
+            public string Name;
             public UILayer Layer;
             public object Arg;
             public UIBase View;
@@ -26,8 +26,8 @@ namespace UI
             public bool Cancelled;
         }
 
-        private readonly Dictionary<UIName, UIData> _registeredUIData = new();
-        private readonly Dictionary<UIName, UIRequest> _requests = new();
+        private readonly Dictionary<string, UIData> _registeredUIData = new();
+        private readonly Dictionary<string, UIRequest> _requests = new();
         private readonly Queue<UIRequest> _pendingOpen = new();
         private bool _shuttingDown;
         private int _transitionVersion;
@@ -53,13 +53,20 @@ namespace UI
             {
                 throw new InvalidOperationException("UIManager.Init: missing transition CanvasGroup.");
             }
-
-            // Register all views here.
-            RegisterUiData(new UIData(UIName.Menu, "Assets/GameResources/Prefab/UI/MenuView.prefab"));
         }
 
-        private void RegisterUiData(UIData uiData)
+        public void RegisterUiData(UIData uiData)
         {
+            if (uiData == null)
+            {
+                throw new ArgumentNullException(nameof(uiData));
+            }
+
+            if (string.IsNullOrWhiteSpace(uiData.UIName) || string.IsNullOrWhiteSpace(uiData.ResourcePath))
+            {
+                throw new ArgumentException("UI registration requires a non-empty ID and resource path.", nameof(uiData));
+            }
+
             if (_registeredUIData.ContainsKey(uiData.UIName))
             {
                 Debug.LogError($"UIManager.RegisterUiData: {uiData.UIName} already registered");
@@ -109,9 +116,9 @@ namespace UI
             }
         }
 
-        public void OpenUI(UILayer layer, UIName uiName, object arg = null, Action<UIBase> callback = null)
+        public void OpenUI(UILayer layer, string uiName, object arg = null, Action<UIBase> callback = null)
         {
-            if (_shuttingDown || !_registeredUIData.ContainsKey(uiName))
+            if (_shuttingDown || string.IsNullOrWhiteSpace(uiName) || !_registeredUIData.ContainsKey(uiName))
             {
                 InvokeCallback(callback, null);
                 return;
@@ -261,9 +268,9 @@ namespace UI
                 ? layerObjects[index] : null;
         }
 
-        public bool CloseUI(UIName uiName)
+        public bool CloseUI(string uiName)
         {
-            if (!_requests.TryGetValue(uiName, out var request))
+            if (string.IsNullOrWhiteSpace(uiName) || !_requests.TryGetValue(uiName, out var request))
             {
                 return false;
             }
@@ -394,7 +401,7 @@ namespace UI
         // Transition
         //-----------------------------------------------------------------------------------------------
 
-        public void OpenViewWithTransition(UIName newUIName, UIName curUIName,
+        public void OpenViewWithTransition(string newUIName, string curUIName,
             UILayer layer, object data = null, Action blackCallback = null)
         {
             var version = _transitionVersion + 1;
@@ -441,9 +448,9 @@ namespace UI
             });
         }
 
-        public bool IsOpen(UIName uiName)
+        public bool IsOpen(string uiName)
         {
-            return _requests.TryGetValue(uiName, out var request) && !request.Cancelled
+            return !string.IsNullOrWhiteSpace(uiName) && _requests.TryGetValue(uiName, out var request) && !request.Cancelled
                 && (request.State != UIState.Open || request.View != null);
         }
 

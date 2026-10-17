@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace UI
@@ -6,7 +6,7 @@ namespace UI
     public class UIBase : MonoBehaviour
     {
         protected object Data;
-        protected UIName UIName;
+        protected string UIName;
 
         private bool _initialized;
         private bool _shown;
@@ -18,10 +18,12 @@ namespace UI
             _closeRequested = callback;
         }
 
-        public void Init(UIName id, object data)
+        public void Init(string id, object data)
         {
             if (_initialized || _released)
+            {
                 return;
+            }
 
             _initialized = true;
             Data = data;
@@ -32,7 +34,9 @@ namespace UI
         public void Show()
         {
             if (!_initialized || _shown || _released)
+            {
                 return;
+            }
 
             _shown = true;
             OnShow();
@@ -41,15 +45,21 @@ namespace UI
         public void Close()
         {
             if (_closeRequested != null)
+            {
                 _closeRequested();
+            }
             else
+            {
                 CloseInternal();
+            }
         }
 
         private void CloseInternal()
         {
             if (!_shown)
+            {
                 return;
+            }
 
             _shown = false;
             OnClose();
@@ -58,23 +68,32 @@ namespace UI
         public void Update()
         {
             if (_shown && !_released)
+            {
                 OnUpdate();
+            }
         }
 
         public void Release()
         {
             if (_closeRequested != null)
+            {
                 _closeRequested();
+            }
             else
+            {
                 ReleaseFromManager();
+            }
         }
 
         internal void ReleaseFromManager()
         {
             if (_released)
+            {
                 return;
+            }
 
             _released = true;
+
             try
             {
                 CloseInternal();

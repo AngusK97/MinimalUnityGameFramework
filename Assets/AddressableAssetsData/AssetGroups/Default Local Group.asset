@@ -17,18 +17,8 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 67270f6934945a542994466024cc5cb4
   m_SerializeEntries:
-  - m_GUID: 9fc0d4010bbf28b4594072e72b8655ab
-    m_Address: Assets/GameResources/Scenes/InitScene.unity
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b143facb5a051b640b0fd673b698e5c6
-    m_Address: Assets/GameResources/Scenes/MenuScene.unity
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9ca8065ff5ec31840ab3b29722173d9a
-    m_Address: Assets/GameResources/Prefab/UI/MenuView.prefab
+  - m_GUID: d296e2d5a7194971be039a9115df72f9
+    m_Address: Assets/GameContent
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

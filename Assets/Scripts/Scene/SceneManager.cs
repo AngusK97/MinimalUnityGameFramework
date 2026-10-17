@@ -81,7 +81,7 @@ namespace Scene
             return TryTransition(key, default, null, enterScene, completed, null);
         }
 
-        internal bool TryTransition(object key, UnityScene existingScene,
+        public bool TryTransition(object key, UnityScene existingScene,
             Func<IEnumerator> prepare, Func<UnityScene, IEnumerator> enterScene,
             Action<bool, string> completed, Func<bool> retry)
         {

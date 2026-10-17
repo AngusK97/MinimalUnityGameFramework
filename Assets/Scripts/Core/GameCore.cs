@@ -1,7 +1,5 @@
 using UI;
-using Data;
 using Event;
-using Level;
 using Scene;
 using Sound;
 using System;
@@ -16,26 +14,20 @@ namespace Core
         private static GameCore _instance;
 
         public static UIManager UI { get; private set; }
-        public static DataManager Data { get; private set; }
         public static EventManager Event { get; private set; }
-        public static LevelManager Level { get; private set; }
         public static SceneManager Scene { get; private set; }
         public static SoundManager Sound { get; private set; }
         public static ResourceManager Resource { get; private set; }
 
         [SerializeField] private UIManager uiManager;
-        [SerializeField] private DataManager dataManager;
         [SerializeField] private EventManager eventManager;
-        [SerializeField] private LevelManager levelManager;
         [SerializeField] private SceneManager sceneManager;
         [SerializeField] private SoundManager soundManager;
         [SerializeField] private ResourceManager resourceManager;
-        [SerializeField] private bool autoStartGame = true;
 
         private bool _initialized;
-        private MenuStartup _menuStartup;
 
-        public string StartupError => _menuStartup?.StartupError;
+        public static bool IsReady => _instance != null && _instance.IsCurrent;
 
         internal bool IsCurrent => this != null && _initialized && ReferenceEquals(_instance, this);
 
@@ -64,21 +56,12 @@ namespace Core
             try
             {
                 InitManagers();
-                _menuStartup = new MenuStartup(this, uiManager, resourceManager, sceneManager);
             }
             catch (Exception exception)
             {
                 Debug.LogException(exception, this);
                 ReleaseOwnership();
                 RejectCore();
-            }
-        }
-
-        private void Start()
-        {
-            if (autoStartGame && IsCurrent)
-            {
-                _menuStartup.StartGame();
             }
         }
 
@@ -97,19 +80,6 @@ namespace Core
             }
 
             eventManager.OnUpdate(Time.deltaTime, Time.unscaledDeltaTime);
-
-            if (IsCurrent)
-            {
-                levelManager.OnUpdate(Time.deltaTime, Time.unscaledDeltaTime);
-            }
-        }
-
-        private void FixedUpdate()
-        {
-            if (IsCurrent)
-            {
-                levelManager.OnFixedUpdate();
-            }
         }
 
         private void OnDestroy()
@@ -125,14 +95,14 @@ namespace Core
                 return false;
             }
 
-            if (uiManager == null || dataManager == null || eventManager == null || levelManager == null
+            if (uiManager == null || eventManager == null
                 || sceneManager == null || soundManager == null || resourceManager == null)
             {
-                Debug.LogError("GameCore requires all seven manager references.", this);
+                Debug.LogError("GameCore requires all five manager references.", this);
                 return false;
             }
 
-            Component[] managers = { uiManager, dataManager, eventManager, levelManager,
+            Component[] managers = { uiManager, eventManager,
                 sceneManager, soundManager, resourceManager };
 
             foreach (var manager in managers)
@@ -155,16 +125,14 @@ namespace Core
             }
 
             UI = uiManager;
-            Data = dataManager;
             Event = eventManager;
-            Level = levelManager;
             Scene = sceneManager;
             Sound = soundManager;
             Resource = resourceManager;
 
             resourceManager.Init();
-            dataManager.Init();
             uiManager.Init();
+            uiManager.HideTransition();
 
             _initialized = true;
         }
@@ -200,17 +168,10 @@ namespace Core
         {
             _instance = null;
             UI = null;
-            Data = null;
             Event = null;
-            Level = null;
             Scene = null;
             Sound = null;
             Resource = null;
-        }
-
-        public bool RetryStartup()
-        {
-            return _menuStartup != null && _menuStartup.RetryStartup();
         }
     }
 }

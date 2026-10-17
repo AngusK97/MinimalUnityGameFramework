@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using UnityEngine;
-using Resource.ResourceModules;
 using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -10,28 +9,48 @@ namespace Resource
 {
     public class ResourceManager : MonoBehaviour
     {
-        private readonly Dictionary<ResourceModuleName, BaseResourceModule> _resourceModules = new();
+        private readonly Dictionary<string, BaseResourceModule> _resourceModules = new();
         private bool _shuttingDown;
 
         public void Init()
         {
-            if (_shuttingDown || _resourceModules.Count != 0)
-                return;
-
-            // todo: register all resource modules here
-            RegisterResourceModule(new MainResourceModule());
         }
 
-        private void RegisterResourceModule(BaseResourceModule baseResourceModule)
+        public void RegisterResourceModule(BaseResourceModule baseResourceModule)
         {
-            if (baseResourceModule != null)
+            if (baseResourceModule == null)
             {
-                _resourceModules[baseResourceModule.GetName()] = baseResourceModule;
+                throw new ArgumentNullException(nameof(baseResourceModule));
             }
+
+            if (_shuttingDown)
+            {
+                throw new InvalidOperationException("ResourceManager is shutting down.");
+            }
+
+            var name = baseResourceModule.GetName();
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Resource module ID must not be empty.", nameof(baseResourceModule));
+            }
+
+            if (_resourceModules.ContainsKey(name))
+            {
+                Debug.LogError($"ResourceManager.RegisterResourceModule: {name} already registered");
+                return;
+            }
+
+            _resourceModules.Add(name, baseResourceModule);
         }
 
-        public T GetResourceModule<T>(ResourceModuleName moduleName) where T : BaseResourceModule
+        public T GetResourceModule<T>(string moduleName) where T : BaseResourceModule
         {
+            if (string.IsNullOrWhiteSpace(moduleName))
+            {
+                return null;
+            }
+
             T t = default(T);
 
             if (_resourceModules.TryGetValue(moduleName, out var module))
@@ -45,20 +64,27 @@ namespace Resource
         public AsyncOperationHandle<TObject> LoadAssetAsync<TObject>(object key)
         {
             if (_shuttingDown)
+            {
                 throw new InvalidOperationException("ResourceManager is shutting down.");
+            }
+
             return Addressables.LoadAssetAsync<TObject>(key);
         }
 
         public void Release<TObject>(AsyncOperationHandle<TObject> handle)
         {
             if (handle.IsValid())
+            {
                 Addressables.Release(handle);
+            }
         }
 
         public void Release(AsyncOperationHandle handle)
         {
             if (handle.IsValid())
+            {
                 Addressables.Release(handle);
+            }
         }
 
         public void Release<TObject>(TObject obj)
@@ -74,7 +100,9 @@ namespace Resource
         public void ReleaseInstance(AsyncOperationHandle<GameObject> handle)
         {
             if (handle.IsValid())
+            {
                 Addressables.ReleaseInstance(handle);
+            }
         }
 
         public void InstantiateGameObjectAsync(string path, Transform parent, 
@@ -128,6 +156,7 @@ namespace Resource
             _shuttingDown = true;
             var modules = new List<BaseResourceModule>(_resourceModules.Values);
             _resourceModules.Clear();
+
             foreach (var module in modules)
             {
                 try
