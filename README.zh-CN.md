@@ -2,6 +2,8 @@
 
 [English](README.md) · 简体中文
 
+**框架版本：** [v0.1.0](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.1.0) · **Unity：** 6.6（6000.6.5f1）
+
 Hello there ~ 我是 Angus，一名游戏开发者。
 
 这是我一直在完善的一个小 Unity 框架。我想把开始做游戏时常用的几件事放在一起：打开界面、加载资源、切换场景、发送事件，还有播放声音。
@@ -88,6 +90,8 @@ Assets/
 之后[创建自己的第一个窗口](docs/quick-start.zh-CN.md)。阅读 Demo 可从 [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs)、[UI.asset](Assets/GameContent/Demo/Editor/Tables/UI.asset) 和 [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs) 三处开始。
 
 ## 环境与范围
+
+需要固定起点时，使用 [v0.1.0 发布版](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.1.0)。`main` 会继续更新，`0.x` 开发阶段的公共 API 仍可能变化。
 
 当前基线为 **Unity 6.6（6000.6.5f1）**、**Addressables 2.11.2**、**uGUI 2.6.0**。Unity 6.6 不是 LTS 版本。继续使用 Built-in 渲染管线与旧 Input Manager。导入、C# 编译与 13 项针对性迁移检查已通过，包括删除 Demo 和两份 macOS Mono 开发构建。完整原生输入与音频验收仍需单独完成；实际范围见[构建手册](docs/build.zh-CN.md#验证范围)。
 

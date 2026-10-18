@@ -2,6 +2,8 @@
 
 English · [简体中文](README.zh-CN.md)
 
+**Version:** [v0.1.0](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.1.0) · **Unity:** 6.6 (6000.6.5f1)
+
 Hello there ~ I'm Angus, a game developer.
 
 This is a small Unity framework I've been working on. I wanted a few familiar tools for starting a game: opening windows, loading resources, changing scenes, sending events and playing sounds.
@@ -88,6 +90,8 @@ Assets/
 Then [create your own first window](docs/quick-start.md). The Demo's three reading entry points are [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs), [UI.asset](Assets/GameContent/Demo/Editor/Tables/UI.asset) and [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs).
 
 ## Environment & scope
+
+For a fixed starting point, use the [v0.1.0 release](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.1.0). `main` keeps evolving; public APIs may change during `0.x` development.
 
 The current baseline is **Unity 6.6 (6000.6.5f1)**, **Addressables 2.11.2** and **uGUI 2.6.0**. Unity 6.6 is not an LTS release. Built-in rendering and the old Input Manager remain in use. Import, C# compilation and 13 focused migration checks passed, including Demo removal and two macOS Mono development builds. Full native input/audio acceptance is still separate; see the exact [verification scope](docs/build.md#verification-scope).
 
