@@ -99,7 +99,7 @@ namespace MyGame
 
 1. Create a new empty scene. Remove any default Camera/Light; discard the temporary authoring scene after saving the prefab.
 2. Save as `Assets/GameContent/MyGame/Scenes/Start.unity`.
-3. Drag [GameCore.prefab](../Assets/GameResources/Prefab/GameCore.prefab) into Hierarchy as a root object. It includes the Canvas layers, EventSystem and AudioListener.
+3. Drag [GameCore.prefab](../Assets/Framework/Prefabs/GameCore.prefab) into Hierarchy as a root object. It includes the Canvas layers, EventSystem and AudioListener.
 4. Create an empty root object named **GameEntry** and attach **MyGameEntry.cs**. Keep it beside GameCore, not inside it.
 5. Save and press Play.
 
@@ -113,7 +113,7 @@ If it fails, check GameCore, the MyGameEntry attachment and the UI table's gener
 
 Delete `Assets/GameContent/Demo` in Unity's Project window. If deleting on disk, close Unity and remove **both the folder and Demo.meta**. Keep GameContent, `.gitkeep`, the shared framework and your game.
 
-Run your own Start.unity again. It must use its own IDs and assets, with no DemoUI, DemoGame or Demo asset references. The shared `Assets/GameResources/Scenes/InitScene.unity` prepares services only; it does not open a menu.
+Run your own Start.unity again. It must use its own IDs and assets, with no DemoUI, DemoGame or Demo asset references. The shared `Assets/Framework/Scenes/InitScene.unity` prepares services only; it does not open a menu.
 
 ## Next
 

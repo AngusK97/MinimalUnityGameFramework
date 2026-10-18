@@ -6,7 +6,7 @@
 
 ## 配置入口
 
-1. 将 [GameCore.prefab](../Assets/GameResources/Prefab/GameCore.prefab) 拖入入口场景，放在 Hierarchy 最外层，保留已有设置。
+1. 将 [GameCore.prefab](../Assets/Framework/Prefabs/GameCore.prefab) 拖入入口场景，放在 Hierarchy 最外层，保留已有设置。
 2. 创建空对象，挂上自己的启动脚本。
 3. 在 `Start()` 中检查 `GameCore.IsReady`，再使用服务。
 

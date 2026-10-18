@@ -60,10 +60,14 @@ UI 通过 Resource 加载窗口；Scene 协调加载、渐变和 UI 收尾。启
 
 ## 内容放在哪里
 
+以下是 `main` 的目录；**v0.1.0** 保留旧目录，升级见[目录迁移说明](Build-in%20Managers%20Usage.zh-CN.md)。
+
 ```text
 Assets/
-├── Scripts/           公共框架
-├── GameResources/     公共 Core 预制体与只初始化服务的 InitScene
+├── Framework/
+│   ├── Scripts/       公共框架代码
+│   ├── Prefabs/       公共 Core 预制体
+│   └── Scenes/        只初始化服务的 InitScene
 └── GameContent/
     ├── Demo/          完整、可整体删除的教学游戏
     └── MyGame/        自己的场景、内容、脚本和 Editor/Tables

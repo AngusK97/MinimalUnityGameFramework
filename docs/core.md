@@ -6,7 +6,7 @@
 
 ## Set it up
 
-1. Drag [GameCore.prefab](../Assets/GameResources/Prefab/GameCore.prefab) into the entry scene at Hierarchy's top level. Keep its settings.
+1. Drag [GameCore.prefab](../Assets/Framework/Prefabs/GameCore.prefab) into the entry scene at Hierarchy's top level. Keep its settings.
 2. Create an empty object and attach your startup script.
 3. Check `GameCore.IsReady` in `Start()` before using services.
 

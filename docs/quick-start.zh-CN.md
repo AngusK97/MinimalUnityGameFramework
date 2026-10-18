@@ -99,7 +99,7 @@ namespace MyGame
 
 1. 新建空场景，移除默认 Camera/Light。Prefab 保存好后，临时制作场景可以不保存。
 2. 保存为 `Assets/GameContent/MyGame/Scenes/Start.unity`。
-3. 将 [GameCore.prefab](../Assets/GameResources/Prefab/GameCore.prefab) 拖入 Hierarchy，保持为根对象。它已带有 Canvas 层、EventSystem 和 AudioListener。
+3. 将 [GameCore.prefab](../Assets/Framework/Prefabs/GameCore.prefab) 拖入 Hierarchy，保持为根对象。它已带有 Canvas 层、EventSystem 和 AudioListener。
 4. 创建空的根对象 **GameEntry**，挂上 **MyGameEntry.cs**。它和 GameCore 并排，互相不包含。
 5. 保存并 Play。
 
@@ -113,7 +113,7 @@ namespace MyGame
 
 在 Unity Project 窗口删除 `Assets/GameContent/Demo`。从磁盘删除时先关 Unity，再删除**目录及 Demo.meta**。保留 GameContent、`.gitkeep`、公共框架和自己的游戏。
 
-再次运行自己的 Start.unity。自己的游戏应使用自己的标识与资产，不引用 DemoUI、DemoGame 或 Demo 资产。公共 `Assets/GameResources/Scenes/InitScene.unity` 只准备服务，不会打开菜单。
+再次运行自己的 Start.unity。自己的游戏应使用自己的标识与资产，不引用 DemoUI、DemoGame 或 Demo 资产。公共 `Assets/Framework/Scenes/InitScene.unity` 只准备服务，不会打开菜单。
 
 ## 下一步
 

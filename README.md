@@ -60,10 +60,14 @@ UI loads windows through Resource. Scene coordinates loading, fades and UI clean
 
 ## Where things belong
 
+This is the `main` layout; **v0.1.0** keeps the old layout. See [directory migration](Build-in%20Managers%20Usage.md).
+
 ```text
 Assets/
-├── Scripts/           Shared framework
-├── GameResources/     Shared Core prefab and services-only InitScene
+├── Framework/
+│   ├── Scripts/       Shared framework code
+│   ├── Prefabs/       Shared Core prefab
+│   └── Scenes/        Services-only InitScene
 └── GameContent/
     ├── Demo/          Complete, removable teaching game
     └── MyGame/        Your scenes, content, scripts and Editor/Tables
