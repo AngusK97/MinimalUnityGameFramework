@@ -2,72 +2,76 @@
 
 [框架总览](../README.zh-CN.md) · [开始使用](quick-start.zh-CN.md) · [English](resources.md)
 
-通过资源模块加载共用资产，由所有者决定何时卸载。UIManager 自行加载窗口，只用 UI 可跳过本页。
+**登记 → 加载 → 使用 → 卸载。** 资源模块持有共享资产，游戏决定其生命周期。UIManager 自行加载窗口，只用 UI 可跳过本页。
 
 ## 试试看
 
-把 **click.wav** 放到 `Assets/GameContent/MyGame/Content/Audio/`，现有 GameContent 父目录登记提供完整路径地址。
+先创建并生成 [Main.asset](resource-tables.zh-CN.md)，设置 `MyGame.MainResources`、ID `MyGame.Main` 和音效条目 `Cue`，等待编译完成。
 
-在 `Assets/GameContent/MyGame/Scripts/` 创建 **GameAssets.cs**：
+在 `Assets/GameContent/MyGame/Scripts/` 创建 **MyResourceStartup.cs**，挂到入口场景中的一个空对象上；同一场景还需放置共用 GameCore 预制体：
 
 ```csharp
-using Resource;
+using Core;
+using Sound;
 using UnityEngine;
 
 namespace MyGame
 {
-    public sealed class GameAssets : BaseResourceModule
+    public sealed class MyResourceStartup : MonoBehaviour
     {
-        public const string Id = "MyGame.Assets";
+        private MainResources main;
 
-        public override string GetName()
+        private void Start()
         {
-            return Id;
+            if (!GameCore.IsReady)
+            {
+                Debug.LogError("Add the shared GameCore prefab to the entry scene.");
+                return;
+            }
+
+            main = new MainResources();
+            GameCore.Resource.RegisterResourceModule(main);
+            main.LoadResources(loadedCallback: PlayCue, failedCallback: OnLoadFailed);
         }
 
-        protected override void RecordAllResourceInfos()
+        private void PlayCue()
         {
-            AddResourceInfo(ResourceType.AudioClip, 1,
-                "Assets/GameContent/MyGame/Content/Audio/click.wav");
+            GameCore.Sound.PlaySound(SoundLayer.UI, main.Cue);
         }
 
-        public AudioClip Click => GetResource<AudioClip>(1);
+        private void OnLoadFailed()
+        {
+            Debug.LogError("Main resources failed to load or were cancelled.");
+        }
+
+        private void OnDestroy()
+        {
+            if (main == null || !GameCore.IsReady)
+            {
+                return;
+            }
+
+            GameCore.Sound.StopSound(SoundLayer.UI);
+            main.UnloadResources();
+        }
     }
 }
 ```
 
-在启动方法中检查 `GameCore.IsReady` 后登记一次（需要 `using Core; using Sound; using UnityEngine;`）：
+**预期结果：** 整个模块加载成功后播放 cue.wav，失败或取消时输出错误。移除所有者时会停止整个 UI 音频层并卸载模块。自己的游戏应等所有借用者用完、依赖实例销毁后再卸载；所有者需存活到这些使用者结束。
+
+Resource 服务保留已登记的模块，Start 返回后仍可用。其他组件可以查找一次并保留同一个实例；查找不会加载资源（需要 `using Core;`）：
 
 ```csharp
-var assets = new MyGame.GameAssets();
-GameCore.Resource.RegisterResourceModule(assets);
-
-assets.LoadResources(
-    loadedCallback: () =>
-    {
-        GameCore.Sound.PlaySound(SoundLayer.UI, assets.Click);
-    },
-    failedCallback: () =>
-    {
-        Debug.LogError("Game resources failed to load or were cancelled.");
-    });
+var main = GameCore.Resource.GetResourceModule<MyGame.MainResources>(MyGame.MainResources.Id);
 ```
 
-**预期结果：** 加载成功后播放 click.wav；失败或取消时输出错误。
-
-Resource 服务保留模块，启动方法返回后仍可通过 `GameCore.Resource.GetResourceModule<MyGame.GameAssets>(MyGame.GameAssets.Id)` 获取，再借用 `Click`。`GetResource<T>` 是受保护方法，对外提供具体类型的属性即可。
-
-等所有借用者用完、依赖实例销毁后，由资源所有者在 Core 就绪时清理。`StopSound` 会停止整个 UI 层：
-
-```csharp
-var assets = GameCore.Resource.GetResourceModule<MyGame.GameAssets>(MyGame.GameAssets.Id);
-GameCore.Sound.StopSound(SoundLayer.UI);
-assets?.UnloadResources();
-```
+加载成功后，玩法直接使用 `main.Cue`。未加载或卸载后，属性返回 null。卸载释放资产，但保留模块登记；再次加载复用同一实例。每个 Core 生命周期登记一次，不随切场景或新增条目重复登记。
 
 ## 使用约定
 
-- 模块 ID 是游戏定义的非空字符串；模块内资源编号是 int，可用本地枚举管理。
+- 模块 ID 由游戏定义并保持稳定；生成的内部资源编号不能作为存档/网络标识。
+- 配置表与生成代码一起维护，见[资源配置表](resource-tables.zh-CN.md)；手写 BaseResourceModule 派生类仍可使用。
 - 只在加载成功回调中或之后借用资产；失败用 `failedCallback` 处理。
 - 共用模块仅由所有者卸载，先停相关音频、销毁依赖实例，不要卸载正在播放的 clip。
 - 使用实际 Addressables Key；修改资源或目标平台后，重新构建对应内容。
@@ -79,7 +83,7 @@ assets?.UnloadResources();
 
 `UnloadResources` 立即使该批失效，取消整组等待。迟到结果自行释放，不影响新批次。重写时必须调用 `base.UnloadResources()`。
 
-重复模块 ID 会被拒绝，不替换或卸载已有模块。哪些模块跨场景保留，由游戏决定。
+重复登记会抛异常，不替换或卸载已有模块。查找未登记 ID 返回 null；以错误模块类型查找已登记 ID 会抛出 InvalidOperationException。哪些模块跨场景保留，由游戏决定。
 
 </details>
 

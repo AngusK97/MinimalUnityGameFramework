@@ -45,6 +45,7 @@ UI 通过 Resource 加载窗口；Scene 协调加载、渐变和 UI 收尾。启
 | 在 Inspector 定义界面 | [UI 配置表](docs/ui-tables.zh-CN.md) | `UI.asset` → `GameUI.RegisterAll()` |
 | 发送通知 | [事件](docs/events.zh-CN.md) | `GameCore.Event` |
 | 加载与释放资产 | [资源](docs/resources.zh-CN.md) | `GameCore.Resource` |
+| 在 Inspector 定义共享资产 | [资源配置表](docs/resource-tables.zh-CN.md) | `Main.asset` → `MainResources` |
 | 切换场景 | [场景](docs/scenes.zh-CN.md) | `GameCore.Scene` |
 | 播放声音 | [音频](docs/audio.zh-CN.md) | `GameCore.Sound` |
 
@@ -82,6 +83,8 @@ Assets/
 Addressables **2.11.2** · uGUI **2.6.0** · Built-in 渲染管线 · 旧 Input Manager。
 
 需要固定快照时使用上面的发布版；`main` 持续更新，`0.x` 的 API 仍可能变化。旧游戏可以固定旧版。按需查看 [Editor 升级](docs/upgrading.zh-CN.md)、[旧 API 迁移](Build-in%20Managers%20Usage.zh-CN.md)和[已验证范围](docs/build.zh-CN.md#验证范围)。
+
+本教程对应当前源码；固定 **v0.1.0** 尚不包含资源配置表。
 
 存档、全局暂停、平台输入和发布验收，按自己的游戏需要补充。
 

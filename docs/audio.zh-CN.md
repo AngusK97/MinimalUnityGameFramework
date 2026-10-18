@@ -6,26 +6,26 @@
 
 ## 试试看
 
-完成[资源示例](resources.zh-CN.md)，在 Core 就绪后登记并加载 `GameAssets`。将此方法加入按钮处理组件（需要 `using Core; using Sound; using UnityEngine;`）：
+完成[资源示例](resources.zh-CN.md)，在 Core 就绪后登记并加载 `MainResources`。将此方法加入按钮处理组件（需要 `using Core; using Sound; using UnityEngine;`）：
 
 ```csharp
 public void PlayClick()
 {
-    var assets = GameCore.Resource.GetResourceModule<MyGame.GameAssets>(MyGame.GameAssets.Id);
+    var main = GameCore.Resource.GetResourceModule<MyGame.MainResources>(MyGame.MainResources.Id);
 
-    if (assets == null || assets.Click == null)
+    if (main == null || main.Cue == null)
     {
-        Debug.LogWarning("Load GameAssets before playing its sounds.");
+        Debug.LogWarning("Load MainResources before playing its sounds.");
         return;
     }
 
-    GameCore.Sound.PlaySound(SoundLayer.UI, assets.Click);
+    GameCore.Sound.PlaySound(SoundLayer.UI, main.Cue);
 }
 ```
 
 在 Button Inspector 展开 **On Click ()**，点击 **+**，拖入挂有该组件的场景对象，再选择 **你的组件 → PlayClick()**。
 
-**预期结果：** 加载后点击按钮，听到 click.wav；模块或音效不可用时，Console 提示先加载 GameAssets。
+**预期结果：** 加载后点击按钮，听到 cue.wav；模块或音效不可用时，Console 提示先加载 MainResources。
 
 `PlaySound` 默认音量 1、音高 1、不循环；循环音乐用 `Play`。
 

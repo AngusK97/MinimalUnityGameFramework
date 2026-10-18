@@ -6,26 +6,26 @@ Play effects or control a music layer. The framework reuses audio sources.
 
 ## Try it
 
-Complete the [resource example](resources.md) to register and load `GameAssets` after Core is ready. Add this method to your button-handling component (`using Core; using Sound; using UnityEngine;`):
+Complete the [resource example](resources.md) to register and load `MainResources` after Core is ready. Add this method to your button-handling component (`using Core; using Sound; using UnityEngine;`):
 
 ```csharp
 public void PlayClick()
 {
-    var assets = GameCore.Resource.GetResourceModule<MyGame.GameAssets>(MyGame.GameAssets.Id);
+    var main = GameCore.Resource.GetResourceModule<MyGame.MainResources>(MyGame.MainResources.Id);
 
-    if (assets == null || assets.Click == null)
+    if (main == null || main.Cue == null)
     {
-        Debug.LogWarning("Load GameAssets before playing its sounds.");
+        Debug.LogWarning("Load MainResources before playing its sounds.");
         return;
     }
 
-    GameCore.Sound.PlaySound(SoundLayer.UI, assets.Click);
+    GameCore.Sound.PlaySound(SoundLayer.UI, main.Cue);
 }
 ```
 
 In the Button Inspector, expand **On Click ()**, click **+**, drag in the scene object with this component, then select **your component → PlayClick()**.
 
-**Expected result:** after loading, clicking plays click.wav. If the module or clip is unavailable, Console tells you to load GameAssets.
+**Expected result:** after loading, clicking plays cue.wav. If the module or clip is unavailable, Console tells you to load MainResources.
 
 `PlaySound` defaults to volume 1, pitch 1, no loop. For looping music, use `Play`.
 

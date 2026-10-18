@@ -7,7 +7,7 @@
 ## 构建 Demo
 
 1. 打开 **File → Build Profiles**，在 **Platforms** 选择已安装的目标平台，需要时点击 **Switch Platform**。
-2. 退出 Play，生成有改动的 UI 配置表，等待编译完成。
+2. 退出 Play，生成有改动的 UI/资源配置表，等待编译完成。
 3. 选择 **Demo → Build Player**，再选择输出位置。
 4. 打开游戏，检查菜单，再试 Start → 键盘通关 → Play again → Menu → Settings → Quit。
 
@@ -17,7 +17,7 @@
 
 1. 打开 **File → Build Profiles**，在 **Platforms** 选择目标平台，需要时点击 **Switch Platform**。
 2. 点击左侧 **Scene List**，添加 `MyGame/Scenes/Start.unity`，放在第一项并勾选。不需要 InitScene 时移除它，保留游戏使用的其他原生场景。**Open Scene List** 打开的也是这份共享列表。
-3. 生成有改动的 UI 配置表，等待编译完成。
+3. 生成有改动的 UI/资源配置表，等待编译完成。
 4. 打开 **Window → Asset Management → Addressables → Groups**，选择 **Build → New Build → Default Build Script**，等待成功。
 5. 回到 **Platforms** 中的目标平台，点击 **Build** 并选择输出位置。
 6. 打开生成的游戏，应看到自己的第一个界面，再试试 UI、输入、声音和转场。
@@ -40,8 +40,8 @@
 | 现象 | 优先检查 |
 | --- | --- |
 | 没有 Demo 菜单 | 打开 DemoStart.unity。InitScene 按设计只初始化服务。 |
-| 缺少 GameUI | 暂时移除或注释对缺失生成类的调用，修复编译后生成配置表，再恢复调用。 |
-| 生成器缺失或禁用 | 解决 Console 中的编译错误，选中 UI.asset，退出 Play，等待编译完成。 |
+| 缺少 GameUI/MainResources | 暂时移除或注释对缺失生成类的调用，修复编译后生成配置表，再恢复调用。 |
+| 生成器缺失或禁用 | 解决 Console 中的编译错误，选中 UI.asset 或资源模块表，退出 Play，等待编译完成。 |
 | 预制体无效 | 引用已保存的预制体，确保根对象上只有一个 UIBase 派生组件。 |
 | 没有可加载地址 | 将运行时内容放在 GameContent 下；检查组的 Include in Build 和 Include Addresses in Catalog。 |
 | 窗口打开失败 | 检查 Core 是否就绪、RegisterAll、实际地址以及 Console 中的首条错误。 |
@@ -57,16 +57,17 @@ macOS 开发构建已通过；输入、音频及正式发布验收尚未完整�
 <details>
 <summary>基线与详细结果</summary>
 
-当前基线：Unity **6.6（6000.6.5f1）**、Addressables **2.11.2**、uGUI **2.6.0**。导入与 C# 编译已通过；移除临时验证脚本后，默认程序集再次编译通过。在一次性迁移工程中，**13 项针对性检查通过**：
+当前基线：Unity **6.6（6000.6.5f1）**、Addressables **2.11.2**、uGUI **2.6.0**。本轮资源配置表验收通过：
 
-- UI 配置生成与重复生成不重写输出；Demo 公共服务、转场、设置暂停、通关、重开及返回。通关检查通过临时探针把玩家放到 GOAL，没有验证键盘移动。
-- 无 Library 缓存的新工程中，仅删除 Demo，再由独立游戏使用剩余框架。
-- Demo 与独立游戏的 **macOS Mono 开发版**资源内容/Player 构建，均为 **0 错误、0 警告**。
+- **31 组 Editor 检查：** 生成、类型化属性、无效引用/名称、地址歧义、移动/替换资源、输出保护与构建检查。
+- **7 组 Demo 检查：** 启动、事件、转场、设置暂停、通关、重开和返回。通关使用临时探针，不代表键盘移动验收。
+- **3 组独立游戏检查：** 从无 Library 的新副本只删 Demo，生成的 UI/资源及生命周期检查通过。AudioClip、Prefab、Single Sprite 访问、取消/重载和晚到隔离也在 Play 与独立 Player 中通过。
+- Demo 与独立游戏的 **macOS Mono 开发版**资源内容/Player 构建，均为 **0 错误、0 警告**；移除所有临时验证资产后，有/无 Demo 默认编译再次通过。
 
-GUI 检查确认 Demo 菜单正常渲染，Escape 可打开/关闭 Settings，删除 Demo 后独立 Player 显示自己的窗口。完整原生鼠标流程、真实键盘通关、音频可听性、其他平台及 IL2CPP/正式发布构建**尚未验收**。这些结果对应上述基线，不代表所有目标与发布配置。
+此前 GUI 检查确认 Demo 菜单正常渲染，Escape 可打开/关闭 Settings，删除 Demo 后独立 Player 显示自己的窗口。完整原生鼠标流程、真实键盘通关、音频可听性、其他平台及 IL2CPP/正式发布构建**尚未验收**。这些结果对应上述基线，不代表所有目标与发布配置。
 
 </details>
 
 [Editor 升级](upgrading.zh-CN.md) · Unity 参考：[Build Profiles](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profiles.html)、[Scene List](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profile-scene-list.html)。
 
-下一步：[UI 配置表恢复](ui-tables.zh-CN.md)，或[场景转场](scenes.zh-CN.md)。
+下一步：[UI 配置表恢复](ui-tables.zh-CN.md)、[资源配置表恢复](resource-tables.zh-CN.md)，或[场景转场](scenes.zh-CN.md)。

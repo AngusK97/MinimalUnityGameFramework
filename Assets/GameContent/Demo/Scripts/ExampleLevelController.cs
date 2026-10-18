@@ -30,7 +30,7 @@ namespace Demo
             }
 
             _sound = GameCore.Sound;
-            var main = GameCore.Resource.GetResourceModule<MainResourceModule>(DemoResources.Main);
+            var main = GameCore.Resource.GetResourceModule<MainResources>(MainResources.Id);
 
             if (main == null)
             {
@@ -46,7 +46,7 @@ namespace Demo
                 yield return null;
             }
 
-            if (!loaded || main.GetRes<AudioClip>(MainResource.Cue) == null)
+            if (!loaded || main.Cue == null)
             {
                 throw new InvalidOperationException("Example sound could not be prepared.");
             }

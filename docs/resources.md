@@ -2,72 +2,76 @@
 
 [Overview](../README.md) · [Quick start](quick-start.md) · [简体中文](resources.zh-CN.md)
 
-Load shared assets through a resource module; its owner decides when to unload them. UIManager loads its own windows, so UI-only projects can skip this page.
+**Register → Load → Use → Unload.** Resource modules own shared assets; your game decides their lifetime. UIManager loads its own windows, so UI-only projects can skip this page.
 
 ## Try it
 
-Put **click.wav** in `Assets/GameContent/MyGame/Content/Audio/`. The existing GameContent folder entry provides its full path address.
+First create and generate [Main.asset](resource-tables.md), with `MyGame.MainResources`, ID `MyGame.Main` and the Audio Clip `Cue`. Wait for compilation.
 
-Create **GameAssets.cs** in `Assets/GameContent/MyGame/Scripts/`:
+Create **MyResourceStartup.cs** in `Assets/GameContent/MyGame/Scripts/`. Attach it to one empty object in your entry scene alongside the shared GameCore prefab:
 
 ```csharp
-using Resource;
+using Core;
+using Sound;
 using UnityEngine;
 
 namespace MyGame
 {
-    public sealed class GameAssets : BaseResourceModule
+    public sealed class MyResourceStartup : MonoBehaviour
     {
-        public const string Id = "MyGame.Assets";
+        private MainResources main;
 
-        public override string GetName()
+        private void Start()
         {
-            return Id;
+            if (!GameCore.IsReady)
+            {
+                Debug.LogError("Add the shared GameCore prefab to the entry scene.");
+                return;
+            }
+
+            main = new MainResources();
+            GameCore.Resource.RegisterResourceModule(main);
+            main.LoadResources(loadedCallback: PlayCue, failedCallback: OnLoadFailed);
         }
 
-        protected override void RecordAllResourceInfos()
+        private void PlayCue()
         {
-            AddResourceInfo(ResourceType.AudioClip, 1,
-                "Assets/GameContent/MyGame/Content/Audio/click.wav");
+            GameCore.Sound.PlaySound(SoundLayer.UI, main.Cue);
         }
 
-        public AudioClip Click => GetResource<AudioClip>(1);
+        private void OnLoadFailed()
+        {
+            Debug.LogError("Main resources failed to load or were cancelled.");
+        }
+
+        private void OnDestroy()
+        {
+            if (main == null || !GameCore.IsReady)
+            {
+                return;
+            }
+
+            GameCore.Sound.StopSound(SoundLayer.UI);
+            main.UnloadResources();
+        }
     }
 }
 ```
 
-Register once in your startup method after checking `GameCore.IsReady` (`using Core; using Sound; using UnityEngine;`):
+**Expected result:** cue.wav plays after the entire module loads. Failure or cancellation logs an error. Removing this owner stops the UI audio layer and unloads its module. In your own game, wait until all borrowers finish and dependent instances are destroyed before unloading; choose an owner that lives as long as those users.
+
+The Resource service retains the registered module after Start returns. Another component can retrieve the same instance once and keep it; lookup does not load it (`using Core;`):
 
 ```csharp
-var assets = new MyGame.GameAssets();
-GameCore.Resource.RegisterResourceModule(assets);
-
-assets.LoadResources(
-    loadedCallback: () =>
-    {
-        GameCore.Sound.PlaySound(SoundLayer.UI, assets.Click);
-    },
-    failedCallback: () =>
-    {
-        Debug.LogError("Game resources failed to load or were cancelled.");
-    });
+var main = GameCore.Resource.GetResourceModule<MyGame.MainResources>(MyGame.MainResources.Id);
 ```
 
-**Expected result:** after loading succeeds, click.wav plays. Failure or cancellation logs an error.
-
-The Resource service retains the module after startup returns. Other users retrieve it with `GameCore.Resource.GetResourceModule<MyGame.GameAssets>(MyGame.GameAssets.Id)` and borrow `Click`. Expose typed properties; `GetResource<T>` is protected.
-
-After all borrowers finish and dependent instances are destroyed, the resource owner cleans up while Core is ready. `StopSound` stops the whole UI layer:
-
-```csharp
-var assets = GameCore.Resource.GetResourceModule<MyGame.GameAssets>(MyGame.GameAssets.Id);
-GameCore.Sound.StopSound(SoundLayer.UI);
-assets?.UnloadResources();
-```
+After successful loading, gameplay uses `main.Cue` directly. Before loading or after unloading, the property returns null. Unload releases assets but leaves the module registered; reuse the same instance to load again. Register once per Core lifetime, not for each scene or new resource row.
 
 ## Conventions
 
-- Module IDs are game-owned, non-empty strings; resource IDs within a module are ints (a local enum is fine).
+- Keep game-owned Module Ids stable. Generated internal resource numbers are not save/network IDs.
+- Keep source tables and generated code together; see [Resource tables](resource-tables.md). Handwritten BaseResourceModule subclasses remain supported.
 - Borrow only in or after a successful load callback; handle failure with `failedCallback`.
 - Only the owner unloads shared modules, after stopping related audio and destroying dependent instances. Do not unload a playing clip.
 - Use the actual Addressables key. Rebuild content for the current target after changing resources or platform.
@@ -79,7 +83,7 @@ Concurrent `LoadResources` calls share one batch; assets become available only a
 
 `UnloadResources` invalidates the batch immediately and cancels the whole group's wait. Late results release themselves without affecting replacement batches. Overrides must call `base.UnloadResources()`.
 
-Duplicate module IDs are rejected without replacing or unloading existing modules. Your game chooses which modules survive scene changes.
+Duplicate registration throws without replacing or unloading the existing module. Looking up an unknown ID returns null; looking up a registered ID as the wrong module type throws InvalidOperationException. Your game chooses which modules survive scene changes.
 
 </details>
 

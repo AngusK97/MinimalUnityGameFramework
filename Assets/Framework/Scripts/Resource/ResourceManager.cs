@@ -37,8 +37,7 @@ namespace Resource
 
             if (_resourceModules.ContainsKey(name))
             {
-                Debug.LogError($"ResourceManager.RegisterResourceModule: {name} already registered");
-                return;
+                throw new InvalidOperationException($"Resource module '{name}' is already registered.");
             }
 
             _resourceModules.Add(name, baseResourceModule);
@@ -51,14 +50,18 @@ namespace Resource
                 return null;
             }
 
-            T t = default(T);
-
-            if (_resourceModules.TryGetValue(moduleName, out var module))
+            if (!_resourceModules.TryGetValue(moduleName, out var module))
             {
-                t = (T)module;
+                return null;
             }
 
-            return t;
+            if (module is T typedModule)
+            {
+                return typedModule;
+            }
+
+            throw new InvalidOperationException($"Resource module '{moduleName}' is registered as "
+                + $"'{module.GetType().FullName}', but was requested as '{typeof(T).FullName}'.");
         }
 
         public AsyncOperationHandle<TObject> LoadAssetAsync<TObject>(object key)

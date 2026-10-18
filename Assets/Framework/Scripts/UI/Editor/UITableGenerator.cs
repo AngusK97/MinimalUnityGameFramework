@@ -171,10 +171,22 @@ namespace UI.Editor
 
                     otherTables.Add(other);
 
-                    if (other.ClassName == table.ClassName &&
-                        string.Equals(other.Namespace ?? "", table.Namespace ?? "", StringComparison.Ordinal))
+                    if (global::Resource.Editor.ResourceModuleTableGenerator.TypeNamesConflict(
+                        table.Namespace, table.ClassName, other.Namespace, other.ClassName))
                     {
                         throw new InvalidOperationException("Namespace/ClassName is already used by another table: " + otherPath);
+                    }
+                }
+
+                foreach (string guid in AssetDatabase.FindAssets("t:ResourceModuleTable"))
+                {
+                    string path = AssetDatabase.GUIDToAssetPath(guid);
+                    var other = AssetDatabase.LoadAssetAtPath<global::Resource.Editor.ResourceModuleTable>(path);
+
+                    if (other != null && global::Resource.Editor.ResourceModuleTableGenerator.TypeNamesConflict(
+                        table.Namespace, table.ClassName, other.Namespace, other.ClassName))
+                    {
+                        throw new InvalidOperationException("Namespace/ClassName conflicts with a resource table: " + path);
                     }
                 }
 

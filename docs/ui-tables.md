@@ -49,7 +49,7 @@ Prefabs under `Assets/GameContent/` inherit its Addressables folder entry. Regen
 <details>
 <summary>Folders, validation and recovery</summary>
 
-Tables must be at `<game root>/Editor/Tables/UI.asset`; output goes to `<game root>/Scripts/Generated/<ClassName>.g.cs`. Future authoring tables can share Tables; only UI tables are implemented. The generator records the prefab's actual Addressables address.
+Tables must be at `<game root>/Editor/Tables/UI.asset`; output goes to `<game root>/Scripts/Generated/<ClassName>.g.cs`. Shared assets use separate [resource module tables](resource-tables.md) under Tables/ResourceModules. The generator records the prefab's actual Addressables address.
 
 Use ASCII C# identifiers for names; Namespace may be empty, and Namespace/Id Prefix may be dot-separated. The tool rejects keywords, RegisterAll, class/member conflicts, duplicate names/prefabs, cross-table class/full-ID collisions and unavailable/non-unique addresses. Prefabs need exactly one UIBase-derived component on the saved root; scene objects and child components are invalid. The Addressables group must enable Include in Build and Include Addresses in Catalog.
 

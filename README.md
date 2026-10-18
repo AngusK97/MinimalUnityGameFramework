@@ -45,6 +45,7 @@ UI loads windows through Resource. Scene coordinates loading, fades and UI clean
 | Define windows in the Inspector | [UI tables](docs/ui-tables.md) | `UI.asset` → `GameUI.RegisterAll()` |
 | Send a notification | [Events](docs/events.md) | `GameCore.Event` |
 | Load and release assets | [Resources](docs/resources.md) | `GameCore.Resource` |
+| Define shared assets in the Inspector | [Resource tables](docs/resource-tables.md) | `Main.asset` → `MainResources` |
 | Change scenes | [Scenes](docs/scenes.md) | `GameCore.Scene` |
 | Play a sound | [Audio](docs/audio.md) | `GameCore.Sound` |
 
@@ -82,6 +83,8 @@ Start reading the Demo at [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame
 Addressables **2.11.2** · uGUI **2.6.0** · Built-in rendering · old Input Manager.
 
 Use the release above for a fixed snapshot; `main` evolves and `0.x` APIs may change. Existing games can stay pinned. See [Editor upgrades](docs/upgrading.md), [older API migration](Build-in%20Managers%20Usage.md) and [what has been verified](docs/build.md#verification-scope).
+
+These guides describe the current source; fixed **v0.1.0** predates resource tables.
 
 Saves, full-game pause, platform input and release validation are left to your game's needs.
 

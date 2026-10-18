@@ -10,7 +10,7 @@ namespace Demo
         public static DemoGame Instance { get; private set; }
 
         public DataManager Data { get; } = new DataManager();
-        public LevelManager Level { get; } = new LevelManager();
+        public LevelManager Level { get; private set; }
         public string StartupError => _startup?.StartupError;
 
         private MenuStartup _startup;
@@ -46,7 +46,9 @@ namespace Demo
 
             Data.Init();
             DemoUI.RegisterAll();
-            GameCore.Resource.RegisterResourceModule(new MainResourceModule());
+            var main = new MainResources();
+            GameCore.Resource.RegisterResourceModule(main);
+            Level = new LevelManager(main);
 
             _initialized = true;
             _startup = new MenuStartup(this, GameCore.UI, GameCore.Resource, GameCore.Scene);

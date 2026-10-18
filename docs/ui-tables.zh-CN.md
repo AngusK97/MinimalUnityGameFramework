@@ -49,7 +49,7 @@ GameCore.UI.OpenUI(UILayer.First, MyGame.GameUI.Menu);
 <details>
 <summary>目录、校验与恢复</summary>
 
-配置表必须位于 `<game root>/Editor/Tables/UI.asset`，输出为 `<game root>/Scripts/Generated/<ClassName>.g.cs`。未来其他编辑配置可共用 Tables；目前只实现 UI 表。生成器记录预制体实际的 Addressables 地址。
+配置表必须位于 `<game root>/Editor/Tables/UI.asset`，输出为 `<game root>/Scripts/Generated/<ClassName>.g.cs`。共享资产使用 Tables/ResourceModules 下独立的[资源模块表](resource-tables.zh-CN.md)。生成器记录预制体实际的 Addressables 地址。
 
 名称使用英文 C# 标识符（字母、数字和下划线）；Namespace 可为空，Namespace/Id Prefix 可用点分隔。工具拒绝关键字、RegisterAll、类名与成员冲突、重复名称/预制体、跨表类名/完整标识冲突，以及不可用或不唯一的地址。已保存的预制体根对象上必须恰有一个 UIBase 派生组件；场景对象和子组件无效。Addressables 组需启用 Include in Build 和 Include Addresses in Catalog。
 

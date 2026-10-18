@@ -68,7 +68,7 @@ namespace Demo
 
         private IEnumerator PrepareResources(int attempt)
         {
-            var main = _resourceManager.GetResourceModule<MainResourceModule>(DemoResources.Main);
+            var main = _resourceManager.GetResourceModule<MainResources>(MainResources.Id);
 
             if (main == null)
             {

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using Core;
-using Resource;
 using Sound;
 using UI;
 using UnityEngine;
@@ -14,6 +13,13 @@ namespace Demo
     {
         public const string ExampleSceneKey = "Assets/GameContent/Demo/Content/Scenes/ExampleLevel.unity";
         private const string MenuSceneKey = "Assets/GameContent/Demo/Content/Scenes/MenuScene.unity";
+
+        private readonly MainResources _main;
+
+        public LevelManager(MainResources main)
+        {
+            _main = main ?? throw new ArgumentNullException(nameof(main));
+        }
 
         public void EnterLevel()
         {
@@ -40,9 +46,7 @@ namespace Demo
 
         public void PlayCue(SoundLayer layer = SoundLayer.UI)
         {
-            var main = GameCore.Resource.GetResourceModule<MainResourceModule>(DemoResources.Main);
-            var clip = main?.GetRes<AudioClip>(MainResource.Cue);
-            GameCore.Sound.PlaySound(layer, clip);
+            GameCore.Sound.PlaySound(layer, _main.Cue);
         }
 
         private static IEnumerator PrepareLevel(UnityScene scene)
