@@ -6,6 +6,10 @@
 
 ## Try it
 
+Complete [Quick start](quick-start.md) first, then exit Play mode. Use the same MyGame scene, UI table and game entry below.
+
+### 1. Define the name
+
 Save **GameEvents.cs** in `Assets/GameContent/MyGame/Scripts/`. Names belong to your game: no enum, event table or advance registration is needed.
 
 ```csharp
@@ -18,7 +22,9 @@ namespace MyGame
 }
 ```
 
-Save **WinNotice.cs** beside it. After Core is ready, the window subscribes when shown and unsubscribes from the **same manager instance** when closed:
+### 2. Add the listener
+
+Save **WinNotice.cs** beside it. The window subscribes when shown and unsubscribes from the saved manager when closed:
 
 ```csharp
 using Core;
@@ -52,15 +58,33 @@ namespace MyGame
 }
 ```
 
-Attach WinNotice as the only UIBase-derived component on a separate window prefab root, then [register and open it](ui.md). Do not add it beside MyMenuView.
+### 3. Open the window and send
 
-While that window is open, send this from a button handler or level-completion method (`using Core; using MyGame;`), on Unity's main thread:
+1. Create a separate UI prefab at `MyGame/Content/Prefabs/UI/WinNotice.prefab`. Attach WinNotice as the only UIBase-derived component on its RectTransform root.
+2. In `MyGame/Editor/Tables/UI.asset`, add an entry with **Name = WinNotice** and **Prefab = WinNotice.prefab**. Click **Validate and Generate**, then wait for compilation. See [UI tables](ui-tables.md) for the Inspector steps.
+3. In **MyGameEntry.cs**, keep `GameUI.RegisterAll()` once. Replace the existing OpenUI call after it with:
+
+```csharp
+GameCore.UI.OpenUI(UILayer.Second, GameUI.WinNotice, callback: view =>
+{
+    if (view == null)
+    {
+        return;
+    }
+
+    GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
+});
+```
+
+Press Play. **Console should print `Level completed.` once.** Opening is asynchronous; the callback sends after OnShow has subscribed.
+
+From here, use this one line in your button handler or level-completion method (`using Core; using MyGame;`), after Core is ready and on Unity's main thread:
 
 ```csharp
 GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 ```
 
-**Expected result:** each broadcast prints `Level completed.` once while the window is open; after closing, it produces no output. RegisterEvent subscribes a listener, not an event-name definition.
+Each broadcast prints once while the window is open. Close it with `GameCore.UI.CloseUI(GameUI.WinNotice)`; later broadcasts produce no output. RegisterEvent subscribes a listener, not an event-name definition.
 
 ## Choose the notification
 
@@ -73,7 +97,8 @@ GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 
 - Use game-owned string constants. IDs must be non-empty; handlers cannot be null.
 - Use services after Core is ready, on Unity's main thread. Core drives the event update; do not call OnUpdate yourself.
-- Subscribe for the receiver's active lifetime and unsubscribe from the saved manager. Keep a lambda delegate if you need to remove it later; a new lambda is a different listener.
+- Subscribe when the receiver needs notifications; unsubscribe from the saved manager when it stops listening. Disabling a component does not unsubscribe it.
+- Keep a lambda delegate if you need to remove it later; a new lambda is a different listener.
 - Events have **no history replay**. A window opened later reads current game state first, then listens for future changes.
 
 ## Before and after
@@ -100,7 +125,7 @@ For data, derive BaseEventArgs, implement Clear(), and send `DispatchNow(sender,
 
 Exceptions are logged and the next registered listener continues. A multicast delegate supplied in one registration is one entry: if one invocation throws, the rest of that entry is skipped. Destroyed direct Unity targets are skipped; valid invocation targets in the same entry still run unless an earlier invocation throws. Mixed multicast entries retain their original delegate references until removed. Closures still need explicit unsubscription; target checks do not make captured objects safe.
 
-Manager destruction clears subscriptions/queued events and stops remaining callbacks. Registering or dispatching through an old, disposed instance throws ObjectDisposedException; UnRegisterEvent remains safe for cleanup. With the new overloads, invalid-input tests using a bare null handler must cast it to Action or HandlerEvent explicitly. This does not turn events into transactions: use return values or completion callbacks to confirm critical operations.
+Manager destruction clears subscriptions/queued events and stops remaining callbacks. Registering or dispatching through an old, disposed instance throws ObjectDisposedException; UnRegisterEvent remains safe for cleanup. Use return values or completion callbacks to confirm critical operations.
 
 </details>
 

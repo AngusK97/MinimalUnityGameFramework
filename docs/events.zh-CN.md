@@ -6,6 +6,10 @@
 
 ## 试试看
 
+先完成[开始使用](quick-start.zh-CN.md)，然后退出 Play。下面沿用其中的 MyGame 场景、UI 配置表和游戏入口。
+
+### 1. 定义名称
+
 将 **GameEvents.cs** 保存到 `Assets/GameContent/MyGame/Scripts/`。事件名称由游戏维护，不需要枚举、配置表或预先登记。
 
 ```csharp
@@ -18,7 +22,9 @@ namespace MyGame
 }
 ```
 
-在同目录保存 **WinNotice.cs**。Core 就绪后，窗口显示时订阅，关闭时向**订阅时保存的同一个管理器实例**退订：
+### 2. 添加监听
+
+在同目录保存 **WinNotice.cs**。窗口显示时订阅，关闭时向保存的管理器退订：
 
 ```csharp
 using Core;
@@ -52,15 +58,33 @@ namespace MyGame
 }
 ```
 
-将 WinNotice 作为唯一的 UIBase 派生组件挂在独立窗口 Prefab 根上，再[登记并打开](ui.zh-CN.md)。不要和 MyMenuView 挂在同一个根上。
+### 3. 打开窗口并发送
 
-窗口打开后，在 Unity 主线程的按钮处理方法或通关方法中发送（需要 `using Core; using MyGame;`）：
+1. 新建独立的 UI Prefab，保存到 `MyGame/Content/Prefabs/UI/WinNotice.prefab`。在它的 RectTransform 根上挂载 WinNotice，根上只保留这一个 UIBase 派生组件。
+2. 在 `MyGame/Editor/Tables/UI.asset` 中新增条目：**Name = WinNotice**，**Prefab = WinNotice.prefab**。点击 **Validate and Generate**，等待编译完成。Inspector 操作见 [UI 配置表](ui-tables.zh-CN.md)。
+3. 在 **MyGameEntry.cs** 中保留一次 `GameUI.RegisterAll()`，将它后面的原 OpenUI 调用替换为：
+
+```csharp
+GameCore.UI.OpenUI(UILayer.Second, GameUI.WinNotice, callback: view =>
+{
+    if (view == null)
+    {
+        return;
+    }
+
+    GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
+});
+```
+
+按下 Play，**Console 应输出一次 `Level completed.`。** 打开窗口是异步操作；在完成回调里发送，就能等到 OnShow 完成订阅。
+
+接下来，在按钮处理方法或通关方法中用这一行广播（需要 `using Core; using MyGame;`）。Core 就绪后，在 Unity 主线程调用：
 
 ```csharp
 GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 ```
 
-**预期结果：** 窗口打开时，每次广播在 Console 输出一次 `Level completed.`；关闭后不再输出。RegisterEvent 登记的是监听器，不是事件名定义。
+窗口打开时，每次广播输出一次。用 `GameCore.UI.CloseUI(GameUI.WinNotice)` 关闭窗口后，再广播就不输出了。RegisterEvent 登记的是监听器，不是事件名定义。
 
 ## 选择通知方式
 
@@ -73,7 +97,8 @@ GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 
 - 使用游戏自己的字符串常量，ID 不能是空白，处理方法不能为 null。
 - Core 就绪后，在 Unity 主线程使用服务。Core 已负责事件更新，不要手调 OnUpdate。
-- 按接收者的活跃期成对订阅/退订，向保存的管理器退订。需要移除 lambda 时保留原委托；新写一个 lambda 是另一个监听器。
+- 需要接收通知时订阅，不再需要时向保存的管理器退订。禁用组件不会自动退订。
+- 需要移除 lambda 时保留原委托；新写一个 lambda 是另一个监听器。
 - 事件**不重放历史**。稍后打开的窗口先读取当前游戏状态，再监听后续变化。
 
 ## 前后用法
@@ -100,7 +125,7 @@ Demo 也使用无参的 `DemoEvents.VolumeChanged` 通知：[DataManager.cs](../
 
 异常会记录，下一条登记监听继续。一次登记传入的多播委托视为一个条目：其中某项抛出，跳过该条目剩余项。直接指向已销毁 Unity 对象的调用项会被跳过；同条目内其他有效调用项仍执行，除非前项抛异常。混合多播条目在退订前仍保留原委托引用。闭包仍需显式退订；目标检查不能保证捕获对象安全。
 
-管理器销毁时清空订阅/队列，并停止后续回调。向已清理的旧实例登记或派发会抛 ObjectDisposedException；UnRegisterEvent 仍可安全用于收尾。新增重载后，无效入参测试中的裸 null 监听器需显式转换为 Action 或 HandlerEvent。事件不提供事务保证，关键操作是否成功应通过返回值或完成回调确认。
+管理器销毁时清空订阅/队列，并停止后续回调。向已清理的旧实例登记或派发会抛 ObjectDisposedException；UnRegisterEvent 仍可安全用于收尾。关键操作是否成功应通过返回值或完成回调确认。
 
 </details>
 
