@@ -22,6 +22,10 @@ Demo 辅助工具会构建 Addressables，并为本次构建提供 DemoStart。�
 5. 回到 **Platforms** 中的目标平台，点击 **Build** 并选择输出位置。
 6. 打开生成的游戏，应看到自己的第一个界面，再试试 UI、输入、声音和转场。
 
+![Unity 6.6 Build Profiles 的 Scene List，MyGame Start 已启用并放在第一项](images/build-scene-list.png)
+
+*第 2 步示例：Build Profiles → Scene List，MyGame/Scenes/Start 已勾选，并放在第一项。*
+
 资源或目标平台改变后，重新构建资源内容。**Use Asset Database (fastest)** 是 Editor 的 Play Mode 选项，不能代替 Player 所需的资源构建。
 
 <details>

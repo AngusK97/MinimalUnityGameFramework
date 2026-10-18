@@ -85,6 +85,10 @@ Assets/
 2. Open `Assets/GameContent/Demo/Scenes/DemoStart.unity` and press Play.
 3. Choose **Start**, then use **WASD / arrow keys** to move the blue cube to GOAL.
 
+![Demo level in Unity 6.6 with a blue player cube and the GOAL](docs/images/demo-level.png)
+
+*The Demo level running in Unity 6.6: move the blue cube to GOAL.*
+
 **Play again** restarts; **Menu** returns; **Settings / Escape** opens volume settings. The shared `InitScene.unity` initializes services only; use DemoStart to see the teaching game.
 
 Then [create your own first window](docs/quick-start.md). The Demo's three reading entry points are [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs), [UI.asset](Assets/GameContent/Demo/Editor/Tables/UI.asset) and [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs).

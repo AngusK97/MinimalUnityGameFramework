@@ -20,6 +20,10 @@
 3. Click **Validate and Generate**, then wait for compilation.
 4. The status should read **Generated code is up to date.** The output is `MyGame/Scripts/Generated/GameUI.g.cs`.
 
+![MyGame UI table Inspector with the Menu prefab reference and up-to-date generated code](images/ui-table-inspector.png)
+
+*MyGame's UI table after generation: Menu references the saved MyMenuView prefab.*
+
 Name is the code label, such as Menu; your player-facing title stays in the prefab. Use names without spaces. For MyGame from the [first-window tutorial](quick-start.md), the folders follow this rule:
 
 ```text

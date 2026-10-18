@@ -115,6 +115,10 @@ namespace MyGame
 
 **Success:** you see `My first menu`, and Console prints `MyGame menu opened.` without red errors. Noooooice 🎉 That's your own window running through the framework.
 
+![MyGame Start scene showing My first menu, GameEntry and the shared GameCore](images/first-window.png)
+
+*My first menu opened from MyGame's Start scene, using GameEntry and the shared GameCore.*
+
 If it does not appear, stop Play and check these three things: GameCore is in the scene, GameEntry has MyGameEntry attached, and UI.asset says the generated code is up to date. [Build & troubleshoot](build.md) covers other common errors.
 
 ## Remove the Demo

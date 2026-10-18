@@ -85,6 +85,10 @@ Assets/
 2. 打开 `Assets/GameContent/Demo/Scenes/DemoStart.unity` 并点击 Play。
 3. 点击 **Start**，用 **WASD / 方向键**把蓝色方块移到 GOAL。
 
+![Unity 6.6 中的 Demo 关卡，包含蓝色玩家方块和 GOAL](docs/images/demo-level.png)
+
+*Unity 6.6 中运行的 Demo 关卡：把蓝色方块移到 GOAL。*
+
 **Play again** 重开，**Menu** 返回，**Settings / Escape** 打开音量设置。公共 `InitScene.unity` 只初始化服务；体验教学游戏请使用 DemoStart。
 
 之后[创建自己的第一个窗口](docs/quick-start.zh-CN.md)。阅读 Demo 可从 [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs)、[UI.asset](Assets/GameContent/Demo/Editor/Tables/UI.asset) 和 [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs) 三处开始。

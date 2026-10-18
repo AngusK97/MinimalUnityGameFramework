@@ -20,6 +20,10 @@
 3. 点击 **Validate and Generate**，等待编译完成。
 4. 状态应显示 **Generated code is up to date.** 输出为 `MyGame/Scripts/Generated/GameUI.g.cs`。
 
+![MyGame UI 配置表 Inspector，显示 Menu 预制体引用和代码已是最新状态](images/ui-table-inspector.png)
+
+*生成后的 MyGame UI 配置表：Menu 引用已保存的 MyMenuView 预制体。*
+
 Name 是给代码用的名字，比如 Menu，不带空格；玩家看到的标题仍写在 Prefab 里。以[第一个窗口教程](quick-start.zh-CN.md)中的 MyGame 为例，目录遵循这条规则：
 
 ```text

@@ -115,6 +115,10 @@ namespace MyGame
 
 **成功标志：** 看到 `My first menu`，Console 输出 `MyGame menu opened.`，没有红色错误。Noooooice 🎉 你自己的窗口已经通过框架跑起来了。
 
+![MyGame Start 场景显示 My first menu、GameEntry 和公共 GameCore](images/first-window.png)
+
+*MyGame 的 Start 场景通过 GameEntry 和公共 GameCore 打开 My first menu。*
+
 若没出现，先退出 Play，检查三件事：场景里有 GameCore、GameEntry 挂了 MyGameEntry、UI.asset 显示生成代码是最新的。其他常见问题见[构建与排错](build.zh-CN.md)。
 
 ## 删除 Demo

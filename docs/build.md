@@ -22,6 +22,10 @@ The Demo helper builds Addressables and supplies DemoStart for that build. It pr
 5. Return to your target under **Platforms**, choose **Build** and an output location.
 6. Open the built app. Your own first screen should appear. Try its UI, input, sound and transitions.
 
+![Unity 6.6 Build Profiles Scene List with MyGame Start enabled as the first scene](images/build-scene-list.png)
+
+*Step 2 example — Build Profiles → Scene List: MyGame/Scenes/Start is enabled as the first scene.*
+
 Rebuild content after changing resources or target platform. **Use Asset Database (fastest)** is an Editor play-mode option; it does not supply a Player content build.
 
 <details>
