@@ -2,27 +2,25 @@
 
 [Overview](../README.md) · [Build](build.md) · [简体中文](quick-start.zh-CN.md)
 
-Let's start with something you can see: **run the Demo, then make a menu of your own**.
-
-Have Unity Hub, a Unity Editor and a C# editor ready. These steps assume basic Unity use; they introduce the framework as we go. In Unity, **Project** holds files, **Hierarchy** shows objects in the current scene, and **Inspector** shows the selected object's settings.
+**Run the Demo, then make your first window.** You'll need Unity Hub, Unity 6.6 (6000.6.5f1), a C# editor and basic Unity knowledge.
 
 ## Run the Demo
 
-1. Clone or download this repository. In **Unity Hub → Add / Open**, select the folder containing Assets, Packages and ProjectSettings. Choose **Unity 6.6 (6000.6.5f1)** for this baseline. Wait for package resolution, import and compilation to finish. Keep older projects on their own pinned version unless you are deliberately [upgrading a copy](upgrading.md).
-2. Before pressing Play, open **Window → Asset Management → Addressables → Groups**. Set **Play Mode Script → Use Asset Database (fastest)** so the Editor reads assets directly.
-3. In Project, open `Assets/GameContent/Demo/Scenes/DemoStart.unity`. Press Play; you should see the MINIMAL LOOP menu.
-4. Choose Start and move with WASD/arrows to GOAL. Play again restarts; Menu returns; Settings/Escape opens volume settings; Done/Escape saves and closes.
-5. Press Unity's **Play button again to stop** before editing the project below.
+1. Clone or download the repository. Open the folder containing Assets, Packages and ProjectSettings in Unity Hub. Wait for import and compilation.
+2. Open **Window → Asset Management → Addressables → Groups**. Set **Play Mode Script → Use Asset Database (fastest)**.
+3. Open `Assets/GameContent/Demo/Scenes/DemoStart.unity` and press Play. Choose **Start** and move to GOAL with **WASD / arrows**.
+4. **Play again** restarts; **Menu** returns; **Settings / Escape** opens volume settings; **Done / Escape** saves and closes them.
+5. Press Play again to stop before editing.
 
-**Success:** the MINIMAL LOOP menu appears and the example level runs. Demo settings pause its movement/timer, rather than providing a full-game pause system.
+**Success:** the MINIMAL LOOP menu and level run. Settings pause the Demo's movement/timer only.
 
 ## Create your first window
 
-I'll use `MyGame` for the example. Keep these names on your first pass so you can copy the code as it is: **view → prefab → table → generate → startup**.
+Use the names below on your first pass: **view → prefab → table → generate → startup**.
 
 ### 1. Create the view
 
-In Project, right-click `Assets/GameContent` → **Create → Folder**, and name it **MyGame**. Create the folders below inside it; slashes mean nested folders:
+Create these folders under `Assets/GameContent/MyGame/`:
 
 ```text
 Scenes/
@@ -31,7 +29,7 @@ Editor/Tables/
 Scripts/
 ```
 
-In your new Scripts folder, right-click **Create → Scripting → MonoBehaviour Script**, name it **MyMenuView**, then double-click it. Replace the **whole file** with this code, save, and return to Unity. Wait for compilation:
+In Scripts, choose **Create → Scripting → MonoBehaviour Script** and name it **MyMenuView**. Replace the whole file with this code, save and wait for compilation:
 
 ```csharp
 using UI;
@@ -51,31 +49,23 @@ namespace MyGame
 
 ### 2. Save a UI prefab
 
-1. Use **File → New Scene** to make a temporary scene for building the UI. Choose an empty template, then **GameObject → UI → Panel**. Unity creates a Canvas with a Panel under it.
-2. Rename the **Panel** to MyMenuView. Select it in Hierarchy, then drag **MyMenuView.cs from Project into its Inspector** to attach the script. Keep only this one UIBase-derived component on the Panel.
-3. With that Panel selected, choose **GameObject → UI → Legacy → Text**. Set the Text to `My first menu`; adjust its position and color so you can see it inside the Panel.
-4. Drag **MyMenuView from Hierarchy** into `MyGame/Content/Prefabs/UI/` in Project. You should now see **MyMenuView.prefab** there. Drag the Panel, not the outer Canvas; keep cameras and EventSystem out of the prefab.
-
-The Panel is the prefab's **root**: its top-level object. It has a RectTransform because it is UI. The Canvas you used here is just for authoring; the real entry scene below gets its Canvas from Core.
+1. Use **File → New Scene** to create a temporary empty scene. Choose **GameObject → UI → Panel**.
+2. Rename the Panel **MyMenuView**. Drag MyMenuView.cs into its Inspector; keep only one UIBase-derived component on it.
+3. With the Panel selected, choose **GameObject → UI → Legacy → Text**. Set its text to `My first menu` and make it visible inside the Panel.
+4. Drag the Panel from Hierarchy into `MyGame/Content/Prefabs/UI/` to save **MyMenuView.prefab**. Save the Panel, not the outer Canvas; keep cameras and EventSystem out of it. Core supplies these at runtime.
 
 ### 3. Generate the UI table
 
-In Project, right-click `MyGame/Editor/Tables/` → **Create → Framework → UI Table**. Keep the name **UI** (Unity saves it as UI.asset). Select it, expand **Entries** and click **+** to add one row. Fill the Inspector:
+1. In `MyGame/Editor/Tables/`, choose **Create → Framework → UI Table**. Keep the name **UI**.
+2. Select UI.asset. Set **Namespace = MyGame**, **Class Name = GameUI**, **Id Prefix = MyGame**.
+3. Expand **Entries**, click **+**, set **Name = Menu** and drag **MyMenuView.prefab from Project** into **Prefab**. Do not use the scene object.
+4. Click **Validate and Generate** and wait for compilation. Confirm `MyGame/Scripts/Generated/GameUI.g.cs` exists and the status reads **Generated code is up to date.**
 
-| Field | Value |
-| --- | --- |
-| Namespace | `MyGame` |
-| Class Name | `GameUI` |
-| Id Prefix | `MyGame` |
-| Entries | One row: Name=`Menu`, Prefab=your saved MyMenuView root component |
-
-Drag **MyMenuView.prefab from Project** into that row's **Prefab** field, not the object still in Hierarchy. Click **Validate and Generate** and wait for compilation. You should see `MyGame/Scripts/Generated/GameUI.g.cs` and the status **Generated code is up to date.**
-
-**Generate first.** The next script refers to GameUI and cannot compile before that class exists. UI.asset stays in Editor/Tables; it is not a runtime scene component.
+**Generate before continuing:** the next script needs GameUI to exist. For later edits, use [UI tables](ui-tables.md).
 
 ### 4. Add your game entry
 
-Once GameUI.g.cs exists, use **Create → Scripting → MonoBehaviour Script** in your Scripts folder again, name it **MyGameEntry**, and replace its whole contents with this:
+Create **MyGameEntry.cs** in Scripts with the same script menu. Replace its whole contents with:
 
 ```csharp
 using Core;
@@ -107,26 +97,24 @@ namespace MyGame
 }
 ```
 
-1. Use **File → New Scene** again and choose an empty template. If it contains a default Camera/Light, delete those default objects so this new Hierarchy is empty. You can discard the temporary authoring scene once its prefab has been saved.
-2. Save this scene as `Assets/GameContent/MyGame/Scenes/Start.unity`.
-3. Find [GameCore.prefab](../Assets/GameResources/Prefab/GameCore.prefab) in Project. Drag it into an empty area of Hierarchy, with no parent object. It already has the needed Canvas layers, EventSystem and AudioListener.
-4. In Hierarchy, right-click **Create Empty**, name it **GameEntry**, and drag **MyGameEntry.cs from Project into its Inspector**. GameEntry and GameCore should be beside each other, not one inside the other.
+1. Create a new empty scene. Remove any default Camera/Light; discard the temporary authoring scene after saving the prefab.
+2. Save as `Assets/GameContent/MyGame/Scenes/Start.unity`.
+3. Drag [GameCore.prefab](../Assets/GameResources/Prefab/GameCore.prefab) into Hierarchy as a root object. It includes the Canvas layers, EventSystem and AudioListener.
+4. Create an empty root object named **GameEntry** and attach **MyGameEntry.cs**. Keep it beside GameCore, not inside it.
 5. Save and press Play.
 
-**Success:** you see `My first menu`, and Console prints `MyGame menu opened.` without red errors. Noooooice 🎉 That's your own window running through the framework.
+**Success:** `My first menu` appears and Console prints `MyGame menu opened.` without red errors. Noooooice 🎉
 
 ![MyGame Start scene showing My first menu, GameEntry and the shared GameCore](images/first-window.png)
 
-*My first menu opened from MyGame's Start scene, using GameEntry and the shared GameCore.*
-
-If it does not appear, stop Play and check these three things: GameCore is in the scene, GameEntry has MyGameEntry attached, and UI.asset says the generated code is up to date. [Build & troubleshoot](build.md) covers other common errors.
+If it fails, check GameCore, the MyGameEntry attachment and the UI table's generation status. More checks: [Build & troubleshoot](build.md).
 
 ## Remove the Demo
 
-Delete `Assets/GameContent/Demo` in Unity's Project window. For disk deletion, close Unity first and remove the folder **and Demo.meta**. Keep GameContent, its `.gitkeep`, the shared framework and your own game directory.
+Delete `Assets/GameContent/Demo` in Unity's Project window. If deleting on disk, close Unity and remove **both the folder and Demo.meta**. Keep GameContent, `.gitkeep`, the shared framework and your game.
 
-Run your own Start.unity again. Your game should use its own IDs/content instead of DemoUI, DemoGame or Demo assets. The shared `Assets/GameResources/Scenes/InitScene.unity` remains a services-only entry and intentionally opens no menu.
+Run your own Start.unity again. It must use its own IDs and assets, with no DemoUI, DemoGame or Demo asset references. The shared `Assets/GameResources/Scenes/InitScene.unity` prepares services only; it does not open a menu.
 
-## Next steps
+## Next
 
-[Add another UI](ui-tables.md) · [Learn window hooks](ui.md) · [Build your game](build.md)
+[Add a UI](ui-tables.md) · [Window lifecycle](ui.md) · [Build your game](build.md)

@@ -2,13 +2,13 @@
 
 [Overview](../README.md) · [Quick start](quick-start.md) · [简体中文](ui.zh-CN.md)
 
-**Give a window a name, then open or close it from your game code. UIManager handles loading and cleanup.**
+**Open or close a named window. UIManager loads and releases its instance.**
 
 ## Open a window
 
-First complete [Quick start](quick-start.md), or create your own [UI table](ui-tables.md). Register it once after Core is ready. The example assumes `MyGame.GameUI.Menu` already exists.
+Complete [Quick start](quick-start.md) or create a [UI table](ui-tables.md). Register it once after Core is ready; this example uses `MyGame.GameUI.Menu`.
 
-Use `using Core; using UI;`. Put this in a button's click handler, or in your startup `Start()` after RegisterAll, when you want to show the menu:
+With `using Core; using UI;`, add this to a button handler or startup `Start()` after RegisterAll:
 
 ```csharp
 GameCore.UI.OpenUI(UILayer.First, MyGame.GameUI.Menu, callback: view =>
@@ -22,7 +22,7 @@ GameCore.UI.OpenUI(UILayer.First, MyGame.GameUI.Menu, callback: view =>
 });
 ```
 
-Use `First` for a normal screen and `Second` for a popup. `Transition` is reserved for the transition overlay.
+Use `First` for a normal screen, `Second` for a popup. Reserve `Transition` for the transition overlay.
 
 ## Close a window
 
@@ -32,7 +32,7 @@ Use `First` for a normal screen and `Second` for a popup. `Transition` is reserv
 | Inside the view | `CloseSelf()` |
 | Close current requests together | `GameCore.UI.CloseAll()` |
 
-You can try closing the window, then opening it again. It should disappear and reappear. UIManager releases the closed instance for you.
+**Expected result:** close and reopen the window. It disappears, its instance is released, then a new instance appears.
 
 ## Put logic in the right hook
 
@@ -43,26 +43,26 @@ You can try closing the window, then opening it again. It should disappear and r
 | `OnClose()` | Remove those bindings and subscriptions |
 | `OnUpdate()` | Per-frame logic while shown; Unity drives it |
 
-A saved prefab needs **one UIBase-derived component on its root**. Its root is a UI RectTransform; the shared Core provides the parent Canvas and EventSystem.
+Save the prefab with **one UIBase-derived component on its RectTransform root**. Core provides the parent Canvas and EventSystem.
 
 <details>
 <summary>Request behavior and manual registration</summary>
 
-Duplicate opens share a pending load; an already-open window returns its current instance without another OnShow. The first request determines layer and data. Failed/cancelled callbacks receive null; directly bound methods on destroyed Unity targets are skipped.
+Duplicate opens share a pending load; an open window returns its instance without another OnShow. The first request sets layer and data. Failed/cancelled callbacks receive null; directly bound methods on destroyed Unity targets are skipped.
 
-CloseUI also cancels queued/loading requests and releases late instances. IsOpen includes queued/loading states, so it does not mean visible. CloseAll operates on the initial request snapshot; explicitly opened requests from close hooks/callbacks survive.
+CloseUI cancels queued/loading requests and releases late instances. IsOpen includes queued/loading states, not just visible windows. CloseAll handles its initial request snapshot; requests explicitly opened by close hooks/callbacks survive.
 
-Close, Release and CloseSelf settle the owning request. There is no window pool. OnClose must tolerate partial OnShow setup. If overriding OnDestroy, call base.OnDestroy() after your cleanup. Do not manually call Update.
+Close, Release and CloseSelf settle the owning request. There is no window pool. OnClose must tolerate partial OnShow setup. After your OnDestroy cleanup, call base.OnDestroy(). Do not manually call Update.
 
-Projects may use manual registration instead of a generated table:
+For manual registration instead of a generated table:
 
 ```csharp
 GameCore.UI.RegisterUiData(new UIData("MyGame.Menu",
     "Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab"));
 ```
 
-Register after Core is ready. Empty IDs/addresses and duplicate IDs are rejected; do not also register the same IDs with RegisterAll. Low-level fades are for separately coordinated UI work; use the scene API for a scene transition.
+Register after Core is ready. Empty IDs/addresses and duplicate IDs are rejected; do not register the same IDs with RegisterAll. Low-level fades require separate coordination; use the scene API for scene transitions.
 
 </details>
 
-Next: [UI tables](ui-tables.md) to add another window, or [events](events.md) to connect it to gameplay.
+Next: [UI tables](ui-tables.md) to add a window, or [events](events.md) to connect gameplay.

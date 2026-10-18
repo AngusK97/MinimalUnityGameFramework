@@ -2,11 +2,11 @@
 
 [Overview](../README.md) · [Quick start](quick-start.md) · [简体中文](audio.zh-CN.md)
 
-Play a button sound, pause the background music or stop a layer. The framework reuses the audio sources for you.
+Play effects or control a music layer. The framework reuses audio sources.
 
 ## Try it
 
-First complete the [resource example](resources.md), so your startup registers and loads `GameAssets` after Core is ready. Add this method to the component handling an existing button, then connect the button's On Click event to `PlayClick()`. Add `using Core; using Sound; using UnityEngine;` at the top of that script:
+Complete the [resource example](resources.md) to register and load `GameAssets` after Core is ready. Add this method to your button-handling component (`using Core; using Sound; using UnityEngine;`):
 
 ```csharp
 public void PlayClick()
@@ -23,15 +23,15 @@ public void PlayClick()
 }
 ```
 
-In the Button Inspector, expand **On Click ()**, click **+**, drag the scene object with this component into the object slot, then select **your component → PlayClick()**.
+In the Button Inspector, expand **On Click ()**, click **+**, drag in the scene object with this component, then select **your component → PlayClick()**.
 
-**Try it:** after loading finishes, click the button. You should hear your click.wav; if the module or clip is not ready, Console tells you to load GameAssets first.
+**Expected result:** after loading, clicking plays click.wav. If the module or clip is unavailable, Console tells you to load GameAssets.
 
-`PlaySound` defaults to volume 1, pitch 1 and no loop. Use it for short effects; request looping music explicitly with `Play`.
+`PlaySound` defaults to volume 1, pitch 1, no loop. For looping music, use `Play`.
 
 ## Conventions
 
-The shared Core configures four layers: `UI`, `Background`, `Environment` and `Event`. Pick a `SoundLayer` by purpose instead of creating each AudioSource yourself.
+Core provides `UI`, `Background`, `Environment` and `Event` layers. Choose `SoundLayer` by purpose.
 
 | Action | Call |
 | --- | --- |
@@ -39,30 +39,30 @@ The shared Core configures four layers: `UI`, `Background`, `Environment` and `E
 | Resume it | `GameCore.Sound.UnPauseSound(SoundLayer.Background)` |
 | Stop and clear its clips | `GameCore.Sound.StopSound(SoundLayer.Background)` |
 
-- Pause affects one layer; pausing background music does not pause UI effects.
-- Paused or full layers drop new requests without queuing or stealing voices.
-- Stop clears playback and clip references but preserves pause state. Call UnPauseSound to accept playback again.
-- Audio does not load assets. Stop related playback before unloading the owning resource module; do not release a playing clip.
+- Pause affects only the chosen layer.
+- Paused/full layers drop new requests without queuing or stealing voices.
+- Stop clears playback and clip references but keeps pause state; call UnPauseSound to accept playback again.
+- Audio does not load assets. Stop related playback before unloading its resource module.
 
 <details>
 <summary>When needed: source limits and reuse</summary>
 
-For looping music, first load its AudioClip, then call `GameCore.Sound.Play` with `SoundLayer.Background`, that clip, volume `0.5f`, pitch `1f` and `isLoop: true`. Unlike `PlaySound`, this lets you choose the playback parameters explicitly.
+For looping music, load the AudioClip, then call `GameCore.Sound.Play` with `SoundLayer.Background`, the clip, volume `0.5f`, pitch `1f` and `isLoop: true`.
 
-Each SourceAgent defaults to `Max Sources` 16. This limits dynamic expansion, not existing sources. Reused sources reset clip, loop, pitch and volume rather than inheriting the previous play's parameters.
+Each SourceAgent's `Max Sources` defaults to 16, limiting expansion, not existing sources. Reuse resets clip, loop, pitch and volume.
 
-Expanded sources copy the first valid source's mixer, spatial and listener configuration. During `AudioListener.pause`, only `ignoreListenerPause` sources are usable. Missing layer configuration logs a warning and skips playback.
+Expanded sources copy the first valid source's mixer, spatial and listener settings. During `AudioListener.pause`, only `ignoreListenerPause` sources are usable. Missing layers log a warning and skip playback.
 
-Scene changes do not automatically stop every layer, and the framework does not save user volume. Your game owns global pause, volume settings and cross-scene audio policy.
+Your game owns global pause, saved volume and cross-scene audio policy. Scene changes do not automatically stop all layers.
 
 </details>
 
 <details>
 <summary>When needed: direct AudioSource access</summary>
 
-Low-level `SourceAgent.GetAudioSource()` may return null. Use a borrowed source immediately; it is not a reserved, long-lived playback handle.
+`SourceAgent.GetAudioSource()` may return null. Use borrowed sources immediately; they are not reserved playback handles.
 
-Native Pause, PlayDelayed and PlayScheduled bypass the layer's pause guarantees. `SourceAgent.Play(clip)` returns whether the request was accepted, not whether it was audible on the device. Prefer the layer APIs for ordinary gameplay.
+Native Pause, PlayDelayed and PlayScheduled bypass layer pause guarantees. `SourceAgent.Play(clip)` reports acceptance, not device audibility. Use layer APIs for ordinary gameplay.
 
 </details>
 

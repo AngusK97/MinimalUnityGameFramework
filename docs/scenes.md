@@ -2,13 +2,13 @@
 
 [Overview](../README.md) · [Quick start](quick-start.md) · [简体中文](scenes.zh-CN.md)
 
-Move from a menu to a level with a loading overlay. One call loads the new scene, closes the old UI and waits for any preparation you provide.
+Load a level behind an overlay, close the old UI and wait for your scene preparation.
 
 ## Try it
 
-First save your **Level01.unity** in `Assets/GameContent/MyGame/Content/Scenes/`. Put a camera and an obvious visible object in it so you can recognize the loaded scene. Remove any extra AudioListener from that camera; Core already has one. Confirm its Addressables address; a Player needs content built for the current target.
+Save **Level01.unity** in `Assets/GameContent/MyGame/Content/Scenes/` with a camera and visible object. Remove the camera's extra AudioListener; Core has one. Confirm the Addressables address and build content for the Player's target.
 
-Put this code in an existing menu button's click handler, after Core is ready. Do not put it in Update. It needs `using Core; using UnityEngine;`:
+Add this to a menu button handler after Core is ready, not Update (`using Core; using UnityEngine;`):
 
 ```csharp
 bool accepted = GameCore.Scene.TryTransition(
@@ -27,36 +27,36 @@ if (!accepted)
 }
 ```
 
-**Expected result:** click once to see the overlay, then the target scene after the old window closes. A load failure keeps the old UI and shows a Retry panel; check Console and the panel's error before retrying. This uses Single loading: the target replaces the old scene, while Core stays alive.
+**Expected result:** one click shows the overlay, closes the old window and displays the target scene. Single loading replaces the old scene; Core persists. A load failure preserves old UI and shows Retry; check Console and the panel's error.
 
 ## Conventions
 
-- True means accepted, not loaded; inspect the completion callback for success. Busy or invalid requests return false without queuing or a completion callback.
-- Old UI closes only after a successful load; a load failure preserves it. Inspect `LastError` and use the built-in Retry panel or `RetryTransition()` after failure.
-- Keep transition controllers on persistent objects or use static methods. Single unloads the old scene, so its objects should not own the remaining flow's callbacks.
-- Gameplay input should check `IsTransitioning`. The overlay blocks UGUI raycasts, not your keyboard or controller code.
+- True means accepted; success comes through the completion callback. Busy/invalid requests return false without queuing or calling completion.
+- Old UI closes only after a successful load. After failure, inspect `LastError`, then use the Retry panel or `RetryTransition()`.
+- Keep transition controllers persistent or use static methods; Single unloads old-scene callback targets.
+- Check `IsTransitioning` in gameplay input. The overlay blocks UGUI raycasts, not keyboard/controller code.
 
 <details>
 <summary>When needed: wait for HUD and resources</summary>
 
-Pass `enterScene: scene => PrepareScene(scene)` to `TryTransition`. Your `PrepareScene` returns `IEnumerator` and takes `UnityEngine.SceneManagement.Scene`; writing the coroutine requires `using System.Collections;`.
+Pass `enterScene: scene => PrepareScene(scene)`. Your method returns `IEnumerator` and takes `UnityEngine.SceneManagement.Scene` (`using System.Collections;`).
 
-The framework runs it after scene activation and old UI cleanup, then removes the overlay when it finishes. Wait for your resource and HUD completion callbacks here. Nested enumerators are supported; an exception fails the transition.
+Preparation runs after activation and old UI cleanup; the overlay stays until it finishes. Wait for resource/HUD callbacks here. Nested enumerators work; exceptions fail the transition.
 
-Preparation failure after Single activation does not restore the old scene; the error panel still allows retry. Ordinary `RetryTransition()` retries the scene and its preparation, not a rollback of game progress.
+Preparation failure after Single activation cannot restore the old scene. The error panel still allows retry; `RetryTransition()` retries loading and preparation, not game-progress rollback.
 
-At timeScale=0, use realtime waits or callback polling. Framework fades use unscaled time; your `WaitForSeconds` retains Unity's normal behavior. Your finally / Dispose must clean up work you own.
+At timeScale=0, use realtime waits or callback polling. Framework fades use unscaled time; `WaitForSeconds` follows Unity's normal behavior. Clean up owned work in finally / Dispose.
 
 </details>
 
 <details>
 <summary>When needed: completion, lifetime and low-level APIs</summary>
 
-Completion runs after the overlay is hidden and the busy flag clears, so it can submit another transition. Completion notification exceptions are logged without changing the settled result. Direct callbacks on destroyed Unity objects are skipped.
+Completion runs after the overlay hides and busy clears, so it can submit another transition. Notification exceptions are logged without changing the result. Direct callbacks on destroyed Unity objects are skipped.
 
-The framework does not reset gameplay pause, unload all modules, stop all audio, cancel a load midway or roll back scenes. Disabling/destroying the manager settles its request once; late failures release their handles and late successes do not unload the new active scene.
+The framework does not reset gameplay pause, unload all modules, stop all audio, cancel loading midway or roll back scenes. Disabling/destroying the manager settles once; late failures release handles and late successes leave the new active scene loaded.
 
-`LoadSceneAsync` / `UnloadSceneAsync` are low-level wrappers for explicitly coordinated Additive loading, manual activation and handle ownership. They bypass the controlled flow. Low-level callers handle failed-load release and successful-scene unloading themselves; do not mix both paths for one operation.
+`LoadSceneAsync` / `UnloadSceneAsync` bypass this flow for coordinated Additive loading, manual activation and handle ownership. Callers release failed loads and unload successful scenes. Do not mix both paths for one operation.
 
 </details>
 

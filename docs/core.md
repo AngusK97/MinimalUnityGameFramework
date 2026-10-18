@@ -2,15 +2,15 @@
 
 [Overview](../README.md) · [Quick start](quick-start.md) · [简体中文](core.zh-CN.md)
 
-**Add one GameCore to your entry scene. It prepares the shared tools, then your own script starts the game.**
+**GameCore prepares the shared services. Your startup script starts the game.**
 
 ## Set it up
 
-1. Find [GameCore.prefab](../Assets/GameResources/Prefab/GameCore.prefab) in Project and drag it into a blank area of Hierarchy. It should be at the top level, not inside another object. Keep the prefab's settings.
-2. Create an empty object for your game entry and attach your startup script to it.
-3. In that script's `Start()`, check `GameCore.IsReady`, then use the services. If you need a complete script to copy, start with [Quick start](quick-start.md).
+1. Drag [GameCore.prefab](../Assets/GameResources/Prefab/GameCore.prefab) into the entry scene at Hierarchy's top level. Keep its settings.
+2. Create an empty object and attach your startup script.
+3. Check `GameCore.IsReady` in `Start()` before using services.
 
-Place this method in your existing startup class (`using Core; using UnityEngine;`):
+Add this method to your startup class (`using Core; using UnityEngine;`). For a complete class that opens a window, see [Quick start](quick-start.md).
 
 ```csharp
 private void Start()
@@ -25,8 +25,6 @@ private void Start()
 }
 ```
 
-For a complete startup class that opens a window, follow [Quick start](quick-start.md).
-
 ## What it owns
 
 | Entry | Responsibility |
@@ -37,15 +35,15 @@ For a complete startup class that opens a window, follow [Quick start](quick-sta
 | `GameCore.Scene` | Controlled scene transitions |
 | `GameCore.Sound` | Layered audio playback |
 
-Core assembles services in `Awake()`. Its `Update()` pumps UI requests and queued events. Unity updates each shown view through `UIBase.OnUpdate()`.
+Core assembles services in `Awake()` and pumps UI requests and queued events in `Update()`. Unity drives shown views through `UIBase.OnUpdate()`.
 
 ## A few things to keep in mind
 
-- The shared prefab already provides Canvas layers, transition UI, EventSystem and an AudioListener. Keep one active set.
-- Keep Core alive across levels. Restart gameplay through your own controller, rather than initializing Core again.
-- Keep game rules, saves, UI IDs and navigation in your game directory. Core does not register a demo menu or choose a first scene.
-- Its five manager references must belong to its own hierarchy. To end its lifetime, destroy the **whole Core root**.
+- The prefab provides Canvas layers, transition UI, EventSystem and an AudioListener. Keep one active set.
+- Keep Core across levels; restart gameplay through your controller, not by reinitializing Core.
+- Keep rules, saves, UI IDs and navigation in your game directory. Your game chooses its first scene; Core registers no demo menu.
+- All five managers must belong to Core's hierarchy. End its lifetime by destroying the **whole Core root**.
 
-**Expected result:** `GameCore.IsReady` is true. Opening the shared InitScene alone prepares services and shows no game menu.
+**Expected result:** `GameCore.IsReady` is true. The shared InitScene alone prepares services without a game menu.
 
-Next: [UI](ui.md) or [the complete first-window tutorial](quick-start.md).
+Next: [UI](ui.md).

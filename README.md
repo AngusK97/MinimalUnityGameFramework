@@ -2,28 +2,34 @@
 
 English · [简体中文](README.zh-CN.md)
 
-**Version:** [v0.1.0](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.1.0) · **Unity:** 6.6 (6000.6.5f1)
+**Version:** [v0.1.0](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.1.0) · **Unity:** 6.6 (6000.6.5f1, not LTS)
 
-Hello there ~ I'm Angus, a game developer.
-
-This is a small Unity framework I've been working on. I wanted a few familiar tools for starting a game: opening windows, loading resources, changing scenes, sending events and playing sounds.
-
-My hope is that you can try the Demo, see how the pieces fit, and then make something of your own.
+Hello there ~ I'm Angus, a game developer. This is a small Unity framework for UI, events, resources, scenes and audio. Try the Demo, then use the same tools to make your own game.
 
 > **Simple is beautiful.** Keep things small, clear, and easy to change.
 
-[Start here](docs/quick-start.md) · [Build your game](docs/build.md) · [Move to Unity 6.6](docs/upgrading.md) · [Older API migration](Build-in%20Managers%20Usage.md)
+## Try it
+
+1. Open the repository root in Unity Hub with the Editor version above. Wait for import and compilation.
+2. Open `Assets/GameContent/Demo/Scenes/DemoStart.unity` and press Play.
+3. Choose **Start**, then move the blue cube to GOAL with **WASD / arrow keys**.
+
+![Demo level in Unity 6.6 with a blue player cube and the GOAL](docs/images/demo-level.png)
+
+**Play again** restarts; **Menu** returns; **Settings / Escape** opens volume settings.
+
+**Next: [create your first window](docs/quick-start.md)** · [Build your game](docs/build.md)
 
 ## Philosophy
 
-- **Keep the flow easy to follow.** Your startup tells the framework which windows and resources exist, then opens the first screen. You can read the calls in order.
-- **Know who cleans up.** Core keeps the services alive. UIManager loads and releases windows. A resource module keeps a group of assets until you unload it.
-- **Start with Unity's own tools.** Use familiar components and the Inspector. Add a tool when it saves repeated work.
-- **Build what your game needs.** Keep its rules and data in your game folder. Share more code when real projects give you a reason to.
+- **Make the flow explicit.** Register your content, then open the first screen.
+- **Know who cleans up.** Core owns services; UI owns windows; resource modules own their loaded assets.
+- **Use Unity's tools first.** Components, the Inspector and ordinary C# are enough for most tasks.
+- **Grow with the game.** Keep its rules and data in its own folder. Extract shared code when you need it.
 
 ## The big picture
 
-Think of **GameCore** as the place to reach the five shared tools. It stays alive when scenes change. Your game and the Demo use the same calls.
+**GameCore** provides five services and stays alive across scene changes. Your game and the removable Demo use the same API.
 
 ```mermaid
 flowchart TB
@@ -36,75 +42,43 @@ flowchart TB
     Core --> Audio["Sound"]
 ```
 
-Core prepares services in `Awake()`. Your startup uses them in `Start()` after `GameCore.IsReady`:
+**Prepare services → Register content → Open the first screen → Run the game.**
 
-**Prepare services → Register your content → Open your first screen → Run your game.**
-
-UI uses Resource to load windows. Scene handles scene loading and closes the previous UI at the right point.
-
-Core checks pending UI requests and sends queued events each frame. Unity updates windows and gameplay scripts. Loading and fades use Addressables and DOTween.
+UI loads windows through Resource. Scene coordinates loading, fades and UI cleanup. Startup and lifecycle details are in [Core](docs/core.md).
 
 ## Pick the module you need
 
-Pick the task you want to do. Each guide starts with a short example; extra notes are folded below it.
-
-| Guide | What it handles | Main entry |
+| I want to… | Guide | Entry |
 | --- | --- | --- |
-| [Core](docs/core.md) | Service setup and lifetime | `GameCore.IsReady` |
-| [UI](docs/ui.md) | Open, close and release windows | `GameCore.UI` |
-| [UI tables](docs/ui-tables.md) | Inspector configuration → constants and registration | `UI.asset` → `GameUI.RegisterAll()` |
-| [Events](docs/events.md) | Notify interested listeners | `GameCore.Event` |
-| [Resources](docs/resources.md) | Load a group and release its owned assets | `GameCore.Resource` |
-| [Scenes](docs/scenes.md) | Load, prepare, fade and retry a transition | `GameCore.Scene` |
-| [Audio](docs/audio.md) | Play, pause and stop by layer | `GameCore.Sound` |
-
-For an end-to-end first window, follow [Quick start](docs/quick-start.md). For packaging and common failures, use [Build & troubleshoot](docs/build.md).
+| Set up shared services | [Core](docs/core.md) | `GameCore.IsReady` |
+| Open or close a window | [UI](docs/ui.md) | `GameCore.UI` |
+| Define windows in the Inspector | [UI tables](docs/ui-tables.md) | `UI.asset` → `GameUI.RegisterAll()` |
+| Send a notification | [Events](docs/events.md) | `GameCore.Event` |
+| Load and release assets | [Resources](docs/resources.md) | `GameCore.Resource` |
+| Change scenes | [Scenes](docs/scenes.md) | `GameCore.Scene` |
+| Play a sound | [Audio](docs/audio.md) | `GameCore.Sound` |
 
 ## Where things belong
 
 ```text
 Assets/
-├── Scripts/                       Shared framework
-├── GameResources/                 Shared Core prefab and InitScene
+├── Scripts/           Shared framework
+├── GameResources/     Shared Core prefab and services-only InitScene
 └── GameContent/
-    ├── .gitkeep                   Keeps the content root
-    ├── Demo/                      Complete, removable teaching game
-    └── MyGame/                    Your game
-        ├── Scenes/                Your entry scenes
-        ├── Content/               Runtime prefabs, scenes and audio
-        ├── Editor/Tables/         Authoring sources, starting with UI.asset
-        └── Scripts/               Startup and gameplay
-            └── Generated/         Generated UI constants and registration
+    ├── Demo/          Complete, removable teaching game
+    └── MyGame/        Your scenes, content, scripts and Editor/Tables
 ```
 
-**The framework handles common tasks. You decide how your game works.** Keep its rules, window names, settings, progress and navigation in its own folder. Demo follows the same rule. Its code, content, configuration and build helper all live inside `GameContent/Demo`, so the folder can be [deleted as a whole](docs/quick-start.md#remove-the-demo).
-
-## Try it
-
-1. Open the repository root with **Unity 6.6 (6000.6.5f1)** in Unity Hub and wait for import/compilation.
-2. Open `Assets/GameContent/Demo/Scenes/DemoStart.unity` and press Play.
-3. Choose **Start**, then use **WASD / arrow keys** to move the blue cube to GOAL.
-
-![Demo level in Unity 6.6 with a blue player cube and the GOAL](docs/images/demo-level.png)
-
-*The Demo level running in Unity 6.6: move the blue cube to GOAL.*
-
-**Play again** restarts; **Menu** returns; **Settings / Escape** opens volume settings. The shared `InitScene.unity` initializes services only; use DemoStart to see the teaching game.
-
-Then [create your own first window](docs/quick-start.md). The Demo's three reading entry points are [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs), [UI.asset](Assets/GameContent/Demo/Editor/Tables/UI.asset) and [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs).
+Start reading the Demo at [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs), [UI.asset](Assets/GameContent/Demo/Editor/Tables/UI.asset) or [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs). Once your own game runs, you can [delete the whole Demo](docs/quick-start.md#remove-the-demo).
 
 ## Environment & scope
 
-For a fixed starting point, use the [v0.1.0 release](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.1.0). `main` keeps evolving; public APIs may change during `0.x` development.
+Addressables **2.11.2** · uGUI **2.6.0** · Built-in rendering · old Input Manager.
 
-The current baseline is **Unity 6.6 (6000.6.5f1)**, **Addressables 2.11.2** and **uGUI 2.6.0**. Unity 6.6 is not an LTS release. Built-in rendering and the old Input Manager remain in use. Import, C# compilation and 13 focused migration checks passed, including Demo removal and two macOS Mono development builds. Full native input/audio acceptance is still separate; see the exact [verification scope](docs/build.md#verification-scope).
+Use the release above for a fixed snapshot; `main` evolves and `0.x` APIs may change. Existing games can stay pinned. See [Editor upgrades](docs/upgrading.md), [older API migration](Build-in%20Managers%20Usage.md) and [what has been verified](docs/build.md#verification-scope).
 
-Already using an older version? You can keep it pinned. Follow [Upgrading](docs/upgrading.md) only when you choose to migrate a separate copy.
-
-This is a foundation for a game. Saves, full-game pause, platform input and release requirements belong to each project's actual needs.
+Saves, full-game pause, platform input and release validation are left to your game's needs.
 
 ---
 
-If you try it and get stuck, I'd like to hear where. A confusing step is something we can make clearer together.
-
-Say hello: **anguskungcn@foxmail.com**.
+If you get stuck, I'd like to hear where: **anguskungcn@foxmail.com**.

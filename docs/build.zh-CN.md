@@ -2,21 +2,21 @@
 
 [框架总览](../README.zh-CN.md) · [开始使用](quick-start.zh-CN.md) · [English](build.md)
 
-**在编辑器里跑通后，我们再做一个可以单独打开的游戏。** Unity 把它叫作 Player：选好入口场景，构建需要的资产，再构建 Player。
+**入口场景 → Addressables → Player。** Player 就是可以脱离编辑器运行的游戏。
 
 ## 构建 Demo
 
-1. 打开 **File → Build Profiles**，在 **Platforms** 选择已安装的目标平台；若尚未标为 Active，点击 **Switch Platform**。首次在 Mac 构建可选择 macOS。
+1. 打开 **File → Build Profiles**，在 **Platforms** 选择已安装的目标平台，需要时点击 **Switch Platform**。
 2. 退出 Play，生成有改动的 UI 配置表，等待编译完成。
 3. 选择 **Demo → Build Player**，再选择输出位置。
-4. 打开生成的游戏，应该能看到和编辑器里一样的 Demo 菜单，再试一次 Start → 键盘通关 → Play again → Menu → Settings → Quit。
+4. 打开游戏，检查菜单，再试 Start → 键盘通关 → Play again → Menu → Settings → Quit。
 
-Demo 辅助工具会构建 Addressables，并为本次构建提供 DemoStart。它保留已保存的场景列表，并随 Demo 一起删除。
+辅助工具会构建 Addressables，使用 DemoStart，不改动已保存的场景列表，并随 Demo 删除。
 
 ## 构建自己的游戏
 
-1. 打开 **File → Build Profiles**，在 **Platforms** 选择目标平台，需要时点击 **Switch Platform**；当前平台会标为 Active。
-2. 点击左侧 **Scene List**，把 Project 中自己的 `MyGame/Scenes/Start.unity` 拖进列表，移到第一项并勾选启用。不需要只提供服务的 InitScene 时移除其条目，保留游戏使用的其他原生场景。平台面板里的 **Open Scene List** 也会打开这份共享列表。
+1. 打开 **File → Build Profiles**，在 **Platforms** 选择目标平台，需要时点击 **Switch Platform**。
+2. 点击左侧 **Scene List**，添加 `MyGame/Scenes/Start.unity`，放在第一项并勾选。不需要 InitScene 时移除它，保留游戏使用的其他原生场景。**Open Scene List** 打开的也是这份共享列表。
 3. 生成有改动的 UI 配置表，等待编译完成。
 4. 打开 **Window → Asset Management → Addressables → Groups**，选择 **Build → New Build → Default Build Script**，等待成功。
 5. 回到 **Platforms** 中的目标平台，点击 **Build** 并选择输出位置。
@@ -26,12 +26,12 @@ Demo 辅助工具会构建 Addressables，并为本次构建提供 DemoStart。�
 
 *第 2 步示例：Build Profiles → Scene List，MyGame/Scenes/Start 已勾选，并放在第一项。*
 
-资源或目标平台改变后，重新构建资源内容。**Use Asset Database (fastest)** 是 Editor 的 Play Mode 选项，不能代替 Player 所需的资源构建。
+资源或平台改变后，重新构建 Addressables。**Use Asset Database (fastest)** 只用于 Editor Play，Player 仍需构建资源。
 
 <details>
-<summary>可选：自定义构建配置</summary>
+<summary>需要独立的场景列表或设置？</summary>
 
-以后需要独立设置或场景列表时，再添加自定义 Build Profile。第一次构建不需要新建配置。
+添加自定义 Build Profile。第一次构建使用共享列表即可。
 
 </details>
 
@@ -52,6 +52,11 @@ Demo 辅助工具会构建 Addressables，并为本次构建提供 DemoStart。�
 
 ## 验证范围
 
+macOS 开发构建已通过；输入、音频及正式发布验收尚未完整完成。
+
+<details>
+<summary>基线与详细结果</summary>
+
 当前基线：Unity **6.6（6000.6.5f1）**、Addressables **2.11.2**、uGUI **2.6.0**。导入与 C# 编译已通过；移除临时验证脚本后，默认程序集再次编译通过。在一次性迁移工程中，**13 项针对性检查通过**：
 
 - UI 配置生成与重复生成不重写输出；Demo 公共服务、转场、设置暂停、通关、重开及返回。通关检查通过临时探针把玩家放到 GOAL，没有验证键盘移动。
@@ -60,6 +65,8 @@ Demo 辅助工具会构建 Addressables，并为本次构建提供 DemoStart。�
 
 GUI 检查确认 Demo 菜单正常渲染，Escape 可打开/关闭 Settings，删除 Demo 后独立 Player 显示自己的窗口。完整原生鼠标流程、真实键盘通关、音频可听性、其他平台及 IL2CPP/正式发布构建**尚未验收**。这些结果对应上述基线，不代表所有目标与发布配置。
 
-版本迁移步骤见[升级说明](upgrading.zh-CN.md)。Unity 参考：[Build Profiles](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profiles.html)、[Scene List](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profile-scene-list.html)。
+</details>
+
+[Editor 升级](upgrading.zh-CN.md) · Unity 参考：[Build Profiles](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profiles.html)、[Scene List](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profile-scene-list.html)。
 
 下一步：[UI 配置表恢复](ui-tables.zh-CN.md)，或[场景转场](scenes.zh-CN.md)。

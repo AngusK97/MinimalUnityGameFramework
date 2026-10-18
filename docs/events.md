@@ -2,11 +2,11 @@
 
 [Overview](../README.md) · [Quick start](quick-start.md) · [简体中文](events.zh-CN.md)
 
-Let a window hear that a level has finished, without making the gameplay code hold that window. Use a direct method call when you need a result back.
+Notify a window when a level finishes, without gameplay holding the window. Use a direct call when you need a result.
 
 ## Try it
 
-Subscribe after Core is ready. Save this complete **WinNotice.cs** in `Assets/GameContent/MyGame/Scripts/`. It subscribes when its window opens and unsubscribes when it closes:
+Save **WinNotice.cs** in `Assets/GameContent/MyGame/Scripts/`. After Core is ready, it subscribes when shown and unsubscribes when closed:
 
 ```csharp
 using Core;
@@ -41,32 +41,32 @@ namespace MyGame
 }
 ```
 
-Use it as the only UIBase-derived component on a separate window prefab root, then [register and open that UI](ui.md). Do not add it beside MyMenuView on the same root.
+Attach it as the only UIBase-derived component on a separate window prefab root, then [register and open it](ui.md). Do not add it beside MyMenuView.
 
-Open that window first. Then send this notification from an existing button handler or your level-completion method, with `using Core;`:
+With that window open, send this from a button handler or level-completion method (`using Core;`):
 
 ```csharp
 GameCore.Event.DispatchNow(this, MyGame.WinNotice.LevelCompleted);
 ```
 
-**Expected result:** sending once while the window is open prints `Level completed.` once in Console. Close the window and send again; it no longer prints, because OnClose removed the subscription.
+**Expected result:** each send prints `Level completed.` once in Console while the window is open. After closing, sends produce no output.
 
 ## Conventions
 
-- Your game owns event IDs; prefer shared string constants. IDs cannot be empty and handlers cannot be null.
-- `DispatchNow` sends immediately; `Dispatch` waits for Core's next event update. Usually choose one rather than sending both.
-- The subscriber removes its own subscription. Do not register every frame or call `OnUpdate` manually; Core drives it.
+- Your game owns event IDs; use shared string constants. IDs cannot be empty; handlers cannot be null.
+- `DispatchNow` sends immediately; `Dispatch` waits for Core's next event update. Choose one per notification.
+- Subscribers remove their subscriptions. Do not register every frame or manually call `OnUpdate`; Core drives it.
 
 <details>
 <summary>When needed: ordering, deferred data and exceptions</summary>
 
-Immediate dispatch uses a listener snapshot in registration order. Changes inside a callback affect later dispatches, including nested ones, but not the current snapshot. Duplicate subscriptions remain separate; one `UnRegisterEvent` removes one occurrence.
+Immediate dispatch snapshots listeners in registration order. Callback changes affect later dispatches, including nested ones, not the current snapshot. Duplicate subscriptions remain separate; one `UnRegisterEvent` removes one occurrence.
 
-An event update takes the pending queue at its start. Deferred events added during processing wait for the next batch. Re-entering `OnUpdate` does not flush them early.
+Each event update takes the pending queue at its start. Events queued during processing wait for the next batch; re-entering `OnUpdate` does not flush them early.
 
-To carry data, derive `BaseEventArgs`, implement `Clear()`, and pass it as the third argument. The deferred queue holds the original reference: do not immediately modify or recycle it after sending. The framework does not copy it.
+For data, derive `BaseEventArgs`, implement `Clear()`, and pass it as the third argument. The deferred queue retains the original reference without copying: do not modify or recycle it immediately after sending.
 
-A listener exception is logged and other listeners continue. Do not infer a critical operation's success from an event; use an explicit return value or completion callback.
+Listener exceptions are logged; other listeners continue. Use a return value or completion callback to confirm critical operations.
 
 </details>
 
