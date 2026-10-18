@@ -84,7 +84,7 @@ Addressables **2.11.2** · uGUI **2.6.0** · Built-in rendering · old Input Man
 
 Use the release above for a fixed snapshot; `main` evolves and `0.x` APIs may change. Existing games can stay pinned. See [Editor upgrades](docs/upgrading.md), [older API migration](Build-in%20Managers%20Usage.md) and [what has been verified](docs/build.md#verification-scope).
 
-These guides describe the current source; fixed **v0.1.0** predates resource tables.
+These guides describe the current source; fixed **v0.1.0** predates resource tables and parameterless event overloads.
 
 Saves, full-game pause, platform input and release validation are left to your game's needs.
 

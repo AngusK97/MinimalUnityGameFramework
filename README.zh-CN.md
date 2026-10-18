@@ -84,7 +84,7 @@ Addressables **2.11.2** · uGUI **2.6.0** · Built-in 渲染管线 · 旧 Input 
 
 需要固定快照时使用上面的发布版；`main` 持续更新，`0.x` 的 API 仍可能变化。旧游戏可以固定旧版。按需查看 [Editor 升级](docs/upgrading.zh-CN.md)、[旧 API 迁移](Build-in%20Managers%20Usage.zh-CN.md)和[已验证范围](docs/build.zh-CN.md#验证范围)。
 
-本教程对应当前源码；固定 **v0.1.0** 尚不包含资源配置表。
+本教程对应当前源码；固定 **v0.1.0** 尚不包含资源配置表和无参事件重载。
 
 存档、全局暂停、平台输入和发布验收，按自己的游戏需要补充。
 

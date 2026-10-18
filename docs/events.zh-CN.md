@@ -2,11 +2,23 @@
 
 [框架总览](../README.zh-CN.md) · [开始使用](quick-start.zh-CN.md) · [English](events.md)
 
-通知窗口关卡已完成，玩法代码无需持有窗口。需要返回结果时，直接调用方法。
+**定义名称 → 订阅 → 广播 → 退订。** 通知窗口时，玩法无需持有窗口。需要返回结果时，直接调用方法。
 
 ## 试试看
 
-将 **WinNotice.cs** 保存到 `Assets/GameContent/MyGame/Scripts/`。Core 就绪后，它在窗口显示时订阅、关闭时取消：
+将 **GameEvents.cs** 保存到 `Assets/GameContent/MyGame/Scripts/`。事件名称由游戏维护，不需要枚举、配置表或预先登记。
+
+```csharp
+namespace MyGame
+{
+    public static class GameEvents
+    {
+        public const string LevelCompleted = "MyGame.LevelCompleted";
+    }
+}
+```
+
+在同目录保存 **WinNotice.cs**。Core 就绪后，窗口显示时订阅，关闭时向**订阅时保存的同一个管理器实例**退订：
 
 ```csharp
 using Core;
@@ -18,22 +30,21 @@ namespace MyGame
 {
     public sealed class WinNotice : UIBase
     {
-        public const string LevelCompleted = "MyGame.LevelCompleted";
+        private EventManager _events;
 
         protected override void OnShow()
         {
-            GameCore.Event.RegisterEvent(LevelCompleted, OnLevelCompleted);
+            _events = GameCore.Event;
+            _events.RegisterEvent(GameEvents.LevelCompleted, OnLevelCompleted);
         }
 
         protected override void OnClose()
         {
-            if (GameCore.Event != null)
-            {
-                GameCore.Event.UnRegisterEvent(LevelCompleted, OnLevelCompleted);
-            }
+            _events?.UnRegisterEvent(GameEvents.LevelCompleted, OnLevelCompleted);
+            _events = null;
         }
 
-        private void OnLevelCompleted(object sender, string type, BaseEventArgs args)
+        private void OnLevelCompleted()
         {
             Debug.Log("Level completed.", this);
         }
@@ -41,32 +52,55 @@ namespace MyGame
 }
 ```
 
-将它作为唯一的 UIBase 派生组件挂在独立窗口 Prefab 根上，再[登记并打开](ui.zh-CN.md)。不要和 MyMenuView 挂在同一个根上。
+将 WinNotice 作为唯一的 UIBase 派生组件挂在独立窗口 Prefab 根上，再[登记并打开](ui.zh-CN.md)。不要和 MyMenuView 挂在同一个根上。
 
-打开窗口后，从按钮处理方法或通关方法发送通知（需要 `using Core;`）：
+窗口打开后，在 Unity 主线程的按钮处理方法或通关方法中发送（需要 `using Core; using MyGame;`）：
 
 ```csharp
-GameCore.Event.DispatchNow(this, MyGame.WinNotice.LevelCompleted);
+GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 ```
 
-**预期结果：** 窗口打开时，每次发送在 Console 输出一次 `Level completed.`；关闭后发送不再输出。
+**预期结果：** 窗口打开时，每次广播在 Console 输出一次 `Level completed.`；关闭后不再输出。RegisterEvent 登记的是监听器，不是事件名定义。
 
-## 使用约定
+## 选择通知方式
 
-- 游戏维护事件 ID，建议使用共用字符串常量。ID 不可为空，处理方法不可为 null。
-- `DispatchNow` 立即发送；`Dispatch` 等待 Core 下一次事件更新。每条通知选一种。
-- 谁订阅，谁取消；不要每帧登记，也不要手调 `OnUpdate`，Core 已负责更新。
+| 操作 | 调用 |
+| --- | --- |
+| 订阅无参方法 | `RegisterEvent(GameEvents.LevelCompleted, OnLevelCompleted)` |
+| 移除该订阅 | `UnRegisterEvent(GameEvents.LevelCompleted, OnLevelCompleted)` |
+| 立即通知 | `DispatchNow(GameEvents.LevelCompleted)` |
+| 下次事件更新时通知 | `Dispatch(GameEvents.LevelCompleted)` |
+
+- 使用游戏自己的字符串常量，ID 不能是空白，处理方法不能为 null。
+- Core 就绪后，在 Unity 主线程使用服务。Core 已负责事件更新，不要手调 OnUpdate。
+- 按接收者的活跃期成对订阅/退订，向保存的管理器退订。需要移除 lambda 时保留原委托；新写一个 lambda 是另一个监听器。
+- 事件**不重放历史**。稍后打开的窗口先读取当前游戏状态，再监听后续变化。
+
+## 前后用法
+
+原 sender/数据接口仍可使用；不需要来源或数据时，选择简短签名：
+
+| | 带来源/数据的监听器 | 无参通知监听器 |
+| --- | --- | --- |
+| 处理方法 | `void OnLevelCompleted(object sender, string type, BaseEventArgs args)` | `void OnLevelCompleted()` |
+| 发送 | `GameCore.Event.DispatchNow(this, GameEvents.LevelCompleted)` | `GameCore.Event.DispatchNow(GameEvents.LevelCompleted)` |
+
+登记与退订仍使用相同方法名。接收者需要来源或数据时保留原有 `HandlerEvent` 签名；Demo 的 [LevelView.cs](../Assets/GameContent/Demo/Scripts/UI/LevelView.cs) 仍按当前关卡的 sender 过滤通关通知。
+
+Demo 也使用无参的 `DemoEvents.VolumeChanged` 通知：[DataManager.cs](../Assets/GameContent/Demo/Scripts/DataManager.cs) 在音量变化后广播，[SettingsView.cs](../Assets/GameContent/Demo/Scripts/UI/SettingsView.cs) 显示时刷新当前状态，监听后续变化，关闭时退订。
 
 <details>
-<summary>需要时再看：回调顺序、延迟数据与异常</summary>
+<summary>需要时再看：顺序、数据、异常与清理</summary>
 
-立即派发按登记顺序调用监听器快照。回调里增删监听器影响后续派发（包括嵌套派发），不改变当前快照。重复订阅分别保留，一次 `UnRegisterEvent` 只移除一项。
+无参 Action 与三参 HandlerEvent 监听器共用登记顺序和一次派发快照。回调中的订阅变化影响后续派发（包括嵌套派发），不改变当前快照。重复订阅分别保留，一次 UnRegisterEvent 只移除一份。无参派发给 HandlerEvent 传入 null sender/数据；Action 监听器忽略原重载传入的 sender/数据。
 
-每次事件更新取出开始时的待处理队列。处理中新增的延迟事件留到下一批，重入 `OnUpdate` 不会提前刷新。
+每次事件更新取出开始时的待处理队列；处理中新增的延迟事件留到下一批，重入 OnUpdate 不会提前刷新。
 
-携带数据时，派生 `BaseEventArgs`、实现 `Clear()`，作为第三个实参传入。延迟队列保留原引用，不复制数据；发送后不要立即修改或回收。
+携带数据时，派生 BaseEventArgs、实现 Clear()，调用 `DispatchNow(sender, eventId, args)` 或 `Dispatch(sender, eventId, args)`。延迟队列保留原引用，不复制，也不自动调用 Clear()；接收者用完前不要修改、清空或回收。
 
-监听器异常会记录，其他监听器继续。关键操作是否成功，用返回值或完成回调确认。
+异常会记录，下一条登记监听继续。一次登记传入的多播委托视为一个条目：其中某项抛出，跳过该条目剩余项。直接指向已销毁 Unity 对象的调用项会被跳过；同条目内其他有效调用项仍执行，除非前项抛异常。混合多播条目在退订前仍保留原委托引用。闭包仍需显式退订；目标检查不能保证捕获对象安全。
+
+管理器销毁时清空订阅/队列，并停止后续回调。向已清理的旧实例登记或派发会抛 ObjectDisposedException；UnRegisterEvent 仍可安全用于收尾。新增重载后，无效入参测试中的裸 null 监听器需显式转换为 Action 或 HandlerEvent。事件不提供事务保证，关键操作是否成功应通过返回值或完成回调确认。
 
 </details>
 

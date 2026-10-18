@@ -34,3 +34,5 @@
 手动 UI 登记仍可用。迁移配置表时，保留 Name/Id Prefix 可保持 ID，移除旧手写常量类与重复登记，再按 [UI 配置表](docs/ui-tables.zh-CN.md) 操作。自己存档/消息中存过的标识需显式迁移。
 
 手写 `BaseResourceModule` 派生类仍可使用。采用资源表时，保留模块 ID，移除旧定义，并只登记一次生成类。Demo 现使用 `Demo.MainResources`（`Id = "Demo.Main"`）：将 `MainResourceModule` 查找改为 `MainResources`，将 `main.GetRes<AudioClip>(MainResource.Cue)` 改为 `main.Cue`；原 Demo 专用类/枚举已移除。重复登记模块现在会抛异常；以错误类型取得已登记模块会抛出 `InvalidOperationException`。见[资源配置表](docs/resource-tables.zh-CN.md)。
+
+事件现支持无参 Action 监听及 `DispatchNow(eventId)` / `Dispatch(eventId)`；原 sender/数据重载仍可使用。游戏维护字符串常量，订阅与收尾退订配对，不需要预登记事件名。见[事件](docs/events.zh-CN.md)。

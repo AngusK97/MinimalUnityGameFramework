@@ -1,3 +1,4 @@
+using Core;
 using UnityEngine;
 
 namespace Demo
@@ -20,8 +21,14 @@ namespace Demo
                 volume = 1f;
             }
 
+            var previous = MasterVolume;
             MasterVolume = Mathf.Clamp01(volume);
             AudioListener.volume = MasterVolume;
+
+            if (MasterVolume != previous)
+            {
+                GameCore.Event.DispatchNow(DemoEvents.VolumeChanged);
+            }
         }
 
         public void SaveSettings()

@@ -57,11 +57,11 @@ macOS development builds passed; input, audio and release acceptance remain inco
 <details>
 <summary>Baseline and exact results</summary>
 
-Baseline: Unity **6.6 (6000.6.5f1)**, Addressables **2.11.2**, uGUI **2.6.0**. Current resource-table verification passed:
+Baseline: Unity **6.6 (6000.6.5f1)**, Addressables **2.11.2**, uGUI **2.6.0**. Current event-module verification passed:
 
-- **31 Editor checks:** generation, typed properties, invalid references/names, address ambiguity, moving/replacing assets, output protection and build guards.
-- **7 Demo checks:** startup, events, transitions, settings pause, win, restart and return. The win check used a temporary probe, not keyboard movement.
-- **3 independent-game checks:** from a fresh no-Library copy deleting only Demo, generated UI/resources and lifecycle checks passed. AudioClip, prefab and Single Sprite access, cancellation/reload and late-result isolation also passed in Play and the independent Player.
+- **32 Play checks:** no-data and original handlers, mixed order, exact unsubscription, snapshots, nested/queued dispatch, exceptions, destroyed targets and manager cleanup. The complete tutorial classes also compiled.
+- **8 Demo checks:** the game loop plus volume notifications, slider feedback prevention, and closing/reopening Settings without duplicate listeners. The win check used a temporary probe, not keyboard movement.
+- **3 independent-game checks:** from a fresh no-Library copy deleting only Demo, generated UI/resources and event lifecycle checks passed. Global no-data notifications, original handlers, Core destruction/recreation and fresh-subscription isolation also passed in Play and the independent Player.
 - Demo and independent-game **macOS Mono development** content/Player builds: **0 errors and 0 warnings**. Default compilation passed with/without Demo after removing all temporary validation assets.
 
 Earlier GUI checks confirmed the Demo menu rendered, Escape opened/closed Settings, and the independent Player displayed its own window after Demo removal. The full native mouse flow, real keyboard completion, audible output, other platforms and IL2CPP/release builds have **not** been accepted. These results apply to the baseline above, not every target or release configuration.
