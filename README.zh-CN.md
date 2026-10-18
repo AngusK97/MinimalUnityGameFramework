@@ -4,21 +4,11 @@
 
 **框架版本：** [v0.1.0](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.1.0) · **Unity：** 6.6（6000.6.5f1，非 LTS）
 
+[开始使用](docs/quick-start.zh-CN.md)
+
 Hello there ~ 我是 Angus，一名游戏开发者。这是一个处理 UI、事件、资源、场景和音频的小 Unity 框架。先玩一下 Demo，再用同样的工具做自己的游戏。
 
 > **简单即美。** 小一点，清楚一点，也容易修改一点。
-
-## 先体验一次
-
-1. 在 Unity Hub 用上面的 Editor 版本打开仓库根目录，等待导入和编译完成。
-2. 打开 `Assets/GameContent/Demo/Scenes/DemoStart.unity`，点击 Play。
-3. 点击 **Start**，用 **WASD / 方向键**把蓝色方块移到 GOAL。
-
-![Unity 6.6 中的 Demo 关卡，包含蓝色玩家方块和 GOAL](docs/images/demo-level.png)
-
-**Play again** 重开，**Menu** 返回，**Settings / Escape** 打开音量设置。
-
-**下一步：[创建自己的第一个窗口](docs/quick-start.zh-CN.md)** · [构建游戏](docs/build.zh-CN.md)
 
 ## 设计哲学
 
@@ -74,6 +64,18 @@ Assets/
 ```
 
 阅读 Demo 可从 [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs)、[UI.asset](Assets/GameContent/Demo/Editor/Tables/UI.asset) 或 [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs) 开始。自己的游戏跑通后，可以[整体删除 Demo](docs/quick-start.zh-CN.md#删除-demo)。
+
+## 先体验一次
+
+1. 在 Unity Hub 用上面的 Editor 版本打开仓库根目录，等待导入和编译完成。
+2. 打开 `Assets/GameContent/Demo/Scenes/DemoStart.unity`，点击 Play。
+3. 点击 **Start**，用 **WASD / 方向键**把蓝色方块移到 GOAL。
+
+![Unity 6.6 中的 Demo 关卡，包含蓝色玩家方块和 GOAL](docs/images/demo-level.png)
+
+**Play again** 重开，**Menu** 返回，**Settings / Escape** 打开音量设置。
+
+**下一步：[创建自己的第一个窗口](docs/quick-start.zh-CN.md)** · [构建游戏](docs/build.zh-CN.md)
 
 ## 环境与范围
 

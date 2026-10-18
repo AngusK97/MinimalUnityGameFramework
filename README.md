@@ -4,21 +4,11 @@ English · [简体中文](README.zh-CN.md)
 
 **Version:** [v0.1.0](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.1.0) · **Unity:** 6.6 (6000.6.5f1, not LTS)
 
+[Quick start](docs/quick-start.md)
+
 Hello there ~ I'm Angus, a game developer. This is a small Unity framework for UI, events, resources, scenes and audio. Try the Demo, then use the same tools to make your own game.
 
 > **Simple is beautiful.** Keep things small, clear, and easy to change.
-
-## Try it
-
-1. Open the repository root in Unity Hub with the Editor version above. Wait for import and compilation.
-2. Open `Assets/GameContent/Demo/Scenes/DemoStart.unity` and press Play.
-3. Choose **Start**, then move the blue cube to GOAL with **WASD / arrow keys**.
-
-![Demo level in Unity 6.6 with a blue player cube and the GOAL](docs/images/demo-level.png)
-
-**Play again** restarts; **Menu** returns; **Settings / Escape** opens volume settings.
-
-**Next: [create your first window](docs/quick-start.md)** · [Build your game](docs/build.md)
 
 ## Philosophy
 
@@ -74,6 +64,18 @@ Assets/
 ```
 
 Start reading the Demo at [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs), [UI.asset](Assets/GameContent/Demo/Editor/Tables/UI.asset) or [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs). Once your own game runs, you can [delete the whole Demo](docs/quick-start.md#remove-the-demo).
+
+## Try it
+
+1. Open the repository root in Unity Hub with the Editor version above. Wait for import and compilation.
+2. Open `Assets/GameContent/Demo/Scenes/DemoStart.unity` and press Play.
+3. Choose **Start**, then move the blue cube to GOAL with **WASD / arrow keys**.
+
+![Demo level in Unity 6.6 with a blue player cube and the GOAL](docs/images/demo-level.png)
+
+**Play again** restarts; **Menu** returns; **Settings / Escape** opens volume settings.
+
+**Next: [create your first window](docs/quick-start.md)** · [Build your game](docs/build.md)
 
 ## Environment & scope
 
