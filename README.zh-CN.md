@@ -2,9 +2,11 @@
 
 [English](README.md) · 简体中文
 
-**框架版本：** [v0.1.0](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.1.0) · **Unity：** 6.6（6000.6.5f1，非 LTS）
+**框架版本：** [v0.2.0](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.2.0) · **Unity：** 6.6（6000.6.5f1，非 LTS）
 
-[开始使用](docs/quick-start.zh-CN.md)
+[下载 v0.2.0（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.2.0.zip) · [开始使用](docs/quick-start.zh-CN.md)
+
+按下载包内的文档操作，也可以阅读[对应 v0.2.0 的在线教程](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.zh-CN.md)。代码与教程来自同一个快照。
 
 Hello there ~ 我是 Angus，一名游戏开发者。这是一个处理 UI、事件、资源、场景和音频的小 Unity 框架。先玩一下 Demo，再用同样的工具做自己的游戏。
 
@@ -51,7 +53,7 @@ UI 通过 Resource 加载窗口；Scene 协调加载、渐变和 UI 收尾。启
 
 ## 内容放在哪里
 
-以下是 `main` 的目录；**v0.1.0** 保留旧目录，升级见[目录迁移说明](Build-in%20Managers%20Usage.zh-CN.md)。
+以下是 **v0.2.0** 的目录。从 v0.1.0 升级时，先看[目录迁移说明](Build-in%20Managers%20Usage.zh-CN.md)。
 
 ```text
 Assets/
@@ -82,9 +84,7 @@ Assets/
 
 Addressables **2.11.2** · uGUI **2.6.0** · Built-in 渲染管线 · 旧 Input Manager。
 
-需要固定快照时使用上面的发布版；`main` 持续更新，`0.x` 的 API 仍可能变化。旧游戏可以固定旧版。按需查看 [Editor 升级](docs/upgrading.zh-CN.md)、[旧 API 迁移](Build-in%20Managers%20Usage.zh-CN.md)和[已验证范围](docs/build.zh-CN.md#验证范围)。
-
-本教程对应当前源码；固定 **v0.1.0** 尚不包含资源配置表和无参事件重载。
+上面的下载与教程对应 **v0.2.0**。`main` 持续更新，`0.x` 的 API 仍可能变化。旧游戏可以继续固定原版本，使用随包文档。按需查看 [Editor 升级](docs/upgrading.zh-CN.md)、[旧 API 迁移](Build-in%20Managers%20Usage.zh-CN.md)和[已验证范围](docs/build.zh-CN.md#验证范围)。
 
 存档、全局暂停、平台输入和发布验收，按自己的游戏需要补充。
 

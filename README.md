@@ -2,9 +2,11 @@
 
 English · [简体中文](README.zh-CN.md)
 
-**Version:** [v0.1.0](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.1.0) · **Unity:** 6.6 (6000.6.5f1, not LTS)
+**Version:** [v0.2.0](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.2.0) · **Unity:** 6.6 (6000.6.5f1, not LTS)
 
-[Quick start](docs/quick-start.md)
+[Download v0.2.0 (ZIP)](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.2.0.zip) · [Quick start](docs/quick-start.md)
+
+Use the guides included in the download, or read the [v0.2.0 guides online](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md). Code and guides come from the same snapshot.
 
 Hello there ~ I'm Angus, a game developer. This is a small Unity framework for UI, events, resources, scenes and audio. Try the Demo, then use the same tools to make your own game.
 
@@ -51,7 +53,7 @@ UI loads windows through Resource. Scene coordinates loading, fades and UI clean
 
 ## Where things belong
 
-This is the `main` layout; **v0.1.0** keeps the old layout. See [directory migration](Build-in%20Managers%20Usage.md).
+This is the **v0.2.0** layout. Upgrading from v0.1.0? See [directory migration](Build-in%20Managers%20Usage.md).
 
 ```text
 Assets/
@@ -82,9 +84,7 @@ Start reading the Demo at [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame
 
 Addressables **2.11.2** · uGUI **2.6.0** · Built-in rendering · old Input Manager.
 
-Use the release above for a fixed snapshot; `main` evolves and `0.x` APIs may change. Existing games can stay pinned. See [Editor upgrades](docs/upgrading.md), [older API migration](Build-in%20Managers%20Usage.md) and [what has been verified](docs/build.md#verification-scope).
-
-These guides describe the current source; fixed **v0.1.0** predates resource tables and parameterless event overloads.
+The download and guides above match **v0.2.0**. `main` continues to evolve, and `0.x` APIs may change. Existing games can keep their pinned version and its bundled guides. See [Editor upgrades](docs/upgrading.md), [older API migration](Build-in%20Managers%20Usage.md) and [what has been verified](docs/build.md#verification-scope).
 
 Saves, full-game pause, platform input and release validation are left to your game's needs.
 

@@ -18,7 +18,7 @@
 
 编辑器与包版本升级见[升级到 Unity 6.6](docs/upgrading.zh-CN.md)。已有游戏可以继续固定旧框架与 Editor；下面的 API 迁移仅适用于决定采用当前框架的项目。
 
-采用 `main` 目录时，将 `Assets/GameResources` 整体重命名为 `Assets/Framework`，保留目录 `.meta`；把 `Assets/Scripts` 及其 `.meta` 移入其中，再将 `Prefab` 及其 `.meta` 重命名为 `Prefabs`。将原生 Scene List 中的 InitScene 路径更新为 `Assets/Framework/Scenes/InitScene.unity`。GUID 与公共 API 不变，`GameContent/Demo` 保持原位；固定使用 **v0.1.0** 时保留旧目录。
+从 **v0.1.0 升级到 v0.2.0** 时，将 `Assets/GameResources` 整体重命名为 `Assets/Framework`，保留目录 `.meta`；把 `Assets/Scripts` 及其 `.meta` 移入其中，再将 `Prefab` 及其 `.meta` 重命名为 `Prefabs`。将原生 Scene List 中的 InitScene 路径更新为 `Assets/Framework/Scenes/InitScene.unity`。目录移动保留 GUID 与公共 API，`GameContent/Demo` 保持原位；固定使用 **v0.1.0** 时保留旧目录。
 
 ## 旧项目迁移
 

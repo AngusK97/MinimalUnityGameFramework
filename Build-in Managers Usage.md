@@ -18,7 +18,7 @@ The usage guide now has focused pages. **Start with [Quick start](docs/quick-sta
 
 For the Editor/package upgrade, see [Moving to Unity 6.6](docs/upgrading.md). Existing games can stay pinned to their older framework and Editor. The API migration below is for projects that choose to adopt the current framework.
 
-For the `main` layout, rename `Assets/GameResources` to `Assets/Framework`, preserving its directory `.meta`; move `Assets/Scripts` and its `.meta` inside it, then rename `Prefab` and its `.meta` to `Prefabs`. Update InitScene’s path in the native Scene List to `Assets/Framework/Scenes/InitScene.unity`. GUIDs and public APIs stay the same; `GameContent/Demo` stays in place. Pinned **v0.1.0** keeps the old layout.
+To move from **v0.1.0 to v0.2.0**, rename `Assets/GameResources` to `Assets/Framework`, preserving its directory `.meta`; move `Assets/Scripts` and its `.meta` inside it, then rename `Prefab` and its `.meta` to `Prefabs`. Update InitScene’s path in the native Scene List to `Assets/Framework/Scenes/InitScene.unity`. The directory move preserves GUIDs and public APIs; `GameContent/Demo` stays in place. Pinned **v0.1.0** keeps the old layout.
 
 ## Migrating an older project
 

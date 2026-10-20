@@ -6,7 +6,7 @@
 
 ## 运行 Demo
 
-1. 克隆或下载仓库，在 Unity Hub 打开包含 Assets、Packages、ProjectSettings 的目录，等待导入和编译完成。
+1. [下载 v0.2.0（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.2.0.zip)并解压，在 Unity Hub 打开包含 Assets、Packages、ProjectSettings 的目录，等待导入和编译完成。
 2. 打开 **Window → Asset Management → Addressables → Groups**，把 **Play Mode Script** 设为 **Use Asset Database (fastest)**。
 3. 打开 `Assets/GameContent/Demo/Scenes/DemoStart.unity`，点击 Play，再点 **Start**，用 **WASD / 方向键**移动到 GOAL。
 4. **Play again** 重开，**Menu** 返回；**Settings / Escape** 打开音量设置，**Done / Escape** 保存并关闭。
