@@ -2,15 +2,17 @@
 
 [Overview](../README.md) · [Quick start](quick-start.md) · [简体中文](events.zh-CN.md)
 
-**Define a name → Subscribe → Broadcast → Unsubscribe.** Notify a window without gameplay holding it. Use a direct call when you need a result.
+**Define a name → Subscribe → Broadcast → Unsubscribe.** Send a notification without knowing who listens. This example prints a message in Console; it needs no UI or configuration table.
 
 ## Try it
 
-Complete [Quick start](quick-start.md) first, then exit Play mode. Use the same MyGame scene, UI table and game entry below.
+### 1. Prepare the scene
 
-### 1. Define the name
+Use this repository's Unity project. Create an empty scene, drag [GameCore.prefab](../Assets/Framework/Prefabs/GameCore.prefab) into Hierarchy at the top level, and keep its settings. Create an empty GameObject named **EventExample**.
 
-Save **GameEvents.cs** in `Assets/GameContent/MyGame/Scripts/`. Names belong to your game: no enum, event table or advance registration is needed.
+### 2. Define the name
+
+Save **GameEvents.cs** in `Assets/GameContent/MyGame/Scripts/` (create the folders if needed). The string constant is the event's name; no enum, table or advance registration is needed.
 
 ```csharp
 namespace MyGame
@@ -22,69 +24,66 @@ namespace MyGame
 }
 ```
 
-### 2. Add the listener
+### 3. Subscribe and broadcast
 
-Save **WinNotice.cs** beside it. The window subscribes when shown and unsubscribes from the saved manager when closed:
+Save **EventExample.cs** beside it, then attach it to the EventExample object:
 
 ```csharp
 using Core;
 using Event;
-using UI;
 using UnityEngine;
 
 namespace MyGame
 {
-    public sealed class WinNotice : UIBase
+    public sealed class EventExample : MonoBehaviour
     {
         private EventManager _events;
 
-        protected override void OnShow()
+        private void Start()
         {
+            if (!GameCore.IsReady)
+            {
+                Debug.LogError("Add the shared GameCore prefab to the scene.", this);
+                return;
+            }
+
             _events = GameCore.Event;
             _events.RegisterEvent(GameEvents.LevelCompleted, OnLevelCompleted);
-        }
 
-        protected override void OnClose()
-        {
-            _events?.UnRegisterEvent(GameEvents.LevelCompleted, OnLevelCompleted);
-            _events = null;
+            _events.DispatchNow(GameEvents.LevelCompleted);
         }
 
         private void OnLevelCompleted()
         {
             Debug.Log("Level completed.", this);
         }
+
+        private void OnDestroy()
+        {
+            if (_events != null)
+            {
+                _events.UnRegisterEvent(GameEvents.LevelCompleted, OnLevelCompleted);
+            }
+
+            _events = null;
+        }
     }
 }
 ```
 
-### 3. Open the window and send
+Press Play. **Console should print `Level completed.` once.** Start subscribes before broadcasting, so the first notification cannot be missed. GameCore initializes in Awake; a different object's OnEnable may run before that, so this example waits for Start and checks readiness.
 
-1. Create a separate UI prefab at `MyGame/Content/Prefabs/UI/WinNotice.prefab`. Attach WinNotice as the only UIBase-derived component on its RectTransform root. Select the saved prefab in **Project** and check **Addressable** in its Inspector.
-2. In your Google Sheets **UI** tab, add **Id = WinNotice**, **Name = Win notice**, **PrefabPath = Assets/GameContent/MyGame/Content/Prefabs/UI/WinNotice.prefab**. Click **Framework → Config → Update Config** and wait for compilation. See [UI tables](ui-tables.md).
-3. In **MyGameEntry.cs**, keep `GameConfig.LoadAndRegister()` once. Replace the existing OpenUI call after it with:
+### 4. Broadcast from your game
 
-```csharp
-GameCore.UI.OpenUI(UILayer.Second, UIName.WinNotice, callback: view =>
-{
-    if (view == null)
-    {
-        return;
-    }
-
-    GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
-});
-```
-
-Press Play. **Console should print `Level completed.` once.** Opening is asynchronous; the callback sends after OnShow has subscribed.
-
-From here, use this one line in your button handler or level-completion method (`using Core; using MyGame;`), after Core is ready and on Unity's main thread:
+In a level-completion method or another game script, use this line after Core is ready (`using Core; using MyGame;`):
 
 ```csharp
 GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 ```
 
-Each broadcast prints once while the window is open. Close it with `GameCore.UI.CloseUI(UIName.WinNotice)`; later broadcasts produce no output. RegisterEvent subscribes a listener, not an event-name definition.
+Each broadcast invokes the listener once. The sender only needs the event name, not the EventExample object. RegisterEvent subscribes a listener; it does not define the name.
+
+Destroying the EventExample object calls OnDestroy and removes its subscription. To check cleanup, broadcast from your game, delete EventExample in Hierarchy during Play, then broadcast again: its message should stop. Disabling the component alone does not unsubscribe it.
 
 ## Choose the notification
 
@@ -95,11 +94,11 @@ Each broadcast prints once while the window is open. Close it with `GameCore.UI.
 | Notify immediately | `DispatchNow(GameEvents.LevelCompleted)` |
 | Notify at the next event update | `Dispatch(GameEvents.LevelCompleted)` |
 
-- Use game-owned string constants. IDs must be non-empty; handlers cannot be null.
+- Use game-owned string constants. IDs cannot be blank; handlers cannot be null.
 - Use services after Core is ready, on Unity's main thread. Core drives the event update; do not call OnUpdate yourself.
 - Subscribe when the receiver needs notifications; unsubscribe from the saved manager when it stops listening. Disabling a component does not unsubscribe it.
 - Keep a lambda delegate if you need to remove it later; a new lambda is a different listener.
-- Events have **no history replay**. A window opened later reads current game state first, then listens for future changes.
+- Events have **no history replay**. A receiver created later must read current game state and subscribe to future changes.
 
 ## Before and after
 
@@ -112,7 +111,12 @@ The original sender/data API remains available; use the shorter signature when y
 
 Registration and removal keep the same method names. Retain the original `HandlerEvent` signature when a receiver needs a source or payload: Demo's [LevelView.cs](../Assets/GameContent/Demo/Scripts/UI/LevelView.cs) filters completion by the active level's sender.
 
-Demo also uses a parameterless `DemoEvents.VolumeChanged` notification: [DataManager.cs](../Assets/GameContent/Demo/Scripts/DataManager.cs) broadcasts after a volume change; [SettingsView.cs](../Assets/GameContent/Demo/Scripts/UI/SettingsView.cs) refreshes current state when shown, listens for changes and unsubscribes when closed.
+<details>
+<summary>Optional: connect events to UI</summary>
+
+For a working UI example, see Demo's `DemoEvents.VolumeChanged`: [DataManager.cs](../Assets/GameContent/Demo/Scripts/DataManager.cs) broadcasts after a volume change; [SettingsView.cs](../Assets/GameContent/Demo/Scripts/UI/SettingsView.cs) subscribes in OnShow, reads current state with RefreshVolume(), and unsubscribes in OnClose. Subscribe before refreshing so later changes are covered. See [UI](ui.md) when you are ready to create a window.
+
+</details>
 
 <details>
 <summary>When needed: ordering, data, exceptions and cleanup</summary>

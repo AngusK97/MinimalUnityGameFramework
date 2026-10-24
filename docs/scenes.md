@@ -7,14 +7,14 @@ Load a level behind an overlay, close the old UI and wait for your scene prepara
 ## Try it
 
 1. Save **Level01.unity** in `Assets/GameContent/MyGame/Content/Scenes/` with a camera and visible object. Remove the camera's extra AudioListener; Core has one. Select the saved **Level01.unity asset in Project** and check **Addressable** in its Inspector.
-2. After [connecting Google Sheets](config.md#first-time-setup), add a **Scene** tab with these rows from A1:
+2. Here is the **Scene** table. For your first connection, enter it at step 6 of [Config setup](config-setup.md). If already connected, open the existing **Scene** tab or create one if missing. Enter all rows from A1 in a new tab; in an existing tab, keep its first two rows and add only the **Level01** data row.
 
 | Id | Name | ScenePath |
 | --- | --- | --- |
 | string | string | string |
 | Level01 | First level | Assets/GameContent/MyGame/Content/Scenes/Level01.unity |
 
-3. Click **Framework → Config → Update Config** and wait for compilation. In startup, after Core is ready, call `MyGame.GameConfig.LoadAndRegister()` once. This registers `SceneName.Level01 = "Level01"` to its Addressables address.
+3. For your first connection, follow [Config setup](config-setup.md) using this Scene table. If already connected, click **Framework → Config → Update Config** and wait for compilation. In startup, after Core is ready, call `MyGame.GameConfig.LoadAndRegister()` once. This registers `SceneName.Level01 = "Level01"` to its Addressables address.
 
 Add this to a menu button handler after startup, not Update (`using Core; using UnityEngine;`):
 

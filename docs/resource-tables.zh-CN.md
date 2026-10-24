@@ -1,20 +1,20 @@
 # 资源配置表
 
-[框架总览](../README.zh-CN.md) · [配置接入](config.zh-CN.md) · [English](resource-tables.md)
+[框架总览](../README.zh-CN.md) · [配置接入](config-setup.zh-CN.md) · [English](resource-tables.md)
 
 **编辑 Resource 标签 → Update Config → 加载模块 → 使用 main.Cue。** 模块将加载生命周期相同的资产放在一起。组件自己的固定资产，用 Inspector 引用也许就够了。
 
 ## 添加资源
 
-1. 完成[首次设置](config.zh-CN.md#首次设置)，将 **cue.wav** 放入 `Assets/GameContent/MyGame/Content/Audio/`。在 **Project** 选中它，勾选 Inspector 中的 **Addressable**。
-2. 打开配置文件夹中已有的 **Resource** 标签；没有时再创建。新标签从 A1 输入下面的示例；已有标签保留前两行，在数据末尾添加 **Cue** 行：
+1. 将 **cue.wav** 放入 `Assets/GameContent/MyGame/Content/Audio/`。在 **Project** 选中它，勾选 Inspector 中的 **Addressable**。
+2. 下面是 **Resource** 表的示例。首次连接时，在[配置接入](config-setup.zh-CN.md)第 6 步填写；已经连接时，打开已有的 **Resource** 标签，没有时再创建。新标签从 A1 输入全部内容；已有标签保留前两行，只添加 **Cue** 数据行。
 
 | Id | Name | Type | Module | AssetPath |
 | --- | --- | --- | --- | --- |
 | string | string | string | string | string |
 | Cue | Button sound | AudioClip | Main | Assets/GameContent/MyGame/Content/Audio/cue.wav |
 
-3. 在 Unity 打开 **Framework → Config**，选择 **MyGame**，点击 **Update Config**，等待编译完成。
+3. 第一次连接时，按[配置接入](config-setup.zh-CN.md)使用上面的表完成设置。已经连接时，在 **Framework → Config** 选择 **MyGame**，点击 **Update Config**，等待编译完成。
 
 **成功标志：** 出现 `MyGame/Scripts/Generated/MainResources.g.cs`，提供 `Id = "MyGame.Main"` 和 `AudioClip Cue` 属性。工具同时生成 ResourceTable、ResourceConfig 和本地 JSON。`Name` 供人阅读，不生成字段。
 

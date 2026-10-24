@@ -4,11 +4,13 @@
 
 **Run the Demo, then make your first window.** You'll need Unity Hub, Unity 6.6 (6000.6.5f1), a C# editor and basic Unity knowledge.
 
-This page follows **main preview**. For the fixed SO-based release, use the [v0.2.0 guide](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md).
+Use the downloaded framework project as the starting point for your game. The steps below keep its packages and settings, and add your content under `GameContent/MyGame/`.
+
+This page follows **v0.3.0**. For the fixed SO-based release, use the [v0.2.0 guide](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md).
 
 ## Run the Demo
 
-1. [Download main preview (ZIP)](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/heads/main.zip) and extract it. In Unity Hub, open the folder containing Assets, Packages and ProjectSettings. Wait for import and compilation.
+1. [Download v0.3.0 (ZIP)](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.3.0.zip) and extract it. In Unity Hub, open the folder containing Assets, Packages and ProjectSettings. Wait for import and compilation.
 2. Open **Window → Asset Management → Addressables → Groups**. Set **Play Mode Script → Use Asset Database (fastest)**.
 3. Open `Assets/GameContent/Demo/Scenes/DemoStart.unity` and press Play. Choose **Start** and move to GOAL with **WASD / arrows**.
 4. **Play again** restarts; **Menu** returns; **Settings / Escape** opens volume settings; **Done / Escape** saves and closes them.
@@ -19,6 +21,8 @@ This page follows **main preview**. For the fixed SO-based release, use the [v0.
 ## Create your first window
 
 Use the names below on your first pass: **view → prefab → Google Sheets → Update Config → startup**.
+
+Before you begin, prepare a Google account and permission to create a Cloud project and service account key. If your team already has a source folder, use its connection details. The [one-time setup](config-setup.md) happens in step 3, using your UI table.
 
 ### 1. Create the view
 
@@ -59,16 +63,17 @@ namespace MyGame
 
 ### 3. Connect and update the UI table
 
-1. Complete [Config: first-time setup](config.md#first-time-setup) for **MyGame**. This creates the shared Drive folder and local credential connection; you only do it once.
-2. In a workbook directly inside that folder, add a tab named **UI**. Starting at A1, enter:
+Your first table is **UI**. Use these three rows, starting at A1:
 
 | Id | Name | PrefabPath |
 | --- | --- | --- |
 | string | string | string |
 | Menu | My first menu | Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab |
 
-3. In Unity, open **Framework → Config**, select **MyGame** and click **Update Config**. Wait for compilation.
-4. Confirm the UI table updated and `MyGame/Scripts/Generated/UIName.g.cs` exists.
+- **First connection:** follow [Connect Google Sheets](config-setup.md). In its step 6, enter the UI rows above. Finish the update, then return here.
+- **Already connected:** open the UI tab in a workbook directly inside your source folder; create it if needed. Keep existing headers and add or update the Menu row. In Unity, select **MyGame** in **Framework → Config**, click **Update Config** and wait for compilation.
+
+**Success:** the UI table updated and `Assets/GameContent/MyGame/Scripts/Generated/UIName.g.cs` contains `Menu = "Menu"`.
 
 **Update before continuing:** the next script needs GameConfig and UIName. For later edits, use [UI tables](ui-tables.md).
 

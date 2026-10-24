@@ -2,15 +2,17 @@
 
 [框架总览](../README.zh-CN.md) · [开始使用](quick-start.zh-CN.md) · [English](events.md)
 
-**定义名称 → 订阅 → 广播 → 退订。** 通知窗口时，玩法无需持有窗口。需要返回结果时，直接调用方法。
+**定义名称 → 订阅 → 广播 → 退订。** 发送通知时不必知道谁在监听。本例只在 Console 打印消息，不需要 UI 或配置表。
 
 ## 试试看
 
-先完成[开始使用](quick-start.zh-CN.md)，然后退出 Play。下面沿用其中的 MyGame 场景、UI 配置表和游戏入口。
+### 1. 准备场景
 
-### 1. 定义名称
+使用本仓库的 Unity 工程。新建空场景，将 [GameCore.prefab](../Assets/Framework/Prefabs/GameCore.prefab) 拖到 Hierarchy 最外层，保留已有设置。新建一个名为 **EventExample** 的空 GameObject。
 
-将 **GameEvents.cs** 保存到 `Assets/GameContent/MyGame/Scripts/`。事件名称由游戏维护，不需要枚举、配置表或预先登记。
+### 2. 定义名称
+
+在 `Assets/GameContent/MyGame/Scripts/` 保存 **GameEvents.cs**，没有目录就先创建。字符串常量就是事件名称，不需要枚举、配置表或预先登记。
 
 ```csharp
 namespace MyGame
@@ -22,69 +24,66 @@ namespace MyGame
 }
 ```
 
-### 2. 添加监听
+### 3. 订阅并广播
 
-在同目录保存 **WinNotice.cs**。窗口显示时订阅，关闭时向保存的管理器退订：
+在同目录保存 **EventExample.cs**，挂到 EventExample 对象上：
 
 ```csharp
 using Core;
 using Event;
-using UI;
 using UnityEngine;
 
 namespace MyGame
 {
-    public sealed class WinNotice : UIBase
+    public sealed class EventExample : MonoBehaviour
     {
         private EventManager _events;
 
-        protected override void OnShow()
+        private void Start()
         {
+            if (!GameCore.IsReady)
+            {
+                Debug.LogError("Add the shared GameCore prefab to the scene.", this);
+                return;
+            }
+
             _events = GameCore.Event;
             _events.RegisterEvent(GameEvents.LevelCompleted, OnLevelCompleted);
-        }
 
-        protected override void OnClose()
-        {
-            _events?.UnRegisterEvent(GameEvents.LevelCompleted, OnLevelCompleted);
-            _events = null;
+            _events.DispatchNow(GameEvents.LevelCompleted);
         }
 
         private void OnLevelCompleted()
         {
             Debug.Log("Level completed.", this);
         }
+
+        private void OnDestroy()
+        {
+            if (_events != null)
+            {
+                _events.UnRegisterEvent(GameEvents.LevelCompleted, OnLevelCompleted);
+            }
+
+            _events = null;
+        }
     }
 }
 ```
 
-### 3. 打开窗口并发送
+按下 Play，**Console 应输出一次 `Level completed.`。** Start 中先订阅再广播，不会漏掉首次通知。GameCore 在 Awake 初始化，其他对象的 OnEnable 可能比它更早，因此本例等到 Start 并检查是否就绪。
 
-1. 新建独立的 UI Prefab，保存到 `MyGame/Content/Prefabs/UI/WinNotice.prefab`。在它的 RectTransform 根上挂载 WinNotice，根上只保留这一个 UIBase 派生组件。在 **Project** 选中保存后的预制体，勾选 Inspector 中的 **Addressable**。
-2. 在 Google Sheets 的 **UI** 标签中新增一行：**Id = WinNotice**、**Name = Win notice**、**PrefabPath = Assets/GameContent/MyGame/Content/Prefabs/UI/WinNotice.prefab**。点击 **Framework → Config → Update Config**，等待编译完成。参见 [UI 配置表](ui-tables.zh-CN.md)。
-3. 在 **MyGameEntry.cs** 中保留一次 `GameConfig.LoadAndRegister()`，将它后面的原 OpenUI 调用替换为：
+### 4. 从游戏中广播
 
-```csharp
-GameCore.UI.OpenUI(UILayer.Second, UIName.WinNotice, callback: view =>
-{
-    if (view == null)
-    {
-        return;
-    }
-
-    GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
-});
-```
-
-按下 Play，**Console 应输出一次 `Level completed.`。** 打开窗口是异步操作；在完成回调里发送，就能等到 OnShow 完成订阅。
-
-接下来，在按钮处理方法或通关方法中用这一行广播（需要 `using Core; using MyGame;`）。Core 就绪后，在 Unity 主线程调用：
+在通关方法或其他游戏脚本中，Core 就绪后用这一行发送（需要 `using Core; using MyGame;`）：
 
 ```csharp
 GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 ```
 
-窗口打开时，每次广播输出一次。用 `GameCore.UI.CloseUI(UIName.WinNotice)` 关闭窗口后，再广播就不输出了。RegisterEvent 登记的是监听器，不是事件名定义。
+每次广播都会调用一次监听方法。发送方只需知道事件名称，不需要持有 EventExample 对象。RegisterEvent 订阅的是监听器，不是定义事件名。
+
+销毁 EventExample 对象时，OnDestroy 移除订阅。要检查清理效果，先从游戏中广播，再在 Play 期间从 Hierarchy 删除 EventExample，重新广播应不再输出它的消息。仅禁用组件不会退订。
 
 ## 选择通知方式
 
@@ -99,7 +98,7 @@ GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 - Core 就绪后，在 Unity 主线程使用服务。Core 已负责事件更新，不要手调 OnUpdate。
 - 需要接收通知时订阅，不再需要时向保存的管理器退订。禁用组件不会自动退订。
 - 需要移除 lambda 时保留原委托；新写一个 lambda 是另一个监听器。
-- 事件**不重放历史**。稍后打开的窗口先读取当前游戏状态，再监听后续变化。
+- 事件**不重放历史**。稍后创建的接收者需读取当前游戏状态，并订阅后续变化。
 
 ## 前后用法
 
@@ -112,7 +111,12 @@ GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 
 登记与退订仍使用相同方法名。接收者需要来源或数据时保留原有 `HandlerEvent` 签名；Demo 的 [LevelView.cs](../Assets/GameContent/Demo/Scripts/UI/LevelView.cs) 仍按当前关卡的 sender 过滤通关通知。
 
-Demo 也使用无参的 `DemoEvents.VolumeChanged` 通知：[DataManager.cs](../Assets/GameContent/Demo/Scripts/DataManager.cs) 在音量变化后广播，[SettingsView.cs](../Assets/GameContent/Demo/Scripts/UI/SettingsView.cs) 显示时刷新当前状态，监听后续变化，关闭时退订。
+<details>
+<summary>可选：将事件连接到 UI</summary>
+
+完整 UI 用法可看 Demo 的 `DemoEvents.VolumeChanged`：[DataManager.cs](../Assets/GameContent/Demo/Scripts/DataManager.cs) 在音量变化后广播；[SettingsView.cs](../Assets/GameContent/Demo/Scripts/UI/SettingsView.cs) 在 OnShow 订阅并通过 RefreshVolume() 读取当前状态，在 OnClose 退订。先订阅再刷新，后续变化就有人接收。准备创建窗口时再看 [UI](ui.zh-CN.md)。
+
+</details>
 
 <details>
 <summary>需要时再看：顺序、数据、异常与清理</summary>

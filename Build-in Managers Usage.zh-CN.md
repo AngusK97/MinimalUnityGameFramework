@@ -2,7 +2,7 @@
 
 [框架总览](README.zh-CN.md) · [English](Build-in%20Managers%20Usage.md)
 
-**第一次先看[开始使用](docs/quick-start.zh-CN.md)**，完成第一个窗口；日常开发按需查下表。本套教程跟随 main 预览版，固定的 [v0.2.0 教程](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.zh-CN.md)保留原 Inspector/SO 流程。
+**第一次先看[开始使用](docs/quick-start.zh-CN.md)**，完成第一个窗口；日常开发按需查下表。本套教程跟随 v0.3.0，固定的 [v0.2.0 教程](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.zh-CN.md)保留原 Inspector/SO 流程。
 
 | 任务 | 手册 |
 | --- | --- |
@@ -22,11 +22,11 @@
 ## 从 v0.2.0 迁移到 Google Sheets
 
 1. 备份可运行的游戏。移除旧方案前，记录 UI 名称、预制体路径、资源名称／类型及模块 ID，保留 Unity 资产和 meta 文件。
-2. 按[配置首次设置](docs/config.zh-CN.md#首次设置)创建需要的 **UI**、**Resource**、**Scene** 标签。原 UI 条目的 Name 对应新的 **Id**；新的 **Name** 列只作说明。资源模块合并到 Resource 标签，通过 **Module** 列区分。
+2. 按[配置首次设置](docs/config-setup.zh-CN.md#首次设置)创建需要的 **UI**、**Resource**、**Scene** 标签。原 UI 条目的 Name 对应新的 **Id**；新的 **Name** 列只作说明。资源模块合并到 Resource 标签，通过 **Module** 列区分。
 3. 保存原有值后，从迁移副本中移除旧 UI.asset、资源模块 SO 资产及其旧生成定义。首次导入前，将旧生成 C# 和 meta 备份到 Assets 之外；新导入器不会覆盖不属于自己的文件。如果把框架文件覆盖复制到旧安装中，也要移除遗留 SO 编辑器工具。若缺少生成类型导致编译失败，先暂时注释调用，首次更新后恢复。
 4. 点击 **Framework → Config → Update Config**，等待编译，按下表恢复并修改调用。新来源设置、生成 CSV／清单、C#、JSON 和 meta 一起提交。此后只在 Google Sheets 编辑表格。
 
-| 旧调用或数据 | main 预览版 |
+| 旧调用或数据 | v0.3.0 |
 | --- | --- |
 | `GameUI.RegisterAll()` / `DemoUI.RegisterAll()` | Core 就绪后调用 `GameConfig.LoadAndRegister()`，每个 Core 生命周期一次 |
 | `GameUI.Shop` / `DemoUI.Menu` | `UIName.Shop` / `UIName.Menu` |

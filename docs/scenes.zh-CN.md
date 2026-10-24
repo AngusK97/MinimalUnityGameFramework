@@ -7,14 +7,14 @@
 ## 试试看
 
 1. 将 **Level01.unity** 保存到 `Assets/GameContent/MyGame/Content/Scenes/`，放入相机和可见物体。移除相机多余的 AudioListener，Core 已有一个。在 **Project 选中保存后的 Level01.unity 资产**，勾选 Inspector 中的 **Addressable**。
-2. [连接 Google Sheets](config.zh-CN.md#首次设置) 后，新建 **Scene** 标签，从 A1 输入：
+2. 下面是 **Scene** 表的示例。首次连接时，在[配置接入](config-setup.zh-CN.md)第 6 步填写；已经连接时，打开已有的 **Scene** 标签，没有时再创建。新标签从 A1 输入全部内容；已有标签保留前两行，只添加 **Level01** 数据行。
 
 | Id | Name | ScenePath |
 | --- | --- | --- |
 | string | string | string |
 | Level01 | First level | Assets/GameContent/MyGame/Content/Scenes/Level01.unity |
 
-3. 点击 **Framework → Config → Update Config**，等待编译完成。在启动代码中，Core 就绪后调用一次 `MyGame.GameConfig.LoadAndRegister()`，将 `SceneName.Level01 = "Level01"` 登记到实际 Addressables 地址。
+3. 第一次连接时，按[配置接入](config-setup.zh-CN.md)使用这张 Scene 表完成设置。已经连接时，点击 **Framework → Config → Update Config**，等待编译完成。在启动代码中，Core 就绪后调用一次 `MyGame.GameConfig.LoadAndRegister()`，将 `SceneName.Level01 = "Level01"` 登记到实际 Addressables 地址。
 
 启动完成后，从菜单按钮处理方法调用，不要放进 Update（需要 `using Core; using UnityEngine;`）：
 

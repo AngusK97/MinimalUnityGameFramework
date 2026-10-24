@@ -2,7 +2,7 @@
 
 [Overview](README.md) · [简体中文](Build-in%20Managers%20Usage.zh-CN.md)
 
-**Start with [Quick start](docs/quick-start.md)** to build your first window; use these pages for daily work. These guides follow the main preview. The fixed [v0.2.0 guides](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md) retain the earlier Inspector/SO workflow.
+**Start with [Quick start](docs/quick-start.md)** to build your first window; use these pages for daily work. These guides match v0.3.0. The fixed [v0.2.0 guides](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md) retain the earlier Inspector/SO workflow.
 
 | Task | Guide |
 | --- | --- |
@@ -22,11 +22,11 @@ For the Editor/package upgrade, see [Moving to Unity 6.6](docs/upgrading.md). Ex
 ## From v0.2.0 to Google Sheets
 
 1. Back up the working game. Before removing the old setup, copy its UI names, prefab paths, resource names/types and module IDs. Keep the Unity assets and their meta files.
-2. Follow [Config setup](docs/config.md#first-time-setup). Create the **UI**, **Resource** and **Scene** tabs you need. The old UI entry Name becomes the new **Id**; the new **Name** column is only a description. Combine resource modules into the Resource tab using its **Module** column.
+2. Follow [Config setup](docs/config-setup.md#first-time-setup). Create the **UI**, **Resource** and **Scene** tabs you need. The old UI entry Name becomes the new **Id**; the new **Name** column is only a description. Combine resource modules into the Resource tab using its **Module** column.
 3. Remove the old UI.asset, resource module SO assets and their obsolete generated definitions from the migration copy after preserving their values. Back up old generated C# and meta files outside Assets before importing: the new importer does not overwrite files it does not own. Remove obsolete SO editor tools if you copied framework files over an older installation. If missing generated types prevent compilation, temporarily comment their callers until the first update completes.
 4. Click **Framework → Config → Update Config**, then wait for compilation. Restore and update callers as below. Commit the new source settings, generated CSV/manifest, C#, JSON and meta files together. Google Sheets is now the editing source.
 
-| Earlier call or data | Main preview |
+| Earlier call or data | v0.3.0 |
 | --- | --- |
 | `GameUI.RegisterAll()` / `DemoUI.RegisterAll()` | `GameConfig.LoadAndRegister()` after Core is ready, once per Core lifetime |
 | `GameUI.Shop` / `DemoUI.Menu` | `UIName.Shop` / `UIName.Menu` |

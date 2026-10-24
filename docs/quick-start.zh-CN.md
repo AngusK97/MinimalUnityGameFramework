@@ -4,11 +4,13 @@
 
 **运行 Demo，再做第一个自己的窗口。** 准备好 Unity Hub、Unity 6.6（6000.6.5f1）和 C# 编辑器，会一点 Unity 基本操作即可。
 
-本页跟随 **main 预览版**。固定的 SO 版本请使用 [v0.2.0 教程](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.zh-CN.md)。
+以下载的框架工程作为自己游戏的起点。下面会保留它的依赖和设置，把自己的内容添加到 `GameContent/MyGame/`。
+
+本页跟随 **v0.3.0**。固定的 SO 版本请使用 [v0.2.0 教程](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.zh-CN.md)。
 
 ## 运行 Demo
 
-1. [下载 main 预览版（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/heads/main.zip)并解压，在 Unity Hub 打开包含 Assets、Packages、ProjectSettings 的目录，等待导入和编译完成。
+1. [下载 v0.3.0（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.3.0.zip)并解压，在 Unity Hub 打开包含 Assets、Packages、ProjectSettings 的目录，等待导入和编译完成。
 2. 打开 **Window → Asset Management → Addressables → Groups**，把 **Play Mode Script** 设为 **Use Asset Database (fastest)**。
 3. 打开 `Assets/GameContent/Demo/Scenes/DemoStart.unity`，点击 Play，再点 **Start**，用 **WASD / 方向键**移动到 GOAL。
 4. **Play again** 重开，**Menu** 返回；**Settings / Escape** 打开音量设置，**Done / Escape** 保存并关闭。
@@ -19,6 +21,8 @@
 ## 创建第一个窗口
 
 第一次先保留下面的名字，顺着做完：**视图 → Prefab → Google Sheets → Update Config → 启动入口**。
+
+开始前，准备一个 Google 账号，以及创建 Cloud 项目和服务账号密钥的权限。如果小组已有配置来源，使用现有连接信息即可。第 3 步会用你的 UI 表完成[首次连接](config-setup.zh-CN.md)。
 
 ### 1. 创建视图
 
@@ -59,16 +63,17 @@ namespace MyGame
 
 ### 3. 连接并更新 UI 配置表
 
-1. 为 **MyGame** 完成[配置：首次设置](config.zh-CN.md#首次设置)。这会准备共享 Drive 文件夹与本机凭据连接，只需做一次。
-2. 在该文件夹直接包含的工作簿中，新建名为 **UI** 的标签，从 A1 输入：
+第一张表就是 **UI**。从 A1 开始使用下面三行：
 
 | Id | Name | PrefabPath |
 | --- | --- | --- |
 | string | string | string |
 | Menu | My first menu | Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab |
 
-3. 在 Unity 打开 **Framework → Config**，选择 **MyGame**，点击 **Update Config**，等待编译完成。
-4. 确认 UI 表已更新，且出现 `MyGame/Scripts/Generated/UIName.g.cs`。
+- **第一次连接：** 按[连接 Google Sheets](config-setup.zh-CN.md)操作。到第 6 步时，填写上面的 UI 三行；完成更新后回到这里。
+- **已经连接：** 打开来源文件夹直接包含的工作簿，使用已有 UI 标签，没有时再创建。保留原表头，新增或修改 Menu 行。在 Unity 的 **Framework → Config** 选择 **MyGame**，点击 **Update Config**，等待编译完成。
+
+**成功标志：** UI 表更新成功，`Assets/GameContent/MyGame/Scripts/Generated/UIName.g.cs` 中出现 `Menu = "Menu"`。
 
 **先更新再继续：** 下一步脚本需要 GameConfig 和 UIName 已存在。后续修改见 [UI 配置表](ui-tables.zh-CN.md)。
 

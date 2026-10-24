@@ -2,11 +2,11 @@
 
 English · [简体中文](README.zh-CN.md)
 
-**Version:** main preview (Google Sheets config) · **Unity:** 6.6 (6000.6.5f1, not LTS)
+**Version:** v0.3.0 (Google Sheets config) · **Unity:** 6.6 (6000.6.5f1, not LTS)
 
-[Download main preview (ZIP)](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/heads/main.zip) · [Quick start](docs/quick-start.md)
+[Download v0.3.0 (ZIP)](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.3.0.zip) · [Quick start](docs/quick-start.md)
 
-These guides follow `main`. Prefer a fixed release? [v0.2.0](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.2.0) uses the earlier Inspector/SO workflow; follow its [own guides](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md). Keep downloaded code and guides together.
+These guides match **v0.3.0**. See the [release notes](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.3.0) and [migration steps](Build-in%20Managers%20Usage.md#from-v020-to-google-sheets). Keep downloaded code and guides together.
 
 Hello there ~ I'm Angus, a game developer. This is a small Unity framework for UI, events, resources, scenes and audio. Try the Demo, then use the same tools to make your own game.
 
@@ -22,6 +22,8 @@ Hello there ~ I'm Angus, a game developer. This is a small Unity framework for U
 ## The big picture
 
 **GameCore** provides five services and stays alive across scene changes. Your game and the removable Demo use the same API.
+
+Configuration follows a separate path: **Google Sheets → Update Config in the Editor → local data → your game**. The running game reads local data and needs no Google connection.
 
 ```mermaid
 flowchart TB
@@ -40,11 +42,13 @@ UI loads windows through Resource. Scene coordinates loading, fades and UI clean
 
 ## Pick the module you need
 
+New here? Start with [your first window](docs/quick-start.md#create-your-first-window). For a specific task, pick a guide below. [Google setup](docs/config-setup.md) is a one-time step for editing tables.
+
 | I want to… | Guide | Entry |
 | --- | --- | --- |
 | Set up shared services | [Core](docs/core.md) | `GameCore.IsReady` |
 | Open or close a window | [UI](docs/ui.md) | `GameCore.UI` |
-| Connect and update Google Sheets | [Config tables](docs/config.md) | **Update Config** → `GameConfig.LoadAndRegister()` |
+| Edit and read configuration | [Config tables](docs/config.md) | **Update Config** → `GameConfig.LoadAndRegister()` |
 | Define windows | [UI tables](docs/ui-tables.md) | `UI` tab → `UIName.Shop` |
 | Send a notification | [Events](docs/events.md) | `GameCore.Event` |
 | Load and release assets | [Resources](docs/resources.md) | `GameCore.Resource` |
@@ -87,7 +91,7 @@ The Demo includes local generated data. No Google account or credentials are nee
 
 Addressables **2.11.2** · uGUI **2.6.0** · Built-in rendering · old Input Manager.
 
-The download and guides above follow the **main preview**, whose Google Sheets workflow is not part of v0.2.0. `0.x` APIs may change. Existing games can keep their pinned version and its bundled guides. See [Editor upgrades](docs/upgrading.md), [older API migration](Build-in%20Managers%20Usage.md) and [what has been verified](docs/build.md#verification-scope).
+The download and guides above use **v0.3.0**, which introduces Google Sheets configuration. `0.x` APIs may change. Existing games can keep their pinned version and its bundled guides. See [Editor upgrades](docs/upgrading.md), [older API migration](Build-in%20Managers%20Usage.md) and [what has been verified](docs/build.md#verification-scope).
 
 Gameplay parameters can stay in the Inspector or game-owned ScriptableObjects. Text/localization and sound-playback tables are deferred; AudioClip resource registration is included. Saves, full-game pause, platform input and release validation are left to your game's needs.
 

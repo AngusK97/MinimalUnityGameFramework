@@ -63,9 +63,9 @@ Checked on **2026-10-24** with Unity **6000.6.5f1**, Addressables **2.11.2** and
 - The Demo Player rendered its menu and opened Settings with Escape. **18 simulated Google transport groups** passed.
 - Real Google authentication and import passed in Unity with the three Demo tables: first connection, unchanged output, invalid-table retention and recovery. The cloud test values were restored.
 
-**Still unverified:** the full native mouse/keyboard game loop, audible output, other platforms and IL2CPP/release builds. No cloud credentials are bundled. Follow [first-time setup](config.md#first-time-setup) to connect your own source.
+**Still unverified:** the full native mouse/keyboard game loop, audible output, other platforms and IL2CPP/release builds. Other platforms need their own build and device checks; this does not indicate a known incompatibility. No cloud credentials are bundled. Follow [first-time setup](config-setup.md#first-time-setup) to connect your own source.
 
-Validation helpers ran only in temporary copies and are not part of the framework. These results describe this preview; v0.2.0 keeps its own code and tutorial.
+Validation helpers ran only in temporary copies and are not part of the framework. These results cover the code included in v0.3.0; older releases keep their own guides.
 
 [Editor upgrades](upgrading.md) · Unity references: [Build Profiles](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profiles.html) and [Scene List](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profile-scene-list.html).
 

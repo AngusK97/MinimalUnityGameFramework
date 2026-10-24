@@ -63,9 +63,9 @@
 - Demo Player 已确认菜单渲染和 Escape 打开设置。**18 组 Google 通信模拟检查**通过。
 - Unity 中使用 Demo 三张表完成真实 Google 身份认证与导入：首次连接、无变化不重写、错误表保留旧版及恢复均通过。云端测试值已恢复。
 
-**尚未验证：** 完整原生鼠标／键盘游戏闭环、实际可听性、其他平台及 IL2CPP／正式发布构建。工程不附带云端凭据；按[首次设置](config.zh-CN.md#首次设置)连接自己的来源。
+**尚未验证：** 完整原生鼠标／键盘游戏闭环、实际可听性、其他平台及 IL2CPP／正式发布构建。其他平台还需实际构建和设备验证，这不表示已发现它们无法运行。工程不附带云端凭据；按[首次设置](config-setup.zh-CN.md#首次设置)连接自己的来源。
 
-验证辅助内容只存在于临时副本，不随框架交付。以上是本次预览版的结果；v0.2.0 保留自己的代码与教程。
+验证辅助内容只存在于临时副本，不随框架交付。以上覆盖 v0.3.0 所包含的代码；旧版本保留各自的教程。
 
 [Editor 升级](upgrading.zh-CN.md) · Unity 参考：[Build Profiles](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profiles.html)、[Scene List](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profile-scene-list.html)。
 

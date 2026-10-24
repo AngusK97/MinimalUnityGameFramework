@@ -1,20 +1,20 @@
 # UI 配置表
 
-[框架总览](../README.zh-CN.md) · [配置接入](config.zh-CN.md) · [English](ui-tables.md)
+[框架总览](../README.zh-CN.md) · [配置接入](config-setup.zh-CN.md) · [English](ui-tables.md)
 
-**编辑 UI 标签 → Update Config → 使用 UIName。** 第一次制作窗口，先看[开始使用](quick-start.zh-CN.md)。按[首次设置](config.zh-CN.md#首次设置)连接一次 Google Sheets。
+**编辑 UI 标签 → Update Config → 使用 UIName。** 第一次制作窗口，先看[开始使用](quick-start.zh-CN.md)。按[首次设置](config-setup.zh-CN.md#首次设置)连接一次 Google Sheets。
 
 ## 添加窗口
 
 1. 将 UI 预制体保存到自己游戏的 `Content/Prefabs/UI/`。RectTransform 根对象上必须恰有一个 UIBase 派生组件。在 **Project** 选中已保存的预制体，勾选 Inspector 中的 **Addressable**。
-2. 打开配置文件夹中已有的 **UI** 标签；没有时再创建。新标签从 A1 输入下面的示例；已有标签保留前两行，在数据末尾添加 **Shop** 行：
+2. 下面是 **UI** 表的示例。首次连接时，在[配置接入](config-setup.zh-CN.md)第 6 步填写；已经连接时，打开已有的 **UI** 标签，没有时再创建。新标签从 A1 输入全部内容；已有标签保留前两行，只添加 **Shop** 数据行。
 
 | Id | Name | PrefabPath |
 | --- | --- | --- |
 | string | string | string |
 | Shop | Shop window | Assets/GameContent/MyGame/Content/Prefabs/UI/ShopView.prefab |
 
-3. 在 Unity 打开 **Framework → Config**，选择 **MyGame**，点击 **Update Config**，等待编译完成。
+3. 第一次连接时，按[配置接入](config-setup.zh-CN.md)使用上面的表完成设置。已经连接时，在 **Framework → Config** 选择 **MyGame**，点击 **Update Config**，等待编译完成。
 
 **成功标志：** `MyGame/Scripts/Generated/UIName.g.cs` 中有 `Shop = "Shop"`。工具同时生成 UITable、UIConfig 和本地 JSON 数据。`Name` 供人阅读，不生成字段。
 

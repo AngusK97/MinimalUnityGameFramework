@@ -2,11 +2,11 @@
 
 [English](README.md) · 简体中文
 
-**框架版本：** main 预览版（Google Sheets 配置） · **Unity：** 6.6（6000.6.5f1，非 LTS）
+**框架版本：** v0.3.0（Google Sheets 配置） · **Unity：** 6.6（6000.6.5f1，非 LTS）
 
-[下载 main 预览版（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/heads/main.zip) · [开始使用](docs/quick-start.zh-CN.md)
+[下载 v0.3.0（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.3.0.zip) · [开始使用](docs/quick-start.zh-CN.md)
 
-本套教程跟随 `main`。需要固定版本时，可用 [v0.2.0](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.2.0)；它仍采用原 Inspector/SO 流程，请阅读[对应版本教程](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.zh-CN.md)。下载的代码与随包文档一起使用。
+本套教程对应 **v0.3.0**。版本变化见[发布说明](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.3.0)，旧工程按[迁移步骤](Build-in%20Managers%20Usage.zh-CN.md#从-v020-迁移到-google-sheets)升级。下载的代码与随包文档一起使用。
 
 Hello there ~ 我是 Angus，一名游戏开发者。这是一个处理 UI、事件、资源、场景和音频的小 Unity 框架。先玩一下 Demo，再用同样的工具做自己的游戏。
 
@@ -22,6 +22,8 @@ Hello there ~ 我是 Angus，一名游戏开发者。这是一个处理 UI、事
 ## 宏观架构
 
 **GameCore** 提供五项公共服务，切场景时保持运行。自己的游戏和可删除的 Demo 使用同一套 API。
+
+配置走另一条流程：**Google Sheets → 在编辑器中 Update Config → 本地数据 → 自己的游戏**。游戏运行时读取本地数据，不需要连接 Google。
 
 ```mermaid
 flowchart TB
@@ -40,11 +42,13 @@ UI 通过 Resource 加载窗口；Scene 协调加载、渐变和 UI 收尾。启
 
 ## 按需要选择模块
 
+第一次来，可以从[自己的第一个窗口](docs/quick-start.zh-CN.md#创建第一个窗口)开始。有具体需求时，直接选下面的教程。[Google 连接](docs/config-setup.zh-CN.md)只在开始编辑表格时设置一次。
+
 | 我想…… | 手册 | 入口 |
 | --- | --- | --- |
 | 准备公共服务 | [Core](docs/core.zh-CN.md) | `GameCore.IsReady` |
 | 打开或关闭窗口 | [UI](docs/ui.zh-CN.md) | `GameCore.UI` |
-| 连接和更新 Google Sheets | [配置表](docs/config.zh-CN.md) | **Update Config** → `GameConfig.LoadAndRegister()` |
+| 编辑和读取配置 | [配置表](docs/config.zh-CN.md) | **Update Config** → `GameConfig.LoadAndRegister()` |
 | 定义界面 | [UI 配置表](docs/ui-tables.zh-CN.md) | `UI` 标签 → `UIName.Shop` |
 | 发送通知 | [事件](docs/events.zh-CN.md) | `GameCore.Event` |
 | 加载与释放资产 | [资源](docs/resources.zh-CN.md) | `GameCore.Resource` |
@@ -87,7 +91,7 @@ Demo 已附带本地生成数据，不需要 Google 账号或凭据即可运行�
 
 Addressables **2.11.2** · uGUI **2.6.0** · Built-in 渲染管线 · 旧 Input Manager。
 
-上面的下载与教程跟随 **main 预览版**，其中 Google Sheets 流程不属于 v0.2.0。`0.x` 的 API 仍可能变化。旧游戏可以继续固定原版本，使用随包文档。按需查看 [Editor 升级](docs/upgrading.zh-CN.md)、[旧 API 迁移](Build-in%20Managers%20Usage.zh-CN.md)和[已验证范围](docs/build.zh-CN.md#验证范围)。
+上面的下载与教程使用 **v0.3.0**，这一版加入 Google Sheets 配置。`0.x` 的 API 仍可能变化。旧游戏可以继续固定原版本，使用随包文档。按需查看 [Editor 升级](docs/upgrading.zh-CN.md)、[旧 API 迁移](Build-in%20Managers%20Usage.zh-CN.md)和[已验证范围](docs/build.zh-CN.md#验证范围)。
 
 玩法参数可以继续放在 Inspector 或游戏自己的 ScriptableObject。文本／本地化与声音播放配置表暂缓，当前包含 AudioClip 资源登记。存档、全局暂停、平台输入和发布验收，按自己的游戏需要补充。
 

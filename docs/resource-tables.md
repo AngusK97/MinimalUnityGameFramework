@@ -1,20 +1,20 @@
 # Resource tables
 
-[Overview](../README.md) · [Config setup](config.md) · [简体中文](resource-tables.zh-CN.md)
+[Overview](../README.md) · [Config setup](config-setup.md) · [简体中文](resource-tables.zh-CN.md)
 
 **Edit the Resource tab → Update Config → Load a module → Use main.Cue.** A module groups assets with the same loading lifetime. For a component's own fixed asset, an Inspector reference may be enough.
 
 ## Add resources
 
-1. Complete [Config setup](config.md#first-time-setup). Put **cue.wav** in `Assets/GameContent/MyGame/Content/Audio/`. Select it in **Project** and check **Addressable** in its Inspector.
-2. Open the **Resource** tab in your configuration folder; create it only if none exists. For a new tab, enter the example below from A1. For an existing tab, keep its first two rows and append the **Cue** data row:
+1. Put **cue.wav** in `Assets/GameContent/MyGame/Content/Audio/`. Select it in **Project** and check **Addressable** in its Inspector.
+2. Here is the **Resource** table. For your first connection, enter it at step 6 of [Config setup](config-setup.md). If already connected, open the existing **Resource** tab or create one if missing. Enter all rows from A1 in a new tab; in an existing tab, keep its first two rows and add only the **Cue** data row.
 
 | Id | Name | Type | Module | AssetPath |
 | --- | --- | --- | --- | --- |
 | string | string | string | string | string |
 | Cue | Button sound | AudioClip | Main | Assets/GameContent/MyGame/Content/Audio/cue.wav |
 
-3. In Unity, open **Framework → Config**, select **MyGame**, click **Update Config** and wait for compilation.
+3. For your first connection, follow [Config setup](config-setup.md) using the table above. If already connected, open **Framework → Config**, select **MyGame**, click **Update Config** and wait for compilation.
 
 **Success:** `MyGame/Scripts/Generated/MainResources.g.cs` exists. It exposes `Id = "MyGame.Main"` and an `AudioClip Cue` property. The tool also generates ResourceTable, ResourceConfig and local JSON. `Name` is a description for people; it is not a generated field.
 
