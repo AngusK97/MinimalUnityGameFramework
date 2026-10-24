@@ -9,7 +9,7 @@
 ## 01 构建 Demo
 
 1. 打开 **File → Build Profiles**，在 **Platforms** 中选择已安装的目标平台，需要切换时点击 **Switch Platform**。
-2. 退出 Play，等待编译完成。Demo 已经附带可用配置，不用先设置云端来源。如果修改过它连接的 Sheets 内容，先执行 **Framework → Config → Update Config**。
+2. 退出 Play，等待编译完成。Demo 已经附带可用配置，不用先设置云端来源。如果修改过它连接的 Sheets 内容，先在 **Framework → Config** 中选择 Demo，再点击 Play 左侧的 **Update Config**。
 3. 选择 **Demo → Build Player**，再选择输出位置。
 4. 打开构建好的游戏，检查菜单，再按这个顺序试一遍：Start → 用键盘通关 → Play again → Menu → Settings → Quit。
 
@@ -21,7 +21,7 @@
 
 1. 打开 **File → Build Profiles**，在 **Platforms** 中选择目标平台，需要切换时点击 **Switch Platform**。
 2. 点击左侧的 **Scene List**，添加 `MyGame/Scenes/Start.unity`，将它移到第一项并勾选。如果不需要 InitScene，就从列表中移除它，保留游戏使用的其他原生场景。**Open Scene List** 打开的也是这份共享列表。
-3. 如果 Google Sheets 内容或本地资产路径有变化，执行 **Framework → Config → Update Config**，等待编译完成。构建前，检查导入报告里是否有保留旧版表的警告，并确认这些表的状态。
+3. 如果 Google Sheets 内容或本地资产路径有变化，先在 **Framework → Config** 中选择自己的游戏，再点击 Play 左侧的 **Update Config**，等待编译完成。构建前，检查导入报告里是否有保留旧版表的警告，并确认这些表的状态。
 4. 打开 **Window → Asset Management → Addressables → Groups**，选择 **Build → New Build → Default Build Script**，等待成功。
 5. 回到 **Platforms**，选中目标平台，点击 **Build** 并选择输出位置。
 6. 打开构建好的游戏，应该能看到自己的第一个界面。再试试 UI、输入、声音和场景切换。
@@ -49,7 +49,8 @@
 | --- | --- |
 | 没有 Demo 菜单 | 打开 DemoStart.unity。InitScene 只负责初始化服务，不会打开菜单。 |
 | 缺少 GameConfig/UIName/MainResources | 从同一版本恢复生成文件和清单；也可以先注释相关调用，解决编译错误后执行 Update Config，再恢复调用。 |
-| Update Config 不可用 | 先解决 Console 中的编译错误，退出 Play，再到 Framework → Config 选择游戏文件夹并检查来源设置。 |
+| Update Config 不可用 | 退出 Play，等待当前更新、导入或编译结束。Console 中有编译错误时，先修复再继续。 |
+| 点击工具栏却打开了 Config 设置 | 选择游戏，补齐 Google 设置，并确认本机密钥文件仍然存在。 |
 | 预制体无效 | 引用已保存的预制体，确保根对象上只有一个 UIBase 派生组件。 |
 | 没有可加载地址 | 在 Project 中选中已保存的资产，勾选 Inspector 中的 Addressable，并检查组的 Include in Build 和 Include Addresses in Catalog。 |
 | 窗口打开失败 | 检查 Core 是否就绪、是否调用了 GameConfig.LoadAndRegister()、UI 表对应行和预制体是否正确，再查看 Console 中的第一条错误。 |
@@ -74,6 +75,8 @@
 **尚未验证：** 用真实鼠标／键盘完整玩一轮游戏、设备是否实际发出声音、其他平台，以及 IL2CPP／正式发布构建。其他平台还需要实际构建并在设备上测试；尚未测试不代表不能运行。工程不附带云端凭据；需要连接自己的来源时，按[首次设置](config-setup.zh-CN.md#01-首次设置)操作。
 
 验证用的辅助内容只放在临时副本中，不会随框架一起交付。以上结果对应 v0.3.1 包含的代码，旧版本仍保留各自的教程。
+
+**v0.4.0 Editor 验证（2026-10-24）：** 31 项针对性检查通过，程序集重载后仍能显示更新结果。包含 Demo 的工程，以及删除 Demo、保留独立 MyGame 的副本，默认编译均通过。实际点击工具栏完成了首次连接（**3 updated**）、部分更新（**1 updated, 1 kept previous**）和 **Cancel** 检查。部分更新保留的 Resource 文件，以及取消后的全部生成文件，内容与修改时间均未变化。云端测试值已恢复。
 
 [Editor 升级](upgrading.zh-CN.md) · Unity 参考：[Build Profiles](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profiles.html)、[Scene List](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profile-scene-list.html)。
 

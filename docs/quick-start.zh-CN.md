@@ -6,13 +6,13 @@
 
 直接用下载的框架工程开始制作游戏。按下面的步骤操作，会保留工程原有的依赖和设置，把自己的内容放进 `GameContent/MyGame/`。
 
-本页对应 **v0.3.1**。使用 SO 配置的旧版本请看 [v0.2.0 教程](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.zh-CN.md)。
+本页对应 **v0.4.0**。使用 SO 配置的旧版本请看 [v0.2.0 教程](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.zh-CN.md)。
 
 <a id="运行-demo"></a>
 
 ## 01 运行 Demo
 
-1. [下载 v0.3.1（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.3.1.zip)并解压。用 Unity Hub 打开包含 Assets、Packages、ProjectSettings 的目录，等待导入和编译完成。
+1. [下载 v0.4.0（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.4.0.zip)并解压。用 Unity Hub 打开包含 Assets、Packages、ProjectSettings 的目录，等待导入和编译完成。
 2. 打开 **Window → Asset Management → Addressables → Groups**，把 **Play Mode Script** 设为 **Use Asset Database (fastest)**。
 3. 打开 `Assets/GameContent/Demo/Scenes/DemoStart.unity`，点击 Play，再点 **Start**，用 **WASD / 方向键**移动到 GOAL。
 4. 点击 **Play again** 重新开始，点击 **Menu** 返回菜单。用 **Settings / Escape** 打开音量设置，再用 **Done / Escape** 保存并关闭。
@@ -81,7 +81,7 @@ namespace MyGame
 | Menu | My first menu | Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab |
 
 - **第一次连接：** 按[连接 Google Sheets](config-setup.zh-CN.md)操作。到第 6 步时，填入上面这三行 UI 配置。完成更新后，再回到这里继续。
-- **已经连接：** 打开直接放在配置来源文件夹中的工作簿，使用已有的 UI 工作表标签，没有就创建一个。保留原表头，新增或修改 Menu 行。在 Unity 的 **Framework → Config** 中选择 **MyGame**，点击 **Update Config**，等待编译完成。
+- **已经连接：** 打开直接放在配置来源文件夹中的工作簿，使用已有的 UI 工作表标签，没有就创建一个。保留原表头，新增或修改 Menu 行。在 Unity 点击 Play 左侧的 **Update Config**，等待更新结果和编译完成。如果之前选的是其他游戏，先在 **Framework → Config** 中切换到 **MyGame**。
 
 **成功标志：** UI 表更新成功，`Assets/GameContent/MyGame/Scripts/Generated/UIName.g.cs` 中出现 `Menu = "Menu"`。
 

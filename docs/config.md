@@ -11,8 +11,12 @@ The bundled Demo already includes generated configuration. You can run it withou
 ## 01 Daily workflow
 
 1. Edit the Google Sheets tabs in your configuration folder.
-2. In Unity, open **Framework → Config**, select your game and click **Update Config**. Wait for compilation.
-3. Check the result below. Fix reported errors in Sheets or Unity, then click **Update Config** again.
+2. In Unity's top toolbar, click **Update Config**, immediately left of **Play**.
+3. Wait for the progress window to close, then read the result. Fix reported errors in Sheets or Unity and update again.
+
+The toolbar uses the last game selected on this computer for this project. If no game is selected or its Google settings are missing, it opens the Config dialog. Use **Framework → Config** to change games or edit settings.
+
+<img src="images/config-toolbar.jpg" alt="Unity top toolbar with Update Config immediately left of Play" width="900">
 
 Each update reads the current table contents from Google Sheets and writes only generated outputs whose contents have changed.
 
@@ -22,14 +26,22 @@ There is no completed-table selection or extra publish step. A valid row can be 
 
 ### 1.1 Read the result
 
+The native progress window stays open while Unity downloads, checks and applies tables. You can **Cancel** before changes are applied; cancellation leaves this update's table changes unapplied.
+
+After progress closes, a result dialog shows **success**, **partial update** or **failure**. Use **Open report** for details. If generated C# triggers compilation, the result appears after compilation; you do not need to update again to see it.
+
 Valid tables update; an invalid table keeps its last successful version. Fix its reported error and update again.
 
 <details>
-<summary>See successful and partial update examples</summary>
+<summary>See progress and result examples</summary>
+
+The progress window shows the current stage:
+
+<img src="images/config-progress.jpg" alt="Unity native Update Config progress window" width="600">
 
 These examples use the Demo tables. **Successful update:** all tables passed validation and their current versions are applied.
 
-<img src="images/config-success.jpg" alt="Unity Config window showing a successful update of the Demo tables" width="600">
+<img src="images/config-success.jpg" alt="Unity Config result dialog showing a successful update of the Demo tables" width="600">
 
 **Partial update:** valid tables update; an invalid table keeps its last successful version. Read the table's error, fix it and update again.
 
@@ -54,7 +66,7 @@ This **Item** example is for ordinary game data. On your first connection, follo
 | string | string | int |
 | Potion | Small potion | 20 |
 
-In Unity, open **Framework → Config**, select **MyGame**, click **Update Config** and wait for compilation. The final update in first-time setup also covers this step.
+In Unity, click **Update Config** beside Play and wait for the result and any compilation. If another game is selected, first choose **MyGame** in **Framework → Config**. The final update in first-time setup also covers this step.
 
 **Success:** `Assets/GameContent/MyGame/Scripts/Generated/ItemTable.g.cs` exists and the result reports the Item table. Continue below to load and read it.
 

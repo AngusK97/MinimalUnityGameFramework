@@ -16,7 +16,7 @@
 | string | string | string | string | string |
 | Cue | Button sound | AudioClip | Main | Assets/GameContent/MyGame/Content/Audio/cue.wav |
 
-3. For your first connection, follow [Config setup](config-setup.md) using the table above. If already connected, open **Framework → Config**, select **MyGame**, click **Update Config** and wait for compilation.
+3. For your first connection, follow [Config setup](config-setup.md) using the table above. If already connected, click **Update Config** beside Play and wait for the result and compilation. To switch games first, choose **MyGame** in **Framework → Config**.
 
 **Success:** `MyGame/Scripts/Generated/MainResources.g.cs` exists. It exposes `Id = "MyGame.Main"` and an `AudioClip Cue` property. The tool also generates ResourceTable, ResourceConfig and local JSON. `Name` is a description for people; it is not a generated field.
 

@@ -30,13 +30,15 @@ You need a Google account and permission to create a Cloud project and a service
 
 6. **Create your first table.** Inside the shared Drive folder, choose **New → Google Sheets → Blank spreadsheet**. Use the table from the tutorial you are following, such as **UI** with the [Quick start rows](quick-start.md#23-connect-and-update-the-ui-table), **Item** with the [ordinary-data example](config.md#03-add-a-table), or the Resource / Scene table from its guide. Rename the first tab accordingly and enter that example from A1. The workbook's name is up to you; the tab name becomes the table name. Put workbooks directly in the folder, without subfolders or shortcuts.
 
-7. **Connect Unity.** Create `Assets/GameContent/MyGame/` if needed. Open **Framework → Config**, select that folder in **Game**, enter **Namespace = MyGame**, and paste the folder ID into **Google Drive Folder ID**. In a URL such as `https://drive.google.com/drive/folders/FOLDER_ID`, copy only `FOLDER_ID`. Choose the downloaded key in **Service Account JSON**.
+7. **Connect Unity.** Create `Assets/GameContent/MyGame/` if needed. Open **Framework → Config**. The dialog shows all setup fields without a foldout. Select that folder in **Game**, enter **Namespace = MyGame**, and paste the folder ID into **Google Drive Folder ID**. In a URL such as `https://drive.google.com/drive/folders/FOLDER_ID`, copy only `FOLDER_ID`. Choose the downloaded key in **Service Account JSON**.
 
-8. **Click Update Config.** Wait for Unity to compile and confirm your table updated. Return to the tutorial you came from to check its generated file and continue. You only need the table used by that tutorial.
+8. **Click Update Config.** A native progress window shows the update, followed by a result dialog. Wait for any compilation and confirm your table updated; use **Open report** for details. Return to the tutorial you came from to check its generated file and continue. You only need the table used by that tutorial.
 
-The folder ID and namespace are saved in `Assets/GameContent/MyGame/Editor/ConfigSource.json`. The key's file path stays in this computer's Unity Editor preferences; the key is not copied into the project. On another computer, select a locally stored key again.
+The folder ID and namespace are saved in `Assets/GameContent/MyGame/Editor/ConfigSource.json`. The last selected game and the key's file path stay in this computer's Unity Editor preferences; the key is not copied into the project. On another computer, select a locally stored key again.
 
-<img src="images/config-update.jpg" alt="Unity 6 Config window with game selection, first-time setup and Update Config" width="480">
+For later edits, click **Update Config** immediately left of **Play** in the top toolbar. It uses the selected game and opens this dialog if setup is incomplete or the key file is missing. Return to **Framework → Config** whenever you need to change games or settings.
+
+<img src="images/config-update.jpg" alt="Unity Config dialog with Game, Namespace, Google Drive Folder ID, Service Account JSON and Update Config" width="480">
 
 The setup fields are shown here with Demo selected. Select **MyGame** for the steps above.
 

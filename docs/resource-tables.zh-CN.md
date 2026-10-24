@@ -16,7 +16,7 @@
 | string | string | string | string | string |
 | Cue | Button sound | AudioClip | Main | Assets/GameContent/MyGame/Content/Audio/cue.wav |
 
-3. 第一次连接时，用上面的表按[配置接入](config-setup.zh-CN.md)完成设置。如果已经连接，在 **Framework → Config** 中选择 **MyGame**，点击 **Update Config**，等待编译完成。
+3. 第一次连接时，用上面的表按[配置接入](config-setup.zh-CN.md)完成设置。如果已经连接，点击 Play 左侧的 **Update Config**，等待更新结果和编译完成。需要切换游戏时，先在 **Framework → Config** 中选择 **MyGame**。
 
 **成功标志：** 已生成 `MyGame/Scripts/Generated/MainResources.g.cs`，其中包含 `Id = "MyGame.Main"` 和 `AudioClip Cue` 属性。工具还会生成 ResourceTable、ResourceConfig 和本地 JSON。`Name` 只用于说明，不会生成字段。
 

@@ -31,7 +31,7 @@ namespace FrameworkConfig.Editor
         private static bool _updating;
 
         public static async Task<ConfigUpdateResult> UpdateAsync(string sourcePath, string credentialPath,
-            CancellationToken cancellation)
+            CancellationToken cancellation, Action<string, float> progress = null)
         {
             var result = new ConfigUpdateResult();
             bool ownsUpdate = false;
@@ -46,6 +46,7 @@ namespace FrameworkConfig.Editor
                 _updating = true;
                 ownsUpdate = true;
                 RequireIdleEditor();
+                ReportProgress("Checking config settings...", 0.02f);
 
                 string root = ConfigFiles.GameRoot(sourcePath);
                 byte[] sourceBefore = File.ReadAllBytes(sourcePath);
@@ -81,7 +82,7 @@ namespace FrameworkConfig.Editor
                 }
 
                 using var client = new GoogleSheetsClient(credentialPath);
-                var read = await client.ReadFolderAsync(source.FolderId, cached, cancellation);
+                var read = await client.ReadFolderAsync(source.FolderId, cached, cancellation, ReportProgress);
                 cancellation.ThrowIfCancellationRequested();
                 RequireIdleEditor();
 
@@ -91,6 +92,7 @@ namespace FrameworkConfig.Editor
                         + "No downloaded changes were applied. Update config again.");
                 }
 
+                ReportProgress("Validating and applying config...", 0.85f);
                 result = ApplySnapshots(root, source, read.Sheets, read.FailedWorkbookIds, read.Errors);
 
                 if (!result.Failed)
@@ -132,8 +134,22 @@ namespace FrameworkConfig.Editor
                 }
             }
 
+            ReportProgress("Saving update report...", 0.95f);
             SaveReport(result);
+            ReportProgress("Config update finished.", 1f);
             return result;
+
+            void ReportProgress(string message, float value)
+            {
+                try
+                {
+                    progress?.Invoke(message, value);
+                }
+                catch (Exception exception)
+                {
+                    Debug.LogWarning("Config progress could not be displayed: " + exception.Message);
+                }
+            }
         }
 
         private static bool SameFileBytes(string path, byte[] expected)

@@ -11,8 +11,12 @@
 ## 01 日常操作
 
 1. 编辑配置文件夹中的 Google Sheets 工作表。
-2. 在 Unity 打开 **Framework → Config**，选择自己的游戏，点击 **Update Config**，等待编译完成。
-3. 按下面的说明查看结果。如果报告中有错误，修正 Sheets 或 Unity 中对应的问题，再点击 **Update Config**。
+2. 在 Unity 顶部工具栏，点击紧挨着 **Play** 左侧的 **Update Config**。
+3. 等待进度窗口关闭，再查看更新结果。有错误时，修正 Sheets 或 Unity 中对应的问题，再更新一次。
+
+工具栏会记住这台电脑上当前工程最后选择的游戏。还没选游戏、Google 设置不完整或密钥文件丢失时，会先打开 Config 设置窗口。需要切换游戏或修改设置时，打开 **Framework → Config**。
+
+<img src="images/config-toolbar.jpg" alt="Unity 顶部工具栏，Update Config 按钮紧挨着 Play 左侧" width="900">
 
 每次更新都会读取 Google Sheets 中当前的表格内容，只写入内容有变化的生成文件。
 
@@ -22,14 +26,22 @@
 
 ### 1.1 查看结果
 
+下载、检查和写入表格时，会显示 Unity 原生进度窗口。开始写入前可以点击 **Cancel**，取消后不会应用本次表格改动。
+
+进度窗口关闭后，会弹出结果窗口，说明本次是**更新成功**、**部分更新**还是**失败**。点击 **Open report** 查看详细报告。如果生成 C# 代码触发编译，结果会在编译完成后显示，不用为了查看结果再更新一次。
+
 通过检查的表会更新，出错的表会保留上次成功的版本。按报告修正错误后，再更新一次。
 
 <details>
-<summary>查看成功与部分更新示例</summary>
+<summary>查看进度与更新结果示例</summary>
+
+进度窗口会显示当前正在进行的步骤：
+
+<img src="images/config-progress.jpg" alt="Unity 原生 Update Config 进度窗口" width="600">
 
 以下截图使用 Demo 表。**更新成功：** 所有表通过校验，当前版本已生效。
 
-<img src="images/config-success.jpg" alt="Unity Config 窗口显示 Demo 表更新成功" width="600">
+<img src="images/config-success.jpg" alt="Unity Config 结果窗口显示 Demo 表更新成功" width="600">
 
 **部分更新：** 通过检查的表已更新，出错的表保留上次成功的版本。查看对应的错误说明，修正后再更新。
 
@@ -54,7 +66,7 @@
 | string | string | int |
 | Potion | Small potion | 20 |
 
-在 Unity 打开 **Framework → Config**，选择 **MyGame**，点击 **Update Config**，等待编译完成。如果你刚在首次设置的最后一步更新过，就不用重复操作。
+在 Unity 点击 Play 左侧的 **Update Config**，等待更新结果和编译完成。如果之前选的是其他游戏，先在 **Framework → Config** 中切换到 **MyGame**。如果刚在首次设置的最后一步更新过，就不用重复操作。
 
 **成功标志：** 已生成 `Assets/GameContent/MyGame/Scripts/Generated/ItemTable.g.cs`，结果报告中也列出了 Item 表。接着按下面的示例加载和读取数据。
 

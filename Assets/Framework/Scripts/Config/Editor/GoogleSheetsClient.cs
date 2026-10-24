@@ -145,7 +145,7 @@ namespace FrameworkConfig.Editor
         }
 
         public async Task<SourceReadResult> ReadFolderAsync(string folderId,
-            IReadOnlyList<SheetSnapshot> cachedSnapshots, CancellationToken ct)
+            IReadOnlyList<SheetSnapshot> cachedSnapshots, CancellationToken ct, Action<string, float> progress = null)
         {
             if (_disposed)
             {
@@ -162,10 +162,11 @@ namespace FrameworkConfig.Editor
 
                 try
                 {
-                    return await ReadFolderOnceAsync(folderId, cachedSnapshots, ct);
+                    return await ReadFolderOnceAsync(folderId, cachedSnapshots, ct, progress);
                 }
                 catch (SourceChangedException) when (attempt == 0)
                 {
+                    progress?.Invoke("Google Sheets changed. Reading the source again...", 0.1f);
                     await Task.Delay(500, ct);
                 }
             }
@@ -174,16 +175,20 @@ namespace FrameworkConfig.Editor
         }
 
         private async Task<SourceReadResult> ReadFolderOnceAsync(string folderId,
-            IReadOnlyList<SheetSnapshot> cachedSnapshots, CancellationToken ct)
+            IReadOnlyList<SheetSnapshot> cachedSnapshots, CancellationToken ct, Action<string, float> progress)
         {
+            progress?.Invoke("Listing Google Sheets...", 0.1f);
             var initial = await ListFolderAsync(folderId, ct);
             await VerifyRemovedWorkbooksAsync(folderId, initial, cachedSnapshots, ct);
             var result = new SourceReadResult();
             var observed = new Dictionary<string, FileMetadata>(initial, StringComparer.Ordinal);
+            int completedWorkbooks = 0;
 
             foreach (var workbook in initial.Values.OrderBy(file => file.Id, StringComparer.Ordinal))
             {
                 ct.ThrowIfCancellationRequested();
+                progress?.Invoke($"Reading Google Sheets ({completedWorkbooks + 1}/{initial.Count})...",
+                    0.15f + 0.55f * completedWorkbooks / initial.Count);
 
                 try
                 {
@@ -205,8 +210,13 @@ namespace FrameworkConfig.Editor
                     result.FailedWorkbookIds.Add(workbook.Id);
                     result.Errors.Add($"Workbook '{workbook.Name}': {exception.Message}");
                 }
+
+                completedWorkbooks++;
+                progress?.Invoke($"Processed Google Sheets ({completedWorkbooks}/{initial.Count}).",
+                    0.15f + 0.55f * completedWorkbooks / initial.Count);
             }
 
+            progress?.Invoke("Verifying Google Sheets...", 0.75f);
             var final = await ListFolderAsync(folderId, ct);
 
             if (observed.Count != final.Count || observed.Any(pair => !final.TryGetValue(pair.Key, out var file)

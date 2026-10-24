@@ -16,7 +16,7 @@
 | string | string | string |
 | Shop | Shop window | Assets/GameContent/MyGame/Content/Prefabs/UI/ShopView.prefab |
 
-3. For your first connection, follow [Config setup](config-setup.md) using the table above. If already connected, open **Framework → Config**, select **MyGame**, click **Update Config** and wait for compilation.
+3. For your first connection, follow [Config setup](config-setup.md) using the table above. If already connected, click **Update Config** beside Play and wait for the result and compilation. To switch games first, choose **MyGame** in **Framework → Config**.
 
 **Success:** `MyGame/Scripts/Generated/UIName.g.cs` contains `Shop = "Shop"`. The tool also generates UITable, UIConfig and local JSON data. `Name` is a description for people; it is not a generated field.
 

@@ -17,7 +17,7 @@
 | 旧 VR 模块 | 从 manifest 移除 `com.unity.modules.vr` |
 | 渲染／输入 | 保留 Built-in Render Pipeline／旧 Input Manager |
 
-升级 Editor 不要求同时改用 URP 或新输入系统。框架 v0.3.1 还调整了配置和场景 ID API；如果也要升级到这个框架版本，请按[用法索引与迁移](../Build-in%20Managers%20Usage.zh-CN.md)中的说明调整。
+升级 Editor 不要求同时改用 URP 或新输入系统。从 v0.2.0 改用 Google Sheets 配置时，配置和场景 ID API 也需要调整，具体见[用法索引与迁移](../Build-in%20Managers%20Usage.zh-CN.md)。从 v0.3.x 升级到 v0.4.0 则只改变编辑器入口、进度与结果窗口，不需要迁移配置数据或修改运行时 API。
 
 <a id="在独立副本中迁移"></a>
 
@@ -26,7 +26,7 @@
 1. 提交或备份能正常运行的工程，包括 Assets、Packages、ProjectSettings 和 meta 文件。保留一个仍能用原 Editor 打开的分支或副本，不要直接用新版打开唯一的工作副本。
 2. 通过 **Unity Hub → Unity 6.6（6000.6.5f1）** 打开迁移副本，等待包解析、资产导入和编译完成。迁移后的 manifest 和 lock 文件要一起保留。如果沿用了旧的 Library 缓存，这次成功导入还不能证明从头导入也能通过。
 3. 先核对上面的包变更，并查看 Console 中的第一条错误，再决定是否需要修改游戏代码。迁移这份工程时，不要顺带打开、升级或替换其他游戏仓库中的框架。
-4. 使用与你选择的框架版本对应的配置流程。v0.3.1 需要先完成[配置迁移](../Build-in%20Managers%20Usage.zh-CN.md#01-从-v020-迁移到-google-sheets)，再执行 **Framework → Config → Update Config**。生成的快照、清单、C#、JSON 和 meta 文件要一起维护。
+4. 使用与你选择的框架版本对应的配置流程。从 v0.2.0 升级时，先完成[配置迁移](../Build-in%20Managers%20Usage.zh-CN.md#01-从-v020-迁移到-google-sheets)。v0.4.0 中，通过 **Framework → Config** 完成设置，日常更新点击 Play 左侧的 **Update Config**。生成的快照、清单、C#、JSON 和 meta 文件要一起维护。
 5. 打开 **File → Build Profiles**，在 **Platforms** 中选择目标平台，需要切换时点击 **Switch Platform**，并核对左侧共享的 **Scene List**。通过 **Build → New Build → Default Build Script** 重新构建 Addressables，再回到目标平台构建新的 Player。旧资源包或旧 Player 能运行，并不代表新的 Editor 和包版本组合也已通过验证。
 
 在 Unity 6 中，为第一个窗口创建脚本时，使用 **Create → Scripting → MonoBehaviour Script**。构建流程也从原来的 Build Settings 改为 Build Profiles；[开始使用](quick-start.zh-CN.md)和[构建](build.zh-CN.md)教程都已使用当前菜单名称。

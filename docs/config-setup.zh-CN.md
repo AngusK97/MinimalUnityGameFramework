@@ -30,13 +30,15 @@
 
 6. **创建第一张表。** 在共享 Drive 文件夹内选择 **New → Google Sheets → Blank spreadsheet**。使用你正在跟着做的教程中的表，例如[快速开始中的 UI 示例](quick-start.zh-CN.md#23-连接并更新-ui-配置表)、普通数据的 [Item 示例](config.zh-CN.md#03-添加一张表)，或资源／场景教程中的 Resource／Scene 表。把第一个工作表标签改成对应的表名，从 A1 开始填入示例内容。工作簿叫什么都可以，框架会把标签名作为表名。工作簿要直接放在这个文件夹中，不要放进子文件夹，也不要使用快捷方式。
 
-7. **连接 Unity。** 如果 `Assets/GameContent/MyGame/` 还不存在，先创建这个文件夹。打开 **Framework → Config**，在 **Game** 选择此文件夹，填写 **Namespace = MyGame**，把文件夹 ID 填入 **Google Drive Folder ID**。例如网址为 `https://drive.google.com/drive/folders/FOLDER_ID` 时，只复制 `FOLDER_ID`。在 **Service Account JSON** 选择下载的密钥文件。
+7. **连接 Unity。** 如果 `Assets/GameContent/MyGame/` 还不存在，先创建这个文件夹。打开 **Framework → Config**，所有设置项都会直接显示，不需要展开。在 **Game** 选择此文件夹，填写 **Namespace = MyGame**，把文件夹 ID 填入 **Google Drive Folder ID**。例如网址为 `https://drive.google.com/drive/folders/FOLDER_ID` 时，只复制 `FOLDER_ID`。在 **Service Account JSON** 选择下载的密钥文件。
 
-8. **点击 Update Config。** 等待 Unity 编译完成，确认表格更新成功。然后回到刚才的教程，检查生成文件，再继续后面的步骤。只创建当前教程用到的表就可以。
+8. **点击 Update Config。** 更新时会显示原生进度窗口，完成后弹出结果。如果 Unity 开始编译，等编译结束再继续；需要详细说明时，点击 **Open report**。确认表格更新成功后，回到刚才的教程检查生成文件，再继续后面的步骤。只创建当前教程用到的表就可以。
 
-文件夹 ID 和命名空间保存在 `Assets/GameContent/MyGame/Editor/ConfigSource.json`。密钥文件路径只保存在这台电脑的 Unity Editor 偏好设置中，密钥不会复制进工程。换电脑后重新选择本机保存的密钥即可。
+文件夹 ID 和命名空间保存在 `Assets/GameContent/MyGame/Editor/ConfigSource.json`。最后选择的游戏和密钥文件路径只保存在这台电脑的 Unity Editor 偏好设置中，密钥不会复制进工程。换电脑后重新选择本机保存的密钥即可。
 
-<img src="images/config-update.jpg" alt="Unity 6 Config 窗口显示游戏选择、首次设置与 Update Config 按钮" width="480">
+以后改表，直接点击顶部工具栏中紧挨着 **Play** 左侧的 **Update Config**。它会更新已选游戏；设置不完整或密钥文件丢失时，会先打开这个设置窗口。需要换游戏或修改设置时，仍从 **Framework → Config** 进入。
+
+<img src="images/config-update.jpg" alt="Unity Config 设置窗口直接显示 Game、Namespace、Google Drive Folder ID、Service Account JSON 和 Update Config" width="480">
 
 截图选中的是 Demo，用来展示设置项的位置。跟着上面的步骤操作时，请选择 **MyGame**。
 

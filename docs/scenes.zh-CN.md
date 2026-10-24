@@ -16,7 +16,7 @@
 | string | string | string |
 | Level01 | First level | Assets/GameContent/MyGame/Content/Scenes/Level01.unity |
 
-3. 第一次连接时，按[配置接入](config-setup.zh-CN.md)的步骤，用这张 Scene 表完成设置。已经连接过的话，点击 **Framework → Config → Update Config**，等待编译完成。在启动代码中，等 Core 就绪后调用一次 `MyGame.GameConfig.LoadAndRegister()`，将 `SceneName.Level01 = "Level01"` 与实际的 Addressables 地址关联起来。
+3. 第一次连接时，按[配置接入](config-setup.zh-CN.md)的步骤，用这张 Scene 表完成设置。已经连接过的话，点击 Play 左侧的 **Update Config**，等待更新结果和编译完成。需要切换游戏时，先在 **Framework → Config** 中选择 **MyGame**。在启动代码中，等 Core 就绪后调用一次 `MyGame.GameConfig.LoadAndRegister()`，将 `SceneName.Level01 = "Level01"` 与实际的 Addressables 地址关联起来。
 
 启动完成后，在菜单按钮的点击处理方法中调用下面的代码，不要放进 Update（需要 `using Core; using UnityEngine;`）：
 
