@@ -1,0 +1,5 @@
+"Id","Name","PrefabPath"
+"string","string","string"
+"Menu","Main menu","Assets/GameContent/Demo/Content/Prefabs/UI/MenuView.prefab"
+"Level","Level HUD","Assets/GameContent/Demo/Content/Prefabs/UI/LevelView.prefab"
+"Settings","Volume settings","Assets/GameContent/Demo/Content/Prefabs/UI/SettingsView.prefab"

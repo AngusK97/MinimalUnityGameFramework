@@ -1,64 +1,41 @@
 # UI tables
 
-[Overview](../README.md) · [Quick start](quick-start.md) · [简体中文](ui-tables.zh-CN.md)
+[Overview](../README.md) · [Config setup](config.md) · [简体中文](ui-tables.zh-CN.md)
 
-**Edit UI.asset → Generate → Use the constant.** Making your first window? Follow [Quick start](quick-start.md).
+**Edit the UI tab → Update Config → Use UIName.** Making your first window? Follow [Quick start](quick-start.md). Connect Google Sheets once with [Config setup](config.md#first-time-setup).
 
-## Create a table
+## Add a window
 
-1. In your game's `Editor/Tables/`, choose **Create → Framework → UI Table**. Keep the name **UI**.
-2. Select UI.asset, expand **Entries**, click **+** and fill in:
+1. Save a UI prefab under your game's `Content/Prefabs/UI/`. Its RectTransform root must have exactly one UIBase-derived component. Select the saved prefab in **Project** and check **Addressable** in its Inspector.
+2. Open the **UI** tab in your configuration folder; create it only if none exists. For a new tab, enter the example below from A1. For an existing tab, keep its first two rows and append the **Shop** data row:
 
-| Field | Example |
-| --- | --- |
-| Namespace | `MyGame` |
-| Class Name | `GameUI` |
-| Id Prefix | `MyGame` |
-| Entries → Name | `Menu` |
-| Entries → Prefab | MyMenuView.prefab from Project; one UIBase-derived component on its root |
+| Id | Name | PrefabPath |
+| --- | --- | --- |
+| string | string | string |
+| Shop | Shop window | Assets/GameContent/MyGame/Content/Prefabs/UI/ShopView.prefab |
 
-3. Click **Validate and Generate** and wait for compilation.
+3. In Unity, open **Framework → Config**, select **MyGame**, click **Update Config** and wait for compilation.
 
-**Success:** `MyGame/Scripts/Generated/GameUI.g.cs` exists and the status reads **Generated code is up to date.**
-
-![MyGame UI table Inspector with the Menu prefab reference and up-to-date generated code](images/ui-table-inspector.png)
-
-Name is the code label, without spaces; the player-facing title stays in the prefab. Use a saved prefab, not a scene object.
+**Success:** `MyGame/Scripts/Generated/UIName.g.cs` contains `Shop = "Shop"`. The tool also generates UITable, UIConfig and local JSON data. `Name` is a description for people; it is not a generated field.
 
 ## Use it
 
-After Core is ready, register **once per Core lifetime**, then open a window:
+In game startup, load config once after Core is ready. Then open windows by ID (`using Core; using UI;`):
 
 ```csharp
-// In game startup, after GameCore.IsReady:
-MyGame.GameUI.RegisterAll();
-GameCore.UI.OpenUI(UILayer.First, MyGame.GameUI.Menu);
+MyGame.GameConfig.LoadAndRegister();
+GameCore.UI.OpenUI(UILayer.First, MyGame.UIName.Shop);
 ```
 
-Add `using Core; using UI;`. Generate before writing code that references GameUI. The example's runtime ID is `MyGame.Menu`.
+The ID is `Shop`; the generated registration resolves its Addressables address. The game namespace keeps C# types separate, but does not prefix UI IDs at runtime.
 
 ## Change a window
 
-- **Add:** add Name and Prefab, generate, then use `GameUI.NewName`.
-- **Move:** keep the prefab's meta and regenerate. Keep Name/Id Prefix to preserve the UI ID.
-- **Delete:** remove the row, generate, then fix references to the removed constant.
-- **Commit:** include UI.asset, generated C# and their meta files. Do not edit generated code.
+- **Add:** add a row, update config, then use `UIName.NewId`.
+- **Replace or move:** update PrefabPath and import again. Keeping Id preserves callers.
+- **Delete or rename Id:** update config, then fix callers and any saved IDs.
+- **Commit:** include generated CSV, manifest, C#, JSON and meta files together. Edit Google Sheets, not generated files.
 
-Prefabs under `Assets/GameContent/` inherit its Addressables folder entry. Regenerate after an address change.
+A missing prefab is an import warning: you can prepare its ID early, but opening it fails until the asset exists and you update config again. A wrong type, invalid UIBase root or unusable Addressables entry is an error. **Player builds reject missing UI prefabs**; finish or remove placeholders before building.
 
-<details>
-<summary>Folders, validation and recovery</summary>
-
-Tables must be at `<game root>/Editor/Tables/UI.asset`; output goes to `<game root>/Scripts/Generated/<ClassName>.g.cs`. Shared assets use separate [resource module tables](resource-tables.md) under Tables/ResourceModules. The generator records the prefab's actual Addressables address.
-
-Use ASCII C# identifiers for names; Namespace may be empty, and Namespace/Id Prefix may be dot-separated. The tool rejects keywords, RegisterAll, class/member conflicts, duplicate names/prefabs, cross-table class/full-ID collisions and unavailable/non-unique addresses. Prefabs need exactly one UIBase-derived component on the saved root; scene objects and child components are invalid. The Addressables group must enable Include in Build and Include Addresses in Catalog.
-
-**Rename Class Name:** generate the new class, update callers, then delete the old output/meta. **Move the game root:** move the table and existing output/meta to the required locations together, then generate. Old files are not deleted automatically; handwritten type names are not parsed. Name/Id Prefix changes alter runtime IDs; migrate any stored IDs. Namespace changes require caller updates.
-
-Validation failure preserves old output. Handwritten files, another table's output and edited generated bodies are not overwritten; restore or move aside edited output first. Identical content is not rewritten; CRLF/BOM checkouts are supported.
-
-Tables/tools are Editor-only; Player uses generated code. Generation is disabled during Play/compilation; Play uses the last generated version. Player prebuild checks reject missing/stale/edited output. Zero tables is valid.
-
-</details>
-
-Next: [Window lifecycle](ui.md) · [Build](build.md)
+For partial updates, output ownership and recovery, see [Config tables](config.md). For window behavior, see [UI](ui.md).

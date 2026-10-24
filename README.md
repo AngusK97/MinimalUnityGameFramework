@@ -2,11 +2,11 @@
 
 English · [简体中文](README.zh-CN.md)
 
-**Version:** [v0.2.0](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.2.0) · **Unity:** 6.6 (6000.6.5f1, not LTS)
+**Version:** main preview (Google Sheets config) · **Unity:** 6.6 (6000.6.5f1, not LTS)
 
-[Download v0.2.0 (ZIP)](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.2.0.zip) · [Quick start](docs/quick-start.md)
+[Download main preview (ZIP)](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/heads/main.zip) · [Quick start](docs/quick-start.md)
 
-Use the guides included in the download, or read the [v0.2.0 guides online](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md). Code and guides come from the same snapshot.
+These guides follow `main`. Prefer a fixed release? [v0.2.0](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.2.0) uses the earlier Inspector/SO workflow; follow its [own guides](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md). Keep downloaded code and guides together.
 
 Hello there ~ I'm Angus, a game developer. This is a small Unity framework for UI, events, resources, scenes and audio. Try the Demo, then use the same tools to make your own game.
 
@@ -34,7 +34,7 @@ flowchart TB
     Core --> Audio["Sound"]
 ```
 
-**Prepare services → Register content → Open the first screen → Run the game.**
+**Prepare services → Load config and register content → Open the first screen → Run the game.**
 
 UI loads windows through Resource. Scene coordinates loading, fades and UI cleanup. Startup and lifecycle details are in [Core](docs/core.md).
 
@@ -44,16 +44,17 @@ UI loads windows through Resource. Scene coordinates loading, fades and UI clean
 | --- | --- | --- |
 | Set up shared services | [Core](docs/core.md) | `GameCore.IsReady` |
 | Open or close a window | [UI](docs/ui.md) | `GameCore.UI` |
-| Define windows in the Inspector | [UI tables](docs/ui-tables.md) | `UI.asset` → `GameUI.RegisterAll()` |
+| Connect and update Google Sheets | [Config tables](docs/config.md) | **Update Config** → `GameConfig.LoadAndRegister()` |
+| Define windows | [UI tables](docs/ui-tables.md) | `UI` tab → `UIName.Shop` |
 | Send a notification | [Events](docs/events.md) | `GameCore.Event` |
 | Load and release assets | [Resources](docs/resources.md) | `GameCore.Resource` |
-| Define shared assets in the Inspector | [Resource tables](docs/resource-tables.md) | `Main.asset` → `MainResources` |
-| Change scenes | [Scenes](docs/scenes.md) | `GameCore.Scene` |
+| Define shared assets | [Resource tables](docs/resource-tables.md) | `Resource` tab → `MainResources` |
+| Define and change scenes | [Scenes](docs/scenes.md) | `Scene` tab → `SceneName.Menu` |
 | Play a sound | [Audio](docs/audio.md) | `GameCore.Sound` |
 
 ## Where things belong
 
-This is the **v0.2.0** layout. Upgrading from v0.1.0? See [directory migration](Build-in%20Managers%20Usage.md).
+Shared code stays in Framework; each game owns its source settings and generated configuration. Existing projects can follow [migration notes](Build-in%20Managers%20Usage.md).
 
 ```text
 Assets/
@@ -63,12 +64,14 @@ Assets/
 │   └── Scenes/        Services-only InitScene
 └── GameContent/
     ├── Demo/          Complete, removable teaching game
-    └── MyGame/        Your scenes, content, scripts and Editor/Tables
+    └── MyGame/        Your scenes, content, source settings and generated data
 ```
 
-Start reading the Demo at [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs), [UI.asset](Assets/GameContent/Demo/Editor/Tables/UI.asset) or [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs). Once your own game runs, you can [delete the whole Demo](docs/quick-start.md#remove-the-demo).
+Start reading the Demo at [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs), [UI.csv](Assets/GameContent/Demo/Editor/Tables/Generated/UI.csv) or [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs). CSV files are generated snapshots; edit Google Sheets to change configuration. Once your own game runs, you can [delete the whole Demo](docs/quick-start.md#remove-the-demo).
 
 ## Try it
+
+The Demo includes local generated data. No Google account or credentials are needed to play.
 
 1. Open the repository root in Unity Hub with the Editor version above. Wait for import and compilation.
 2. Open `Assets/GameContent/Demo/Scenes/DemoStart.unity` and press Play.
@@ -84,9 +87,9 @@ Start reading the Demo at [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame
 
 Addressables **2.11.2** · uGUI **2.6.0** · Built-in rendering · old Input Manager.
 
-The download and guides above match **v0.2.0**. `main` continues to evolve, and `0.x` APIs may change. Existing games can keep their pinned version and its bundled guides. See [Editor upgrades](docs/upgrading.md), [older API migration](Build-in%20Managers%20Usage.md) and [what has been verified](docs/build.md#verification-scope).
+The download and guides above follow the **main preview**, whose Google Sheets workflow is not part of v0.2.0. `0.x` APIs may change. Existing games can keep their pinned version and its bundled guides. See [Editor upgrades](docs/upgrading.md), [older API migration](Build-in%20Managers%20Usage.md) and [what has been verified](docs/build.md#verification-scope).
 
-Saves, full-game pause, platform input and release validation are left to your game's needs.
+Gameplay parameters can stay in the Inspector or game-owned ScriptableObjects. Text/localization and sound-playback tables are deferred; AudioClip resource registration is included. Saves, full-game pause, platform input and release validation are left to your game's needs.
 
 ---
 

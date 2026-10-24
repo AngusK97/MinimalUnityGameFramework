@@ -6,9 +6,9 @@
 
 ## 试试看
 
-先创建并生成 [Main.asset](resource-tables.zh-CN.md)，设置 `MyGame.MainResources`、ID `MyGame.Main` 和音效条目 `Cue`，等待编译完成。
+先在 Google Sheets 的[资源表](resource-tables.zh-CN.md)添加 Cue 行，填写 **Type = AudioClip**、**Module = Main**，点击 **Update Config**。工具会生成 `MyGame.MainResources`，ID 为 `MyGame.Main`；等待编译完成。
 
-在 `Assets/GameContent/MyGame/Scripts/` 创建 **MyResourceStartup.cs**，挂到入口场景中的一个空对象上；同一场景还需放置共用 GameCore 预制体：
+在 `Assets/GameContent/MyGame/Scripts/` 创建 **MyResourceStartup.cs**，将它作为启动入口挂到一个空对象上，同一场景还需放置共用 GameCore 预制体。如果 MyGameEntry 已加载配置，将本例合并进原入口，确保 `GameConfig.LoadAndRegister()` 只执行一次：
 
 ```csharp
 using Core;
@@ -28,6 +28,8 @@ namespace MyGame
                 Debug.LogError("Add the shared GameCore prefab to the entry scene.");
                 return;
             }
+
+            GameConfig.LoadAndRegister();
 
             main = new MainResources();
             GameCore.Resource.RegisterResourceModule(main);
@@ -71,7 +73,7 @@ var main = GameCore.Resource.GetResourceModule<MyGame.MainResources>(MyGame.Main
 ## 使用约定
 
 - 模块 ID 由游戏定义并保持稳定；生成的内部资源编号不能作为存档/网络标识。
-- 配置表与生成代码一起维护，见[资源配置表](resource-tables.zh-CN.md)；手写 BaseResourceModule 派生类仍可使用。
+- 生成快照、清单、代码和 JSON 一起提交，见[资源配置表](resource-tables.zh-CN.md)；手写 BaseResourceModule 派生类仍可使用。
 - 只在加载成功回调中或之后借用资产；失败用 `failedCallback` 处理。
 - 共用模块仅由所有者卸载，先停相关音频、销毁依赖实例，不要卸载正在播放的 clip。
 - 使用实际 Addressables Key；修改资源或目标平台后，重新构建对应内容。

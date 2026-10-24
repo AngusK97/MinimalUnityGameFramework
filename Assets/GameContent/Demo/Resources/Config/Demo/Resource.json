@@ -1,0 +1,13 @@
+{
+  "_generatedBy": "Framework Config",
+  "Schema": 1,
+  "Rows": [
+    {
+      "Id": "Cue",
+      "Type": "AudioClip",
+      "Module": "Main",
+      "AssetPath": "Assets/GameContent/Demo/Content/Audio/cue.wav",
+      "Address": "Assets/GameContent/Demo/Content/Audio/cue.wav"
+    }
+  ]
+}

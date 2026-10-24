@@ -56,7 +56,7 @@ namespace Demo
 
             try
             {
-                GameCore.UI.OpenUI(UILayer.First, DemoUI.Level, this, result =>
+                GameCore.UI.OpenUI(UILayer.First, UIName.Level, this, result =>
                 {
                     view = result;
                     finished = true;
@@ -78,7 +78,7 @@ namespace Demo
             {
                 if (!finished && GameCore.UI != null)
                 {
-                    GameCore.UI.CloseUI(DemoUI.Level);
+                    GameCore.UI.CloseUI(UIName.Level);
                 }
             }
         }
@@ -95,7 +95,7 @@ namespace Demo
                 return;
             }
 
-            if (HasWon || GameCore.UI.IsOpen(DemoUI.Settings))
+            if (HasWon || GameCore.UI.IsOpen(UIName.Settings))
             {
                 return;
             }

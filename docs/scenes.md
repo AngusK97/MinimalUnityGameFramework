@@ -6,13 +6,21 @@ Load a level behind an overlay, close the old UI and wait for your scene prepara
 
 ## Try it
 
-Save **Level01.unity** in `Assets/GameContent/MyGame/Content/Scenes/` with a camera and visible object. Remove the camera's extra AudioListener; Core has one. Confirm the Addressables address and build content for the Player's target.
+1. Save **Level01.unity** in `Assets/GameContent/MyGame/Content/Scenes/` with a camera and visible object. Remove the camera's extra AudioListener; Core has one. Select the saved **Level01.unity asset in Project** and check **Addressable** in its Inspector.
+2. After [connecting Google Sheets](config.md#first-time-setup), add a **Scene** tab with these rows from A1:
 
-Add this to a menu button handler after Core is ready, not Update (`using Core; using UnityEngine;`):
+| Id | Name | ScenePath |
+| --- | --- | --- |
+| string | string | string |
+| Level01 | First level | Assets/GameContent/MyGame/Content/Scenes/Level01.unity |
+
+3. Click **Framework → Config → Update Config** and wait for compilation. In startup, after Core is ready, call `MyGame.GameConfig.LoadAndRegister()` once. This registers `SceneName.Level01 = "Level01"` to its Addressables address.
+
+Add this to a menu button handler after startup, not Update (`using Core; using UnityEngine;`):
 
 ```csharp
-bool accepted = GameCore.Scene.TryTransition(
-    "Assets/GameContent/MyGame/Content/Scenes/Level01.unity",
+GameCore.Scene.TryTransition(
+    MyGame.SceneName.Level01,
     completed: (succeeded, error) =>
     {
         if (!succeeded)
@@ -20,19 +28,14 @@ bool accepted = GameCore.Scene.TryTransition(
             Debug.LogWarning(error);
         }
     });
-
-if (!accepted)
-{
-    Debug.LogWarning("Transition was not accepted. Check the current transition and setup.");
-}
 ```
 
-**Expected result:** one click shows the overlay, closes the old window and displays the target scene. Single loading replaces the old scene; Core persists. A load failure preserves old UI and shows Retry; check Console and the panel's error.
+**Expected result:** one click shows the overlay, closes the old window and displays the target scene. Single loading replaces the old scene; Core persists. Build Addressables for the Player target before testing outside the Editor. A load failure preserves old UI and shows Retry; check Console and the panel's error.
 
 ## Conventions
 
-- True means accepted; success comes through the completion callback. Busy/invalid requests return false without queuing or calling completion.
-- Old UI closes only after a successful load. After failure, inspect `LastError`, then use the Retry panel or `RetryTransition()`.
+- `TryTransition` and `TryTransitionAddress` return true when accepted. Busy or invalid requests return false without queuing and call `completed(false, error)` once immediately. The callback above therefore handles both rejection and later failure.
+- Old UI closes only after a successful load. If an accepted transition fails, inspect `LastError`, then use the Retry panel or `RetryTransition()`. A rejected request does not create a retry operation.
 - Keep transition controllers persistent or use static methods; Single unloads old-scene callback targets.
 - Check `IsTransitioning` in gameplay input. The overlay blocks UGUI raycasts, not keyboard/controller code.
 
@@ -52,9 +55,11 @@ At timeScale=0, use realtime waits or callback polling. Framework fades use unsc
 <details>
 <summary>When needed: completion, lifetime and low-level APIs</summary>
 
-Completion runs after the overlay hides and busy clears, so it can submit another transition. Notification exceptions are logged without changing the result. Direct callbacks on destroyed Unity objects are skipped.
+For an accepted transition, completion runs after the overlay hides and busy clears, so it can submit another transition. Rejection calls completion synchronously and leaves any current transition running. Notification exceptions are logged without changing the result. Direct callbacks on destroyed Unity objects are skipped.
 
 The framework does not reset gameplay pause, unload all modules, stop all audio, cancel loading midway or roll back scenes. Disabling/destroying the manager settles once; late failures release handles and late successes leave the new active scene loaded.
+
+`TryTransition(string)` resolves a registered scene ID. Unknown IDs return false; it does not guess an Addressables address. For an intentional raw key, use `TryTransitionAddress(key, ...)`. Older calls that passed a string address must move to that method.
 
 `LoadSceneAsync` / `UnloadSceneAsync` bypass this flow for coordinated Additive loading, manual activation and handle ownership. Callers release failed loads and unload successful scenes. Do not mix both paths for one operation.
 

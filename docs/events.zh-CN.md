@@ -60,12 +60,12 @@ namespace MyGame
 
 ### 3. 打开窗口并发送
 
-1. 新建独立的 UI Prefab，保存到 `MyGame/Content/Prefabs/UI/WinNotice.prefab`。在它的 RectTransform 根上挂载 WinNotice，根上只保留这一个 UIBase 派生组件。
-2. 在 `MyGame/Editor/Tables/UI.asset` 中新增条目：**Name = WinNotice**，**Prefab = WinNotice.prefab**。点击 **Validate and Generate**，等待编译完成。Inspector 操作见 [UI 配置表](ui-tables.zh-CN.md)。
-3. 在 **MyGameEntry.cs** 中保留一次 `GameUI.RegisterAll()`，将它后面的原 OpenUI 调用替换为：
+1. 新建独立的 UI Prefab，保存到 `MyGame/Content/Prefabs/UI/WinNotice.prefab`。在它的 RectTransform 根上挂载 WinNotice，根上只保留这一个 UIBase 派生组件。在 **Project** 选中保存后的预制体，勾选 Inspector 中的 **Addressable**。
+2. 在 Google Sheets 的 **UI** 标签中新增一行：**Id = WinNotice**、**Name = Win notice**、**PrefabPath = Assets/GameContent/MyGame/Content/Prefabs/UI/WinNotice.prefab**。点击 **Framework → Config → Update Config**，等待编译完成。参见 [UI 配置表](ui-tables.zh-CN.md)。
+3. 在 **MyGameEntry.cs** 中保留一次 `GameConfig.LoadAndRegister()`，将它后面的原 OpenUI 调用替换为：
 
 ```csharp
-GameCore.UI.OpenUI(UILayer.Second, GameUI.WinNotice, callback: view =>
+GameCore.UI.OpenUI(UILayer.Second, UIName.WinNotice, callback: view =>
 {
     if (view == null)
     {
@@ -84,7 +84,7 @@ GameCore.UI.OpenUI(UILayer.Second, GameUI.WinNotice, callback: view =>
 GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 ```
 
-窗口打开时，每次广播输出一次。用 `GameCore.UI.CloseUI(GameUI.WinNotice)` 关闭窗口后，再广播就不输出了。RegisterEvent 登记的是监听器，不是事件名定义。
+窗口打开时，每次广播输出一次。用 `GameCore.UI.CloseUI(UIName.WinNotice)` 关闭窗口后，再广播就不输出了。RegisterEvent 登记的是监听器，不是事件名定义。
 
 ## 选择通知方式
 

@@ -1,0 +1,136 @@
+{
+  "GeneratorVersion": 1,
+  "Namespace": "Demo",
+  "FolderId": "",
+  "Tables": [
+    {
+      "Source": {
+        "WorkbookId": "",
+        "WorkbookName": "Bundled Demo template",
+        "Version": "template-v1",
+        "SheetId": 2,
+        "Name": "Resource",
+        "Rows": [
+          [
+            "Id",
+            "Name",
+            "Type",
+            "Module",
+            "AssetPath"
+          ],
+          [
+            "string",
+            "string",
+            "string",
+            "string",
+            "string"
+          ],
+          [
+            "Cue",
+            "UI click",
+            "AudioClip",
+            "Main",
+            "Assets/GameContent/Demo/Content/Audio/cue.wav"
+          ]
+        ],
+        "ReadErrors": []
+      },
+      "Hash": "d009f8352085245c418941f6012f533e3f895f95ee4ce02ba6618d79e806f4ac",
+      "RowCount": 1,
+      "Files": {
+        "Resources/Config/Demo/Resource.json": "3c0de2a60cd186462e5cfd1f039ccbe409ee2e01a69dc65f732d492afed7044f",
+        "Scripts/Generated/ResourceTable.g.cs": "3eaaf0cc0f4ba71f61f71490421ed121479404ff7225557e879aaedf712a9a95",
+        "Scripts/Generated/MainResources.g.cs": "3fe1150042a211a1ad5d68563fe5f1e5761b147d8dd41d74cc8d0e7e92eaff69",
+        "Editor/Tables/Generated/Resource.csv": "12864b110040e12e918d9caf055945b64445a2d2226a2398bc31b83a57c45475"
+      }
+    },
+    {
+      "Source": {
+        "WorkbookId": "",
+        "WorkbookName": "Bundled Demo template",
+        "Version": "template-v1",
+        "SheetId": 3,
+        "Name": "Scene",
+        "Rows": [
+          [
+            "Id",
+            "Name",
+            "ScenePath"
+          ],
+          [
+            "string",
+            "string",
+            "string"
+          ],
+          [
+            "Menu",
+            "Main menu",
+            "Assets/GameContent/Demo/Content/Scenes/MenuScene.unity"
+          ],
+          [
+            "Example",
+            "Example level",
+            "Assets/GameContent/Demo/Content/Scenes/ExampleLevel.unity"
+          ]
+        ],
+        "ReadErrors": []
+      },
+      "Hash": "1d36168d6ccd83f4426e4dce26cd13221a991c9e3765507595580ef43461116b",
+      "RowCount": 2,
+      "Files": {
+        "Resources/Config/Demo/Scene.json": "824a2a901b2d0c3978816b954e66db8f509b879c0246abe662891832ee205146",
+        "Scripts/Generated/SceneTable.g.cs": "6108c5e5b1364cea419ed2769769dbd5bfa3a2d87803f32a8ebb4015d56a9e62",
+        "Scripts/Generated/SceneName.g.cs": "033ec567e713ea173585497bdd62c2925d3e8aa270e3d5354036746aeb45f2b7",
+        "Editor/Tables/Generated/Scene.csv": "6ec09467f7c842c1751ff94ed152764c11328089a94933ae7d8f4f4272f2c1b9"
+      }
+    },
+    {
+      "Source": {
+        "WorkbookId": "",
+        "WorkbookName": "Bundled Demo template",
+        "Version": "template-v1",
+        "SheetId": 1,
+        "Name": "UI",
+        "Rows": [
+          [
+            "Id",
+            "Name",
+            "PrefabPath"
+          ],
+          [
+            "string",
+            "string",
+            "string"
+          ],
+          [
+            "Menu",
+            "Main menu",
+            "Assets/GameContent/Demo/Content/Prefabs/UI/MenuView.prefab"
+          ],
+          [
+            "Level",
+            "Level HUD",
+            "Assets/GameContent/Demo/Content/Prefabs/UI/LevelView.prefab"
+          ],
+          [
+            "Settings",
+            "Volume settings",
+            "Assets/GameContent/Demo/Content/Prefabs/UI/SettingsView.prefab"
+          ]
+        ],
+        "ReadErrors": []
+      },
+      "Hash": "b6e33f345871eb9dac34811f5332970285631909b31a3bf9e69844c3b095fcd8",
+      "RowCount": 3,
+      "Files": {
+        "Resources/Config/Demo/UI.json": "dced11f20397a59114c706c20b719813e1148fe378e334f2a9384d5efa3f17d9",
+        "Scripts/Generated/UITable.g.cs": "00bb20fead532841a27ad2adc2b15a00b28fcd89949f5592bf9a2204424cef86",
+        "Scripts/Generated/UIName.g.cs": "19cc973140b2aaafa5cc3e2984d7b3775e7e136bc52603c79d53c68eed831397",
+        "Editor/Tables/Generated/UI.csv": "9242aa5b8c6612c2b9b6b1642c12952bae71a95f6db45f680167d5f3782663e1"
+      }
+    }
+  ],
+  "SharedFiles": {
+    "Scripts/Generated/GameConfig.g.cs": "6eff395915ccf90801fd44088637ea27f660d76c4fd31fb5fe4a927118273743"
+  }
+}

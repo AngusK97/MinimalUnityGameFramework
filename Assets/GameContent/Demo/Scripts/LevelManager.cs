@@ -11,8 +11,6 @@ namespace Demo
     // This template's navigation example. Replace its content when making your game.
     public class LevelManager
     {
-        public const string ExampleSceneKey = "Assets/GameContent/Demo/Content/Scenes/ExampleLevel.unity";
-        private const string MenuSceneKey = "Assets/GameContent/Demo/Content/Scenes/MenuScene.unity";
 
         private readonly MainResources _main;
 
@@ -23,7 +21,7 @@ namespace Demo
 
         public void EnterLevel()
         {
-            GameCore.Scene.TryTransition(ExampleSceneKey, PrepareLevel);
+            GameCore.Scene.TryTransition(SceneName.Example, PrepareLevel);
         }
 
         public void RestartLevel()
@@ -33,14 +31,14 @@ namespace Demo
 
         public void ReturnToMenu()
         {
-            GameCore.Scene.TryTransition(MenuSceneKey, scene => PrepareMenu());
+            GameCore.Scene.TryTransition(SceneName.Menu, scene => PrepareMenu());
         }
 
         public void OpenSettings()
         {
             if (!GameCore.Scene.IsTransitioning)
             {
-                GameCore.UI.OpenUI(UILayer.Second, DemoUI.Settings);
+                GameCore.UI.OpenUI(UILayer.Second, UIName.Settings);
             }
         }
 
@@ -81,7 +79,7 @@ namespace Demo
 
             try
             {
-                GameCore.UI.OpenUI(UILayer.First, DemoUI.Menu, callback: result =>
+                GameCore.UI.OpenUI(UILayer.First, UIName.Menu, callback: result =>
                 {
                     view = result;
                     finished = true;
@@ -101,7 +99,7 @@ namespace Demo
             {
                 if (!finished && GameCore.UI != null)
                 {
-                    GameCore.UI.CloseUI(DemoUI.Menu);
+                    GameCore.UI.CloseUI(UIName.Menu);
                 }
             }
         }
@@ -113,9 +111,9 @@ namespace Demo
                 return;
             }
 
-            if (GameCore.UI.IsOpen(DemoUI.Settings))
+            if (GameCore.UI.IsOpen(UIName.Settings))
             {
-                GameCore.UI.CloseUI(DemoUI.Settings);
+                GameCore.UI.CloseUI(UIName.Settings);
             }
             else
             {

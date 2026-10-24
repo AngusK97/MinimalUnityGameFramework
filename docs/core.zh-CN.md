@@ -21,9 +21,11 @@ private void Start()
         return;
     }
 
-    // Register your game's content and start its first screen here.
+    // Load config, register content and start your first screen here.
 }
 ```
+
+使用生成表时，先[生成配置](config.zh-CN.md)，再在此处调用 `MyGame.GameConfig.LoadAndRegister()`，每个 Core 生命周期一次。它应早于资源模块创建、UI 打开和场景请求。只初始化服务的 InitScene 不加载游戏配置。
 
 ## 它负责什么
 

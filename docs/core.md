@@ -21,9 +21,11 @@ private void Start()
         return;
     }
 
-    // Register your game's content and start its first screen here.
+    // Load config, register content and start your first screen here.
 }
 ```
+
+For generated tables, call `MyGame.GameConfig.LoadAndRegister()` here once per Core lifetime, after [generating config](config.md). Do this before constructing resource modules, opening UI or requesting a scene. The services-only InitScene does not load game configuration.
 
 ## What it owns
 

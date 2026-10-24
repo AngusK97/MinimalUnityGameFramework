@@ -1,64 +1,50 @@
 # 资源配置表
 
-[框架总览](../README.zh-CN.md) · [开始使用](quick-start.zh-CN.md) · [English](resource-tables.md)
+[框架总览](../README.zh-CN.md) · [配置接入](config.zh-CN.md) · [English](resource-tables.md)
 
-**编辑 Main.asset → 生成 → 加载模块 → 使用 main.Cue。** 一份表定义一组共同加载和释放的共享资产。组件自己固定使用的资产，普通 Inspector 引用就可能够用。
+**编辑 Resource 标签 → Update Config → 加载模块 → 使用 main.Cue。** 模块将加载生命周期相同的资产放在一起。组件自己的固定资产，用 Inspector 引用也许就够了。
 
-## 创建配置表
+## 添加资源
 
-1. 把 **cue.wav** 放到 `Assets/GameContent/MyGame/Content/Audio/`。
-2. 在 `Assets/GameContent/MyGame/Editor/Tables/ResourceModules/` 中选择 **Create → Framework → Resource Module Table**，将资产命名为 **Main**。
-3. 选中 Main.asset，在原生 Inspector 中填写：
+1. 完成[首次设置](config.zh-CN.md#首次设置)，将 **cue.wav** 放入 `Assets/GameContent/MyGame/Content/Audio/`。在 **Project** 选中它，勾选 Inspector 中的 **Addressable**。
+2. 打开配置文件夹中已有的 **Resource** 标签；没有时再创建。新标签从 A1 输入下面的示例；已有标签保留前两行，在数据末尾添加 **Cue** 行：
 
-| 字段 | 示例 |
+| Id | Name | Type | Module | AssetPath |
+| --- | --- | --- | --- | --- |
+| string | string | string | string | string |
+| Cue | Button sound | AudioClip | Main | Assets/GameContent/MyGame/Content/Audio/cue.wav |
+
+3. 在 Unity 打开 **Framework → Config**，选择 **MyGame**，点击 **Update Config**，等待编译完成。
+
+**成功标志：** 出现 `MyGame/Scripts/Generated/MainResources.g.cs`，提供 `Id = "MyGame.Main"` 和 `AudioClip Cue` 属性。工具同时生成 ResourceTable、ResourceConfig 和本地 JSON。`Name` 供人阅读，不生成字段。
+
+| Type | 属性类型 |
 | --- | --- |
-| Namespace | `MyGame` |
-| Class Name | `MainResources` |
-| Module Id | `MyGame.Main` |
-| Audio Clips → Name | `Cue` |
-| Audio Clips → Asset | Project 里的 cue.wav |
-| Prefabs | 可选，填写名称并拖入 GameObject 预制体 |
-| Sprites | 可选，填写名称并选择 Sprite 资产 |
+| `AudioClip` | `UnityEngine.AudioClip` |
+| `Prefab` | `UnityEngine.GameObject` |
+| `Sprite` | `UnityEngine.Sprite` |
 
-4. 点击 **Validate and Generate**，**等待编译完成**，再编写调用代码。
+资产必须存在，且有可加载的 Addressables 条目。为每个引用资产勾选 **Addressable**；仅放在 GameContent 下还不够。Sprite 使用 Single 模式纹理或独立 Sprite 主资产；暂不支持切片 Sprite 和其他子资产。
 
-**成功标志：** 出现 `MyGame/Scripts/Generated/MainResources.g.cs`，Inspector 显示 **Generated code is up to date.**。
+## 使用模块
 
-生成的 `MyGame.MainResources` 继承 `BaseResourceModule`，提供 `public const string Id = "MyGame.Main"` 和 `AudioClip Cue` 属性。Prefabs 生成 `GameObject` 属性，Sprites 生成 `Sprite` 属性。Name 是代码名称，玩家看到的文字放在游戏内容中。
+Core 就绪后先调用 `GameConfig.LoadAndRegister()`。创建并登记需要的资源模块，每个只登记一次，再显式加载。启动、失败和清理的完整写法见[资源示例](resources.zh-CN.md)。
 
-`Assets/GameContent/` 下的普通内容继承现有 Addressables 父目录条目，**不用逐个重复登记资产**。生成器解析并校验地址，不修改打包分组。接入其他工程时，由程序一次性设置内容根目录。
-
-## 使用配置表
-
-完整的启动、加载与清理示例见[资源](resources.zh-CN.md)。每个 Core 生命周期登记一次模块，显式加载，再为玩法保留已加载的模块实例：
+MainResources 加载成功后，玩法直接使用：
 
 ```csharp
 GameCore.Sound.PlaySound(SoundLayer.UI, main.Cue);
 ```
 
-这一行的前提是 Core 和模块已就绪（需要 `using Core; using Sound;`）。读取属性不会触发加载。新增条目不用再改启动登记；新增模块才需要程序接入一次。
+这一行需要 `using Core; using Sound;`。访问属性不会自动加载。新增一行不需要增加启动登记；新增模块才需要显式接入。
 
 ## 修改资源
 
-- **新增：** 在对应列表添加 Name 和 Asset，生成后使用新属性。
-- **替换：** 修改 Asset 并生成；保持 Name 不变，调用代码就不变。
-- **移动：** 保留资产 meta，重新生成，让输出地址跟随移动。
-- **名称改名或删除：** 生成，再更新使用该属性的调用方。
-- **提交：** 配置表、生成的 C#、资产及其 meta 一起提交。修改配置表，不改生成代码；合并冲突时先解决配置表，再生成。
+- **新增或替换：** 编辑行，更新配置，再使用生成属性；保留 Id 即可保持调用。
+- **移动资产：** 修改 AssetPath，再次导入。
+- **重命名或删除 Id/Module：** 更新配置，再修正调用及模块登记。模块 ID 为 `<namespace>.<Module>`。
+- **提交：** 生成的 CSV、清单、C#、JSON、资产和 meta 一起提交。在 Sheets 来源中解决冲突后重新导入，不手工拼接生成正文。
 
-按加载生命周期拆分 Main、Level01 等配置表；只有一组资源时，先建 Main 即可。
+先用 **Main** 即可。资产需要不同生命周期时，再使用 **Level01** 等其他 Module 值。缺失或类型错误的资产会报错；旧版保留与恢复见[配置表](config.zh-CN.md)。生成的内部资源编号不能作为存档或网络标识。
 
-<details>
-<summary>目录、校验与恢复</summary>
-
-配置表位于 `<game root>/Editor/Tables/ResourceModules/<name>.asset`，输出为 `<game root>/Scripts/Generated/<ClassName>.g.cs`。`ResourceModuleTable` 和 `ResourceModuleTableGenerator` 仅用于 Editor，Player 使用生成类。Demo 的 [Main.asset](../Assets/GameContent/Demo/Editor/Tables/ResourceModules/Main.asset) 生成 [MainResources.g.cs](../Assets/GameContent/Demo/Scripts/Generated/MainResources.g.cs)，类型为 `Demo.MainResources`，ID 为 `Demo.Main`。两者均属于可整体删除的 Demo，框架不依赖它们。
-
-名称使用英文 C# 标识符且不能是关键字；Namespace 可为空或以点分隔。三个列表中的名称统一唯一，不能使用 Id、生成类名或继承成员名。Module Id 必须非空且唯一。校验拒绝名称/类型/模块 ID 冲突、无效引用及不可用或歧义 Addressables 键。使用保存的资产，不使用场景对象。Sprite 支持 Single 模式贴图和独立 Sprite 主资产；Multiple 模式切片、图集及其他子资源会被拒绝，不会静默加载其他切片。组需启用 Include in Build 和 Include Addresses in Catalog。
-
-**修改 Class Name：** 生成新类型，更新调用方，再删除旧文件名对应的输出及 meta；构建检查会指出遗留输出。**修改 Namespace：** 生成并更新调用方，输出文件名不变。**修改 Module Id：** 更新查找代码与已保存的标识。**移动游戏根目录：** 配置表、现有输出及 meta 一起移动，再生成。旧输出不会自动删除。资源内部编号是生成细节，不要写入存档或网络消息。
-
-校验失败保留旧输出。生成器保护手写文件和被修改的输出，内容相同不重写。Play/编译时禁止生成，Play 使用上次生成结果。Player 构建前检查拒绝缺失、过期、被修改或遗留的输出，包括源配置表已删除的生成文件。零资源表工程也有效。
-
-</details>
-
-下一步：[登记、加载和释放模块](resources.zh-CN.md) · [构建](build.zh-CN.md)
+下一步：[登记、加载与释放模块](resources.zh-CN.md)。

@@ -45,7 +45,7 @@ namespace Demo
             }
 
             Data.Init();
-            DemoUI.RegisterAll();
+            GameConfig.LoadAndRegister();
             var main = new MainResources();
             GameCore.Resource.RegisterResourceModule(main);
             Level = new LevelManager(main);

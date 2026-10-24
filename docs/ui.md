@@ -6,12 +6,12 @@
 
 ## Open a window
 
-Complete [Quick start](quick-start.md) or create a [UI table](ui-tables.md). Register it once after Core is ready; this example uses `MyGame.GameUI.Menu`.
+Complete [Quick start](quick-start.md) or create a [UI table](ui-tables.md). Call `MyGame.GameConfig.LoadAndRegister()` once after Core is ready; this example uses `MyGame.UIName.Menu`.
 
-With `using Core; using UI;`, add this to a button handler or startup `Start()` after RegisterAll:
+With `using Core; using UI;`, add this to a button handler or startup `Start()` after `GameConfig.LoadAndRegister()`:
 
 ```csharp
-GameCore.UI.OpenUI(UILayer.First, MyGame.GameUI.Menu, callback: view =>
+GameCore.UI.OpenUI(UILayer.First, MyGame.UIName.Menu, callback: view =>
 {
     if (view == null)
     {
@@ -28,7 +28,7 @@ Use `First` for a normal screen, `Second` for a popup. Reserve `Transition` for 
 
 | Where | Call |
 | --- | --- |
-| Game code | `GameCore.UI.CloseUI(MyGame.GameUI.Menu)` |
+| Game code | `GameCore.UI.CloseUI(MyGame.UIName.Menu)` |
 | Inside the view | `CloseSelf()` |
 | Close current requests together | `GameCore.UI.CloseAll()` |
 
@@ -57,11 +57,11 @@ Close, Release and CloseSelf settle the owning request. There is no window pool.
 For manual registration instead of a generated table:
 
 ```csharp
-GameCore.UI.RegisterUiData(new UIData("MyGame.Menu",
+GameCore.UI.RegisterUiData(new UIData("Menu",
     "Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab"));
 ```
 
-Register after Core is ready. Empty IDs/addresses and duplicate IDs are rejected; do not register the same IDs with RegisterAll. Low-level fades require separate coordination; use the scene API for scene transitions.
+Register after Core is ready. Empty IDs and duplicate IDs are rejected; do not register the same IDs again through GameConfig. An empty address is a placeholder: OpenUI reports failure and calls back with null. Low-level fades require separate coordination; use the scene API for scene transitions.
 
 </details>
 

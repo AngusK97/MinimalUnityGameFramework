@@ -4,19 +4,21 @@
 
 **运行 Demo，再做第一个自己的窗口。** 准备好 Unity Hub、Unity 6.6（6000.6.5f1）和 C# 编辑器，会一点 Unity 基本操作即可。
 
+本页跟随 **main 预览版**。固定的 SO 版本请使用 [v0.2.0 教程](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.zh-CN.md)。
+
 ## 运行 Demo
 
-1. [下载 v0.2.0（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.2.0.zip)并解压，在 Unity Hub 打开包含 Assets、Packages、ProjectSettings 的目录，等待导入和编译完成。
+1. [下载 main 预览版（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/heads/main.zip)并解压，在 Unity Hub 打开包含 Assets、Packages、ProjectSettings 的目录，等待导入和编译完成。
 2. 打开 **Window → Asset Management → Addressables → Groups**，把 **Play Mode Script** 设为 **Use Asset Database (fastest)**。
 3. 打开 `Assets/GameContent/Demo/Scenes/DemoStart.unity`，点击 Play，再点 **Start**，用 **WASD / 方向键**移动到 GOAL。
 4. **Play again** 重开，**Menu** 返回；**Settings / Escape** 打开音量设置，**Done / Escape** 保存并关闭。
 5. 再点一次 Play 退出运行，然后继续制作。
 
-**成功标志：** MINIMAL LOOP 菜单和关卡正常运行。设置只暂停 Demo 的移动和计时。
+**成功标志：** MINIMAL LOOP 菜单和关卡正常运行。设置只暂停 Demo 的移动和计时。Demo 已包含生成配置，运行不需要 Google 账号、密钥或网络。
 
 ## 创建第一个窗口
 
-第一次先保留下面的名字，顺着做完：**视图 → Prefab → 配置表 → 生成 → 启动入口**。
+第一次先保留下面的名字，顺着做完：**视图 → Prefab → Google Sheets → Update Config → 启动入口**。
 
 ### 1. 创建视图
 
@@ -53,15 +55,22 @@ namespace MyGame
 2. 把 Panel 改名 **MyMenuView**，将 MyMenuView.cs 拖进它的 Inspector；上面只保留一个 UIBase 派生组件。
 3. 选中 Panel，选择 **GameObject → UI → Legacy → Text**，文字设为 `My first menu`，调整到 Panel 内可见的位置。
 4. 将 Hierarchy 中的 Panel 拖到 `MyGame/Content/Prefabs/UI/`，保存为 **MyMenuView.prefab**。保存 Panel，不是外层 Canvas；相机和 EventSystem 也不放进去，运行时由 Core 提供。
+5. 在 **Project 选中已保存的 MyMenuView.prefab**，勾选 Inspector 顶部的 **Addressable**，保留默认地址。
 
-### 3. 生成 UI 配置表
+### 3. 连接并更新 UI 配置表
 
-1. 在 `MyGame/Editor/Tables/` 选择 **Create → Framework → UI Table**，保留名字 **UI**。
-2. 选中 UI.asset，填写 **Namespace = MyGame**、**Class Name = GameUI**、**Id Prefix = MyGame**。
-3. 展开 **Entries**，点 **+**，填写 **Name = Menu**，把 **Project 里的 MyMenuView.prefab** 拖进 **Prefab**，不要拖场景对象。
-4. 点击 **Validate and Generate**，等待编译。确认出现 `MyGame/Scripts/Generated/GameUI.g.cs`，状态为 **Generated code is up to date.**。
+1. 为 **MyGame** 完成[配置：首次设置](config.zh-CN.md#首次设置)。这会准备共享 Drive 文件夹与本机凭据连接，只需做一次。
+2. 在该文件夹直接包含的工作簿中，新建名为 **UI** 的标签，从 A1 输入：
 
-**先生成再继续：** 下一步脚本需要 GameUI 已存在。后续修改见 [UI 配置表](ui-tables.zh-CN.md)。
+| Id | Name | PrefabPath |
+| --- | --- | --- |
+| string | string | string |
+| Menu | My first menu | Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab |
+
+3. 在 Unity 打开 **Framework → Config**，选择 **MyGame**，点击 **Update Config**，等待编译完成。
+4. 确认 UI 表已更新，且出现 `MyGame/Scripts/Generated/UIName.g.cs`。
+
+**先更新再继续：** 下一步脚本需要 GameConfig 和 UIName 已存在。后续修改见 [UI 配置表](ui-tables.zh-CN.md)。
 
 ### 4. 添加游戏入口
 
@@ -84,8 +93,9 @@ namespace MyGame
                 return;
             }
 
-            GameUI.RegisterAll();
-            GameCore.UI.OpenUI(UILayer.First, GameUI.Menu, callback: view =>
+            GameConfig.LoadAndRegister();
+
+            GameCore.UI.OpenUI(UILayer.First, UIName.Menu, callback: view =>
             {
                 if (view == null)
                 {
@@ -113,7 +123,7 @@ namespace MyGame
 
 在 Unity Project 窗口删除 `Assets/GameContent/Demo`。从磁盘删除时先关 Unity，再删除**目录及 Demo.meta**。保留 GameContent、`.gitkeep`、公共框架和自己的游戏。
 
-再次运行自己的 Start.unity。自己的游戏应使用自己的标识与资产，不引用 DemoUI、DemoGame 或 Demo 资产。公共 `Assets/Framework/Scenes/InitScene.unity` 只准备服务，不会打开菜单。
+再次运行自己的 Start.unity。自己的游戏应使用自己的标识与资产，不引用 Demo 命名空间、DemoGame 或 Demo 资产。公共 `Assets/Framework/Scenes/InitScene.unity` 只准备服务，不会打开菜单。
 
 ## 下一步
 

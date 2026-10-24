@@ -1,0 +1,16 @@
+{
+  "_generatedBy": "Framework Config",
+  "Schema": 1,
+  "Rows": [
+    {
+      "Id": "Menu",
+      "ScenePath": "Assets/GameContent/Demo/Content/Scenes/MenuScene.unity",
+      "Address": "Assets/GameContent/Demo/Content/Scenes/MenuScene.unity"
+    },
+    {
+      "Id": "Example",
+      "ScenePath": "Assets/GameContent/Demo/Content/Scenes/ExampleLevel.unity",
+      "Address": "Assets/GameContent/Demo/Content/Scenes/ExampleLevel.unity"
+    }
+  ]
+}

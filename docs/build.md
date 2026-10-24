@@ -7,7 +7,7 @@
 ## Build the Demo
 
 1. Open **File → Build Profiles**. Under **Platforms**, select an installed target and **Switch Platform** if needed.
-2. Exit Play, generate any changed UI/resource tables and wait for compilation.
+2. Exit Play and wait for compilation. The bundled Demo config is ready; no cloud setup is needed. If you changed its connected Sheets source, run **Framework → Config → Update Config** first.
 3. Choose **Demo → Build Player**, then select an output location.
 4. Open the app. Check the menu, then Start → keyboard win → Play again → Menu → Settings → Quit.
 
@@ -17,7 +17,7 @@ The helper builds Addressables and uses DemoStart without changing the saved sce
 
 1. Open **File → Build Profiles**. Select your target under **Platforms** and **Switch Platform** if needed.
 2. Select **Scene List** on the left. Add `MyGame/Scenes/Start.unity`, put it first and enable it. Remove InitScene if unneeded; keep other native scenes your game uses. **Open Scene List** opens this same shared list.
-3. Generate changed UI/resource tables and wait for compilation.
+3. If you changed Google Sheets or local asset paths, run **Framework → Config → Update Config** and wait for compilation. Review any retained-table warnings before building.
 4. Open **Window → Asset Management → Addressables → Groups**. Choose **Build → New Build → Default Build Script** and wait for success.
 5. Return to your target under **Platforms**, choose **Build** and an output location.
 6. Open the built app. Your own first screen should appear. Try its UI, input, sound and transitions.
@@ -25,6 +25,8 @@ The helper builds Addressables and uses DemoStart without changing the saved sce
 ![Unity 6.6 Build Profiles Scene List with MyGame Start enabled as the first scene](images/build-scene-list.png)
 
 *Step 2 example — Build Profiles → Scene List: MyGame/Scenes/Start is enabled as the first scene.*
+
+The build checks committed local snapshots, generated file ownership and current assets. It does not contact Google or need a key. It cannot detect cloud edits you have not imported. Missing UI placeholders, invalid assets or altered generated files block the Player build.
 
 Rebuild Addressables after resource or platform changes. **Use Asset Database (fastest)** is for Editor Play only; Player still needs built content.
 
@@ -40,34 +42,31 @@ Add a custom Build Profile. The shared list is enough for your first build.
 | Symptom | First check |
 | --- | --- |
 | No Demo menu | Open DemoStart.unity. InitScene deliberately initializes services only. |
-| GameUI/MainResources is missing | Temporarily remove/comment callers of the missing generated class, fix compilation, generate the table, then restore callers. |
-| Generator is absent/disabled | Resolve Console compile errors, select UI.asset or a resource module table, exit Play and wait for compilation. |
+| GameConfig/UIName/MainResources is missing | Restore generated files and manifest from the same revision, or temporarily comment callers, fix compilation and run Update Config; then restore callers. |
+| Update Config is disabled | Resolve Console compile errors, exit Play, select a game folder in Framework → Config and check its source settings. |
 | Invalid prefab | Reference a saved prefab with one UIBase-derived component on its root. |
-| No loadable address | Keep runtime content under GameContent; check group Include in Build and Include Addresses in Catalog. |
-| Window fails to open | Check Core readiness, RegisterAll, the actual address and the first Console error. |
+| No loadable address | Select the saved asset in Project, check Addressable in its Inspector, and check group Include in Build and Include Addresses in Catalog. |
+| Window fails to open | Check Core readiness, GameConfig.LoadAndRegister(), the UI row, its prefab and the first Console error. |
 | Duplicate EventSystem/AudioListener | Keep the shared Core's infrastructure; remove extra copies from scenes/prefabs. |
-| Stale/edited output blocks build | Fix the table or restore generated output, generate and wait for compilation. |
+| Edited/missing output blocks build | Restore generated outputs and manifest from the same revision, or fix the source and update config. |
+| Missing UI placeholder blocks build | Create the prefab or remove its UI row, then update config. Import allows this warning; Player builds require usable assets. |
 | Player shows only a background | Put your own entry first; the default saved list contains only InitScene. |
-| Scene load fails | Check its real Addressables key and rebuild content for the selected target. |
+| Scene load fails | Check startup config loading, the Scene row and Addressables content for the selected target. Raw string keys use TryTransitionAddress. |
 
 ## Verification scope
 
-macOS development builds passed; input, audio and release acceptance remain incomplete.
+Checked on **2026-10-24** with Unity **6000.6.5f1**, Addressables **2.11.2** and uGUI **2.6.0**:
 
-<details>
-<summary>Baseline and exact results</summary>
+- Config import checks passed in Unity: unchanged files, independent updates, reference rollback, deletion and output protection, UI placeholders and retained assets.
+- **81 Demo Play assertions passed:** local tables, generated IDs, resource access, Settings lifecycle and two Menu ↔ Example cycles. These checks invoked game APIs.
+- Demo and a fresh independent game built as **macOS Mono development Players**. The independent Player passed config, events, resource load/release, UI and scene checks after deleting the entire Demo folder.
+- The Demo Player rendered its menu and opened Settings with Escape. **18 simulated Google transport groups** passed.
+- Real Google authentication and import passed in Unity with the three Demo tables: first connection, unchanged output, invalid-table retention and recovery. The cloud test values were restored.
 
-Baseline: Unity **6.6 (6000.6.5f1)**, Addressables **2.11.2**, uGUI **2.6.0**. Current event-module verification passed:
+**Still unverified:** the full native mouse/keyboard game loop, audible output, other platforms and IL2CPP/release builds. No cloud credentials are bundled. Follow [first-time setup](config.md#first-time-setup) to connect your own source.
 
-- **32 Play checks:** no-data and original handlers, mixed order, exact unsubscription, snapshots, nested/queued dispatch, exceptions, destroyed targets and manager cleanup. The complete tutorial classes also compiled.
-- **8 Demo checks:** the game loop plus volume notifications, slider feedback prevention, and closing/reopening Settings without duplicate listeners. The win check used a temporary probe, not keyboard movement.
-- **3 independent-game checks:** from a fresh no-Library copy deleting only Demo, generated UI/resources and event lifecycle checks passed. Global no-data notifications, original handlers, Core destruction/recreation and fresh-subscription isolation also passed in Play and the independent Player.
-- Demo and independent-game **macOS Mono development** content/Player builds: **0 errors and 0 warnings**. Default compilation passed with/without Demo after removing all temporary validation assets.
-
-Earlier GUI checks confirmed the Demo menu rendered, Escape opened/closed Settings, and the independent Player displayed its own window after Demo removal. The full native mouse flow, real keyboard completion, audible output, other platforms and IL2CPP/release builds have **not** been accepted. These results apply to the baseline above, not every target or release configuration.
-
-</details>
+Validation helpers ran only in temporary copies and are not part of the framework. These results describe this preview; v0.2.0 keeps its own code and tutorial.
 
 [Editor upgrades](upgrading.md) · Unity references: [Build Profiles](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profiles.html) and [Scene List](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profile-scene-list.html).
 
-Next: [UI table recovery](ui-tables.md), [resource table recovery](resource-tables.md) or [scene transitions](scenes.md).
+Next: [Config setup and recovery](config.md) or [scene transitions](scenes.md).

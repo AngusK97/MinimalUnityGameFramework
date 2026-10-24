@@ -50,7 +50,7 @@ namespace Demo
             _startupStarted = true;
             StartupError = null;
             var attempt = ++_startupAttempt;
-            var accepted = _sceneManager.TryTransition("Assets/GameContent/Demo/Content/Scenes/MenuScene.unity",
+            _sceneManager.TryTransition(SceneName.Menu,
                 _menuScene, () => PrepareResources(attempt), scene => OpenMenu(scene, attempt),
                 (succeeded, error) =>
                 {
@@ -59,11 +59,6 @@ namespace Demo
                         FailStartup(attempt, error);
                     }
                 }, RetryStartup);
-
-            if (!accepted)
-            {
-                FailStartup(attempt, "Startup transition could not be accepted; check Core/UI or an active transition.");
-            }
         }
 
         private IEnumerator PrepareResources(int attempt)
@@ -102,7 +97,7 @@ namespace Demo
 
             try
             {
-                _uiManager.OpenUI(UILayer.First, DemoUI.Menu, callback: result =>
+                _uiManager.OpenUI(UILayer.First, UIName.Menu, callback: result =>
                 {
                     view = result;
                     finished = true;
@@ -122,7 +117,7 @@ namespace Demo
             {
                 if (!finished && _uiManager != null)
                 {
-                    _uiManager.CloseUI(DemoUI.Menu);
+                    _uiManager.CloseUI(UIName.Menu);
                 }
             }
         }

@@ -6,9 +6,9 @@
 
 ## Try it
 
-First create and generate [Main.asset](resource-tables.md), with `MyGame.MainResources`, ID `MyGame.Main` and the Audio Clip `Cue`. Wait for compilation.
+First add the Cue row to your Google Sheets [Resource table](resource-tables.md), with **Type = AudioClip** and **Module = Main**, then click **Update Config**. This generates `MyGame.MainResources` with ID `MyGame.Main`. Wait for compilation.
 
-Create **MyResourceStartup.cs** in `Assets/GameContent/MyGame/Scripts/`. Attach it to one empty object in your entry scene alongside the shared GameCore prefab:
+Create **MyResourceStartup.cs** in `Assets/GameContent/MyGame/Scripts/`. Use it as the startup owner on one empty object alongside the shared GameCore prefab. If MyGameEntry already loads config, merge this example into that entry so `GameConfig.LoadAndRegister()` runs only once:
 
 ```csharp
 using Core;
@@ -28,6 +28,8 @@ namespace MyGame
                 Debug.LogError("Add the shared GameCore prefab to the entry scene.");
                 return;
             }
+
+            GameConfig.LoadAndRegister();
 
             main = new MainResources();
             GameCore.Resource.RegisterResourceModule(main);
@@ -71,7 +73,7 @@ After successful loading, gameplay uses `main.Cue` directly. Before loading or a
 ## Conventions
 
 - Keep game-owned Module Ids stable. Generated internal resource numbers are not save/network IDs.
-- Keep source tables and generated code together; see [Resource tables](resource-tables.md). Handwritten BaseResourceModule subclasses remain supported.
+- Commit generated snapshots, manifest, code and JSON together; see [Resource tables](resource-tables.md). Handwritten BaseResourceModule subclasses remain supported.
 - Borrow only in or after a successful load callback; handle failure with `failedCallback`.
 - Only the owner unloads shared modules, after stopping related audio and destroying dependent instances. Do not unload a playing clip.
 - Use the actual Addressables key. Rebuild content for the current target after changing resources or platform.

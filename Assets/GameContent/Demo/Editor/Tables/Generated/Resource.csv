@@ -1,0 +1,3 @@
+"Id","Name","Type","Module","AssetPath"
+"string","string","string","string","string"
+"Cue","UI click","AudioClip","Main","Assets/GameContent/Demo/Content/Audio/cue.wav"

@@ -4,19 +4,21 @@
 
 **Run the Demo, then make your first window.** You'll need Unity Hub, Unity 6.6 (6000.6.5f1), a C# editor and basic Unity knowledge.
 
+This page follows **main preview**. For the fixed SO-based release, use the [v0.2.0 guide](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md).
+
 ## Run the Demo
 
-1. [Download v0.2.0 (ZIP)](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.2.0.zip) and extract it. In Unity Hub, open the folder containing Assets, Packages and ProjectSettings. Wait for import and compilation.
+1. [Download main preview (ZIP)](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/heads/main.zip) and extract it. In Unity Hub, open the folder containing Assets, Packages and ProjectSettings. Wait for import and compilation.
 2. Open **Window → Asset Management → Addressables → Groups**. Set **Play Mode Script → Use Asset Database (fastest)**.
 3. Open `Assets/GameContent/Demo/Scenes/DemoStart.unity` and press Play. Choose **Start** and move to GOAL with **WASD / arrows**.
 4. **Play again** restarts; **Menu** returns; **Settings / Escape** opens volume settings; **Done / Escape** saves and closes them.
 5. Press Play again to stop before editing.
 
-**Success:** the MINIMAL LOOP menu and level run. Settings pause the Demo's movement/timer only.
+**Success:** the MINIMAL LOOP menu and level run. Settings pause the Demo's movement/timer only. Its generated config is included; playing needs no Google account, key or network.
 
 ## Create your first window
 
-Use the names below on your first pass: **view → prefab → table → generate → startup**.
+Use the names below on your first pass: **view → prefab → Google Sheets → Update Config → startup**.
 
 ### 1. Create the view
 
@@ -53,15 +55,22 @@ namespace MyGame
 2. Rename the Panel **MyMenuView**. Drag MyMenuView.cs into its Inspector; keep only one UIBase-derived component on it.
 3. With the Panel selected, choose **GameObject → UI → Legacy → Text**. Set its text to `My first menu` and make it visible inside the Panel.
 4. Drag the Panel from Hierarchy into `MyGame/Content/Prefabs/UI/` to save **MyMenuView.prefab**. Save the Panel, not the outer Canvas; keep cameras and EventSystem out of it. Core supplies these at runtime.
+5. Select the saved **MyMenuView.prefab in Project** and check **Addressable** at the top of its Inspector. Keep the default address.
 
-### 3. Generate the UI table
+### 3. Connect and update the UI table
 
-1. In `MyGame/Editor/Tables/`, choose **Create → Framework → UI Table**. Keep the name **UI**.
-2. Select UI.asset. Set **Namespace = MyGame**, **Class Name = GameUI**, **Id Prefix = MyGame**.
-3. Expand **Entries**, click **+**, set **Name = Menu** and drag **MyMenuView.prefab from Project** into **Prefab**. Do not use the scene object.
-4. Click **Validate and Generate** and wait for compilation. Confirm `MyGame/Scripts/Generated/GameUI.g.cs` exists and the status reads **Generated code is up to date.**
+1. Complete [Config: first-time setup](config.md#first-time-setup) for **MyGame**. This creates the shared Drive folder and local credential connection; you only do it once.
+2. In a workbook directly inside that folder, add a tab named **UI**. Starting at A1, enter:
 
-**Generate before continuing:** the next script needs GameUI to exist. For later edits, use [UI tables](ui-tables.md).
+| Id | Name | PrefabPath |
+| --- | --- | --- |
+| string | string | string |
+| Menu | My first menu | Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab |
+
+3. In Unity, open **Framework → Config**, select **MyGame** and click **Update Config**. Wait for compilation.
+4. Confirm the UI table updated and `MyGame/Scripts/Generated/UIName.g.cs` exists.
+
+**Update before continuing:** the next script needs GameConfig and UIName. For later edits, use [UI tables](ui-tables.md).
 
 ### 4. Add your game entry
 
@@ -84,8 +93,9 @@ namespace MyGame
                 return;
             }
 
-            GameUI.RegisterAll();
-            GameCore.UI.OpenUI(UILayer.First, GameUI.Menu, callback: view =>
+            GameConfig.LoadAndRegister();
+
+            GameCore.UI.OpenUI(UILayer.First, UIName.Menu, callback: view =>
             {
                 if (view == null)
                 {
@@ -113,7 +123,7 @@ If it fails, check GameCore, the MyGameEntry attachment and the UI table's gener
 
 Delete `Assets/GameContent/Demo` in Unity's Project window. If deleting on disk, close Unity and remove **both the folder and Demo.meta**. Keep GameContent, `.gitkeep`, the shared framework and your game.
 
-Run your own Start.unity again. It must use its own IDs and assets, with no DemoUI, DemoGame or Demo asset references. The shared `Assets/Framework/Scenes/InitScene.unity` prepares services only; it does not open a menu.
+Run your own Start.unity again. It must use its own IDs and assets, with no Demo namespace, DemoGame or Demo asset references. The shared `Assets/Framework/Scenes/InitScene.unity` prepares services only; it does not open a menu.
 
 ## Next
 

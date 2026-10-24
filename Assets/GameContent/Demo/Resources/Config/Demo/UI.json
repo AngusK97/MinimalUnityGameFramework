@@ -1,0 +1,21 @@
+{
+  "_generatedBy": "Framework Config",
+  "Schema": 1,
+  "Rows": [
+    {
+      "Id": "Menu",
+      "PrefabPath": "Assets/GameContent/Demo/Content/Prefabs/UI/MenuView.prefab",
+      "Address": "Assets/GameContent/Demo/Content/Prefabs/UI/MenuView.prefab"
+    },
+    {
+      "Id": "Level",
+      "PrefabPath": "Assets/GameContent/Demo/Content/Prefabs/UI/LevelView.prefab",
+      "Address": "Assets/GameContent/Demo/Content/Prefabs/UI/LevelView.prefab"
+    },
+    {
+      "Id": "Settings",
+      "PrefabPath": "Assets/GameContent/Demo/Content/Prefabs/UI/SettingsView.prefab",
+      "Address": "Assets/GameContent/Demo/Content/Prefabs/UI/SettingsView.prefab"
+    }
+  ]
+}

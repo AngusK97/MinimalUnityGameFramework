@@ -1,0 +1,4 @@
+"Id","Name","ScenePath"
+"string","string","string"
+"Menu","Main menu","Assets/GameContent/Demo/Content/Scenes/MenuScene.unity"
+"Example","Example level","Assets/GameContent/Demo/Content/Scenes/ExampleLevel.unity"

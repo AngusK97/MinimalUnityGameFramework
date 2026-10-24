@@ -62,9 +62,9 @@ namespace UI
                 throw new ArgumentNullException(nameof(uiData));
             }
 
-            if (string.IsNullOrWhiteSpace(uiData.UIName) || string.IsNullOrWhiteSpace(uiData.ResourcePath))
+            if (string.IsNullOrWhiteSpace(uiData.UIName))
             {
-                throw new ArgumentException("UI registration requires a non-empty ID and resource path.", nameof(uiData));
+                throw new ArgumentException("UI registration requires a non-empty ID.", nameof(uiData));
             }
 
             if (_registeredUIData.ContainsKey(uiData.UIName))
@@ -148,6 +148,13 @@ namespace UI
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(_registeredUIData[uiName].ResourcePath))
+            {
+                Debug.LogError($"UIManager.OpenUI: {uiName} has no prefab assigned. Assign a prefab and update configuration.");
+                InvokeCallback(callback, null);
+                return;
+            }
+
             if (GetGameObjectByUILayers(layer) == null)
             {
                 Debug.LogError($"UIManager.OpenUI: invalid layer {layer} for {uiName}");
@@ -168,6 +175,15 @@ namespace UI
 
         private void LoadUI(UIRequest request)
         {
+            var resourcePath = _registeredUIData[request.Name].ResourcePath;
+
+            if (string.IsNullOrWhiteSpace(resourcePath))
+            {
+                Debug.LogError($"UIManager.OpenUI: {request.Name} has no prefab assigned. Assign a prefab and update configuration.");
+                CloseRequest(request);
+                return;
+            }
+
             var layer = GetGameObjectByUILayers(request.Layer);
 
             if (layer == null)
@@ -182,7 +198,7 @@ namespace UI
             try
             {
                 GameCore.Resource.InstantiateGameObjectAsync(
-                    _registeredUIData[request.Name].ResourcePath, layer.transform, false,
+                    resourcePath, layer.transform, false,
                     handle => CompleteLoad(request, handle));
             }
             catch (Exception exception)

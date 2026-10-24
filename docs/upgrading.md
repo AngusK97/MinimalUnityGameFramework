@@ -15,14 +15,14 @@
 | Legacy VR module | `com.unity.modules.vr` removed from the manifest |
 | Rendering / input | Built-in Render Pipeline / old Input Manager retained |
 
-This upgrade does not require URP, a new input system or changes to the framework's public calls. Older framework API changes are covered separately in [Usage index & migration](../Build-in%20Managers%20Usage.md).
+The Editor upgrade itself does not require URP or a new input system. The main preview also changes configuration and scene-ID APIs; follow [Usage index & migration](../Build-in%20Managers%20Usage.md) if adopting that framework version.
 
 ## Migrate a separate copy
 
 1. Commit or back up the working project, including Assets, Packages, ProjectSettings and their meta files. Keep a branch or copy that still opens in its original Editor. Do not open that only working copy with the newer Editor.
 2. Open the migration copy with **Unity Hub → Unity 6.6 (6000.6.5f1)**. Wait for package resolution, asset import and compilation. Keep the migrated manifest and lock file together; do not reuse an older Library cache as proof of a clean import.
 3. Check the package changes above and the first Console error before changing gameplay code. This migration does not open, upgrade or replace the framework inside any other game's repository.
-4. Select your game's `Editor/Tables/UI.asset`, click **Validate and Generate**, then wait for compilation. Keep the table, generated C# and meta files together; do not rewrite the generated class by hand.
+4. Keep the config workflow that belongs to your chosen framework version. For main preview, follow [config migration](../Build-in%20Managers%20Usage.md#from-v020-to-google-sheets), then **Framework → Config → Update Config**. Keep generated snapshots, manifest, C#, JSON and meta files together.
 5. In **File → Build Profiles**, select the target under **Platforms** and use **Switch Platform** if needed. Check the shared **Scene List** on the left. Rebuild Addressables with **Build → New Build → Default Build Script**, then return to the target platform and build a new Player. Do not assume old bundles or an old Player certify the new Editor/package combination.
 
 Unity 6 uses **Create → Scripting → MonoBehaviour Script** for the first-window scripts. Build Profiles replaces the old Build Settings workflow; [Quick start](quick-start.md) and [Build](build.md) use the current labels.
@@ -34,7 +34,7 @@ Unity 6 uses **Create → Scripting → MonoBehaviour Script** for the first-win
 - In a disposable copy, delete `Assets/GameContent/Demo` and `Demo.meta`. Keep GameContent and its `.gitkeep`; reimport, run your own entry or the services-only InitScene, and rebuild content/Player. No Demo type, asset or build menu should be required.
 - Open the new Player and check the real UI, input and audio. Record which target was tested; an Editor check alone is not a device check.
 
-The [verification scope](build.md#verification-scope) records what has actually passed for this baseline. Keep the older branch/copy until your game's own acceptance is complete.
+The [verification scope](build.md#verification-scope) separates earlier baseline checks from the new main config workflow. Keep the older branch/copy until your game's own acceptance is complete.
 
 <details>
 <summary>Unity references</summary>

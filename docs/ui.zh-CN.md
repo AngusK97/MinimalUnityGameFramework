@@ -6,12 +6,12 @@
 
 ## 打开窗口
 
-完成[开始使用](quick-start.zh-CN.md)，或创建 [UI 配置表](ui-tables.zh-CN.md)，在 Core 就绪后登记一次。示例使用 `MyGame.GameUI.Menu`。
+完成[开始使用](quick-start.zh-CN.md)，或创建 [UI 配置表](ui-tables.zh-CN.md)，在 Core 就绪后调用一次 `MyGame.GameConfig.LoadAndRegister()`。示例使用 `MyGame.UIName.Menu`。
 
-需要 `using Core; using UI;`。将代码放在按钮点击方法，或启动脚本 `Start()` 的 RegisterAll 之后：
+需要 `using Core; using UI;`。将代码放在按钮点击方法，或启动脚本 `Start()` 的 `GameConfig.LoadAndRegister()` 之后：
 
 ```csharp
-GameCore.UI.OpenUI(UILayer.First, MyGame.GameUI.Menu, callback: view =>
+GameCore.UI.OpenUI(UILayer.First, MyGame.UIName.Menu, callback: view =>
 {
     if (view == null)
     {
@@ -28,7 +28,7 @@ GameCore.UI.OpenUI(UILayer.First, MyGame.GameUI.Menu, callback: view =>
 
 | 调用位置 | 调用方式 |
 | --- | --- |
-| 游戏代码 | `GameCore.UI.CloseUI(MyGame.GameUI.Menu)` |
+| 游戏代码 | `GameCore.UI.CloseUI(MyGame.UIName.Menu)` |
 | 窗口内部 | `CloseSelf()` |
 | 一起关闭当前请求 | `GameCore.UI.CloseAll()` |
 
@@ -57,11 +57,11 @@ Close、Release、CloseSelf 都会结束所属请求；框架没有窗口池。O
 也可手动登记，替代生成的配置表：
 
 ```csharp
-GameCore.UI.RegisterUiData(new UIData("MyGame.Menu",
+GameCore.UI.RegisterUiData(new UIData("Menu",
     "Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab"));
 ```
 
-Core 就绪后再登记。空标识、空地址及重复标识会被拒绝，不要再用 RegisterAll 登记相同标识。底层淡入淡出需单独协调；场景转场使用场景 API。
+Core 就绪后再登记。空标识与重复标识会被拒绝，不要再通过 GameConfig 登记相同标识。空地址可作为占位，OpenUI 会报告失败并回调 null。底层淡入淡出需单独协调；场景转场使用场景 API。
 
 </details>
 

@@ -35,6 +35,7 @@ namespace Scene
             public string LoadError;
         }
 
+        private readonly Dictionary<string, object> _registeredScenes = new(StringComparer.Ordinal);
         private TransitionRequest _current;
         private TransitionRequest _retry;
         private bool _unavailable;
@@ -75,23 +76,89 @@ namespace Scene
             Finish(request, false, request.AbortError, false);
         }
 
+        public void RegisterScene(string id, object key)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentException("Scene registration requires a non-empty ID.", nameof(id));
+            }
+
+            if (key == null || (key is string path && string.IsNullOrWhiteSpace(path)))
+            {
+                throw new ArgumentException("Scene registration requires a non-empty address.", nameof(key));
+            }
+
+            if (_registeredScenes.ContainsKey(id))
+            {
+                Debug.LogError($"SceneManager.RegisterScene: {id} already registered", this);
+                return;
+            }
+
+            _registeredScenes.Add(id, key);
+        }
+
+        public bool TryTransition(string id, Func<UnityScene, IEnumerator> enterScene = null,
+            Action<bool, string> completed = null)
+        {
+            return TryTransition(id, default, null, enterScene, completed, null);
+        }
+
+        public bool TryTransition(string id, UnityScene existingScene,
+            Func<IEnumerator> prepare, Func<UnityScene, IEnumerator> enterScene,
+            Action<bool, string> completed, Func<bool> retry)
+        {
+            if (string.IsNullOrWhiteSpace(id) || !_registeredScenes.TryGetValue(id, out var key))
+            {
+                return RejectTransition($"Scene ID '{id}' is not registered. Register scene configuration before transitioning.", completed);
+            }
+
+            return TryTransitionAddress(key, existingScene, prepare, enterScene, completed, retry);
+        }
+
+        // Legacy object keys remain supported. Use TryTransitionAddress for raw string addresses.
         public bool TryTransition(object key, Func<UnityScene, IEnumerator> enterScene = null,
             Action<bool, string> completed = null)
         {
-            return TryTransition(key, default, null, enterScene, completed, null);
+            return TryTransitionAddress(key, enterScene, completed);
         }
 
         public bool TryTransition(object key, UnityScene existingScene,
             Func<IEnumerator> prepare, Func<UnityScene, IEnumerator> enterScene,
             Action<bool, string> completed, Func<bool> retry)
         {
+            return TryTransitionAddress(key, existingScene, prepare, enterScene, completed, retry);
+        }
+
+        public bool TryTransitionAddress(object key, Func<UnityScene, IEnumerator> enterScene = null,
+            Action<bool, string> completed = null)
+        {
+            return TryTransitionAddress(key, default, null, enterScene, completed, null);
+        }
+
+        public bool TryTransitionAddress(object key, UnityScene existingScene,
+            Func<IEnumerator> prepare, Func<UnityScene, IEnumerator> enterScene,
+            Action<bool, string> completed, Func<bool> retry)
+        {
             var ui = GameCore.UI;
 
-            if (IsTransitioning || _unavailable || !isActiveAndEnabled || GameCore.Scene != this
-                || ui == null || !ui.isActiveAndEnabled || ui.transitionCanvasGroup == null
-                || key == null || (key is string path && string.IsNullOrWhiteSpace(path)))
+            if (IsTransitioning)
             {
-                return false;
+                return RejectTransition("Another scene transition is already running.", completed);
+            }
+
+            if (_unavailable || !isActiveAndEnabled || GameCore.Scene != this)
+            {
+                return RejectTransition("Scene transition service is unavailable.", completed);
+            }
+
+            if (ui == null || !ui.isActiveAndEnabled || ui.transitionCanvasGroup == null)
+            {
+                return RejectTransition("Scene transition requires an active UI service with a transition CanvasGroup.", completed);
+            }
+
+            if (key == null || (key is string path && string.IsNullOrWhiteSpace(path)))
+            {
+                return RejectTransition("Scene transition requires a non-empty address.", completed);
             }
 
             var request = new TransitionRequest
@@ -128,7 +195,14 @@ namespace Scene
                 return request.Retry();
             }
 
-            return TryTransition(request.Key, request.EnterScene, request.Completed);
+            return TryTransitionAddress(request.Key, request.EnterScene, request.Completed);
+        }
+
+        private bool RejectTransition(string error, Action<bool, string> completed)
+        {
+            Debug.LogError($"SceneManager.TryTransition: {error}", this);
+            InvokeCompleted(completed, false, error);
+            return false;
         }
 
         private IEnumerator RunTransition(TransitionRequest request)
@@ -341,12 +415,17 @@ namespace Scene
             LastError = allowRetry ? error : null;
             _retry = !succeeded && allowRetry ? request : null;
 
-            if (request.Completed == null)
+            InvokeCompleted(request.Completed, succeeded, error);
+        }
+
+        private void InvokeCompleted(Action<bool, string> completed, bool succeeded, string error)
+        {
+            if (completed == null)
             {
                 return;
             }
 
-            foreach (Action<bool, string> callback in request.Completed.GetInvocationList())
+            foreach (Action<bool, string> callback in completed.GetInvocationList())
             {
                 if (callback.Target is UnityEngine.Object target && target == null)
                 {

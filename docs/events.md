@@ -60,12 +60,12 @@ namespace MyGame
 
 ### 3. Open the window and send
 
-1. Create a separate UI prefab at `MyGame/Content/Prefabs/UI/WinNotice.prefab`. Attach WinNotice as the only UIBase-derived component on its RectTransform root.
-2. In `MyGame/Editor/Tables/UI.asset`, add an entry with **Name = WinNotice** and **Prefab = WinNotice.prefab**. Click **Validate and Generate**, then wait for compilation. See [UI tables](ui-tables.md) for the Inspector steps.
-3. In **MyGameEntry.cs**, keep `GameUI.RegisterAll()` once. Replace the existing OpenUI call after it with:
+1. Create a separate UI prefab at `MyGame/Content/Prefabs/UI/WinNotice.prefab`. Attach WinNotice as the only UIBase-derived component on its RectTransform root. Select the saved prefab in **Project** and check **Addressable** in its Inspector.
+2. In your Google Sheets **UI** tab, add **Id = WinNotice**, **Name = Win notice**, **PrefabPath = Assets/GameContent/MyGame/Content/Prefabs/UI/WinNotice.prefab**. Click **Framework → Config → Update Config** and wait for compilation. See [UI tables](ui-tables.md).
+3. In **MyGameEntry.cs**, keep `GameConfig.LoadAndRegister()` once. Replace the existing OpenUI call after it with:
 
 ```csharp
-GameCore.UI.OpenUI(UILayer.Second, GameUI.WinNotice, callback: view =>
+GameCore.UI.OpenUI(UILayer.Second, UIName.WinNotice, callback: view =>
 {
     if (view == null)
     {
@@ -84,7 +84,7 @@ From here, use this one line in your button handler or level-completion method (
 GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 ```
 
-Each broadcast prints once while the window is open. Close it with `GameCore.UI.CloseUI(GameUI.WinNotice)`; later broadcasts produce no output. RegisterEvent subscribes a listener, not an event-name definition.
+Each broadcast prints once while the window is open. Close it with `GameCore.UI.CloseUI(UIName.WinNotice)`; later broadcasts produce no output. RegisterEvent subscribes a listener, not an event-name definition.
 
 ## Choose the notification
 
