@@ -2,24 +2,29 @@
 
 English · [简体中文](README.zh-CN.md)
 
-**Version:** v0.3.0 (Google Sheets config) · **Unity:** 6.6 (6000.6.5f1, not LTS)
+**Version:** v0.3.1 (Google Sheets config) · **Unity:** 6.6 (6000.6.5f1, not LTS)
 
-[Download v0.3.0 (ZIP)](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.3.0.zip) · [Quick start](docs/quick-start.md)
+[Download v0.3.1 (ZIP)](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.3.1.zip) · [Quick start](docs/quick-start.md)
 
-These guides match **v0.3.0**. See the [release notes](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.3.0) and [migration steps](Build-in%20Managers%20Usage.md#from-v020-to-google-sheets). Keep downloaded code and guides together.
+These guides match **v0.3.1**. See the [release notes](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.3.1) and [migration steps](Build-in%20Managers%20Usage.md#01-from-v020-to-google-sheets). Keep downloaded code and guides together.
 
 Hello there ~ I'm Angus, a game developer. This is a small Unity framework for UI, events, resources, scenes and audio. Try the Demo, then use the same tools to make your own game.
 
-> **Simple is beautiful.** Keep things small, clear, and easy to change.
+> **Simple is beautiful.** Easy to start, easy to understand, easy to change.
 
-## Philosophy
+<a id="philosophy"></a>
 
-- **Make the flow explicit.** Register your content, then open the first screen.
-- **Know who cleans up.** Core owns services; UI owns windows; resource modules own their loaded assets.
-- **Use Unity's tools first.** Components, the Inspector and ordinary C# are enough for most tasks.
-- **Grow with the game.** Keep its rules and data in its own folder. Extract shared code when you need it.
+## 01 Philosophy
 
-## The big picture
+- **Keep everyday tasks direct.** Make configuration easy to edit and features easy to call.
+- **Make flow and ownership clear.** Initialization, loading and cleanup each have an explicit owner.
+- **Keep one source for each configuration.** Edit the source; let tools generate code and runtime data.
+- **Use the right existing tools.** Inspector for component settings, sheets for bulk configuration, ordinary C# for game logic.
+- **Grow from real needs.** Keep gameplay in your game. Extract shared code when the same need comes up again.
+
+<a id="the-big-picture"></a>
+
+## 02 The big picture
 
 **GameCore** provides five services and stays alive across scene changes. Your game and the removable Demo use the same API.
 
@@ -40,9 +45,11 @@ flowchart TB
 
 UI loads windows through Resource. Scene coordinates loading, fades and UI cleanup. Startup and lifecycle details are in [Core](docs/core.md).
 
-## Pick the module you need
+<a id="pick-the-module-you-need"></a>
 
-New here? Start with [your first window](docs/quick-start.md#create-your-first-window). For a specific task, pick a guide below. [Google setup](docs/config-setup.md) is a one-time step for editing tables.
+## 03 Pick the module you need
+
+New here? Start with [your first window](docs/quick-start.md#02-create-your-first-window). For a specific task, pick a guide below. [Google setup](docs/config-setup.md) is a one-time step for editing tables.
 
 | I want to… | Guide | Entry |
 | --- | --- | --- |
@@ -56,7 +63,9 @@ New here? Start with [your first window](docs/quick-start.md#create-your-first-w
 | Define and change scenes | [Scenes](docs/scenes.md) | `Scene` tab → `SceneName.Menu` |
 | Play a sound | [Audio](docs/audio.md) | `GameCore.Sound` |
 
-## Where things belong
+<a id="where-things-belong"></a>
+
+## 04 Where things belong
 
 Shared code stays in Framework; each game owns its source settings and generated configuration. Existing projects can follow [migration notes](Build-in%20Managers%20Usage.md).
 
@@ -71,9 +80,11 @@ Assets/
     └── MyGame/        Your scenes, content, source settings and generated data
 ```
 
-Start reading the Demo at [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs), [UI.csv](Assets/GameContent/Demo/Editor/Tables/Generated/UI.csv) or [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs). CSV files are generated snapshots; edit Google Sheets to change configuration. Once your own game runs, you can [delete the whole Demo](docs/quick-start.md#remove-the-demo).
+Start reading the Demo at [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs), [UI.csv](Assets/GameContent/Demo/Editor/Tables/Generated/UI.csv) or [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs). CSV files are generated snapshots; edit Google Sheets to change configuration. Once your own game runs, you can [delete the whole Demo](docs/quick-start.md#03-remove-the-demo).
 
-## Try it
+<a id="try-it"></a>
+
+## 05 Try it
 
 The Demo includes local generated data. No Google account or credentials are needed to play.
 
@@ -87,11 +98,13 @@ The Demo includes local generated data. No Google account or credentials are nee
 
 **Next: [create your first window](docs/quick-start.md)** · [Build your game](docs/build.md)
 
-## Environment & scope
+<a id="environment--scope"></a>
+
+## 06 Environment & scope
 
 Addressables **2.11.2** · uGUI **2.6.0** · Built-in rendering · old Input Manager.
 
-The download and guides above use **v0.3.0**, which introduces Google Sheets configuration. `0.x` APIs may change. Existing games can keep their pinned version and its bundled guides. See [Editor upgrades](docs/upgrading.md), [older API migration](Build-in%20Managers%20Usage.md) and [what has been verified](docs/build.md#verification-scope).
+The download and guides above use **v0.3.1**, which includes Google Sheets configuration. `0.x` APIs may change. Existing games can keep their pinned version and its bundled guides. See [Editor upgrades](docs/upgrading.md), [older API migration](Build-in%20Managers%20Usage.md) and [what has been verified](docs/build.md#04-verification-scope).
 
 Gameplay parameters can stay in the Inspector or game-owned ScriptableObjects. Text/localization and sound-playback tables are deferred; AudioClip resource registration is included. Saves, full-game pause, platform input and release validation are left to your game's needs.
 

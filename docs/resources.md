@@ -4,7 +4,9 @@
 
 **Register → Load → Use → Unload.** Resource modules own shared assets; your game decides their lifetime. UIManager loads its own windows, so UI-only projects can skip this page.
 
-## Try it
+<a id="try-it"></a>
+
+## 01 Try it
 
 First add the Cue row to your Google Sheets [Resource table](resource-tables.md), with **Type = AudioClip** and **Module = Main**, then click **Update Config**. This generates `MyGame.MainResources` with ID `MyGame.Main`. Wait for compilation.
 
@@ -70,7 +72,9 @@ var main = GameCore.Resource.GetResourceModule<MyGame.MainResources>(MyGame.Main
 
 After successful loading, gameplay uses `main.Cue` directly. Before loading or after unloading, the property returns null. Unload releases assets but leaves the module registered; reuse the same instance to load again. Register once per Core lifetime, not for each scene or new resource row.
 
-## Conventions
+<a id="conventions"></a>
+
+## 02 Conventions
 
 - Keep game-owned Module Ids stable. Generated internal resource numbers are not save/network IDs.
 - Commit generated snapshots, manifest, code and JSON together; see [Resource tables](resource-tables.md). Handwritten BaseResourceModule subclasses remain supported.

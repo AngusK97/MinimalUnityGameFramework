@@ -6,7 +6,9 @@
 
 The bundled Demo already includes generated configuration. You can run it without a Google account, credentials or an internet connection. Set up your own source below when you want to change tables.
 
-## Daily workflow
+<a id="daily-workflow"></a>
+
+## 01 Daily workflow
 
 1. Edit the Google Sheets tabs in your configuration folder.
 2. In Unity, open **Framework → Config**, select your game and click **Update Config**. Wait for compilation.
@@ -16,7 +18,9 @@ Each update reads the current table contents from Google Sheets and writes only 
 
 There is no completed-table selection or extra publish step. A valid row can be imported while someone is still editing it, so agree with teammates before importing an unfinished change.
 
-### Read the result
+<a id="read-the-result"></a>
+
+### 1.1 Read the result
 
 Valid tables update; an invalid table keeps its last successful version. Fix its reported error and update again.
 
@@ -33,13 +37,17 @@ These examples use the Demo tables. **Successful update:** all tables passed val
 
 </details>
 
-## First-time setup
+<a id="first-time-setup"></a>
 
-Follow [Config setup](config-setup.md#first-time-setup) to prepare Google access and connect Unity. Use the UI table from Quick start or the Item example below as your first table.
+## 02 First-time setup
 
-## Add a table
+Follow [Config setup](config-setup.md#01-first-time-setup) to prepare Google access and connect Unity. Use the UI table from Quick start or the Item example below as your first table.
 
-This **Item** example is for ordinary game data. On your first connection, follow [Config setup](config-setup.md#first-time-setup) and use these rows in step 6. If Unity is already connected, use a workbook directly inside your configuration folder and a tab named **Item**. Enter the three rows from A1:
+<a id="add-a-table"></a>
+
+## 03 Add a table
+
+This **Item** example is for ordinary game data. On your first connection, follow [Config setup](config-setup.md#01-first-time-setup) and use these rows in step 6. If Unity is already connected, use a workbook directly inside your configuration folder and a tab named **Item**. Enter the three rows from A1:
 
 | Id | Name | Price |
 | --- | --- | --- |
@@ -50,7 +58,9 @@ In Unity, open **Framework → Config**, select **MyGame**, click **Update Confi
 
 **Success:** `Assets/GameContent/MyGame/Scripts/Generated/ItemTable.g.cs` exists and the result reports the Item table. Continue below to load and read it.
 
-## Read a table
+<a id="read-a-table"></a>
+
+## 04 Read a table
 
 In your game's startup, **after Core is ready and before opening UI or changing scenes**, load the generated configuration once per Core lifetime:
 
@@ -71,7 +81,9 @@ The tab **Item** generates the query entry **ItemTable** and row type **ItemConf
 
 `GameConfig.LoadAndRegister()` loads local table data and registers UI and scene IDs. Resource modules still need explicit registration and loading; follow [Resources](resources.md) before using `main.Cue`.
 
-## Table format
+<a id="table-format"></a>
+
+## 05 Table format
 
 Use one tab per table. Table names must be unique across all workbooks in the selected folder.
 
@@ -87,7 +99,9 @@ The Demo's **UI** tab shows this layout in Google Sheets: field names in row 1, 
 
 `Id` must be `string` or `int`. Use ASCII C# identifiers for table and field names. Enter literal values, with `true` / `false` for booleans and a dot for decimals. Formulas are not supported in this version. `ref:Item` means that cell must contain an existing Item ID.
 
-### UI, resources and scenes
+<a id="ui-resources-and-scenes"></a>
+
+### 5.1 UI, resources and scenes
 
 These tables use fixed headers. Follow the matching guide:
 

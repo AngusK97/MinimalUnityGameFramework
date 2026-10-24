@@ -2,17 +2,23 @@
 
 [框架总览](../README.zh-CN.md) · [开始使用](quick-start.zh-CN.md) · [English](events.md)
 
-**定义名称 → 订阅 → 广播 → 退订。** 发送通知时不必知道谁在监听。本例只在 Console 打印消息，不需要 UI 或配置表。
+**定义名称 → 订阅 → 广播 → 退订。** 用事件发送通知时，不必知道谁在监听。下面的例子只在 Console 打印消息，不需要 UI 或配置表。
 
-## 试试看
+<a id="试试看"></a>
 
-### 1. 准备场景
+## 01 试试看
 
-使用本仓库的 Unity 工程。新建空场景，将 [GameCore.prefab](../Assets/Framework/Prefabs/GameCore.prefab) 拖到 Hierarchy 最外层，保留已有设置。新建一个名为 **EventExample** 的空 GameObject。
+<a id="1-准备场景"></a>
 
-### 2. 定义名称
+### 1.1 准备场景
 
-在 `Assets/GameContent/MyGame/Scripts/` 保存 **GameEvents.cs**，没有目录就先创建。字符串常量就是事件名称，不需要枚举、配置表或预先登记。
+打开本仓库的 Unity 工程，新建一个空场景。将 [GameCore.prefab](../Assets/Framework/Prefabs/GameCore.prefab) 拖到 Hierarchy 最外层，保留已有设置，再新建一个名为 **EventExample** 的空 GameObject。
+
+<a id="2-定义名称"></a>
+
+### 1.2 定义名称
+
+在 `Assets/GameContent/MyGame/Scripts/` 中创建 **GameEvents.cs**；如果目录还不存在，先创建目录。这里用字符串常量作为事件名称，不需要枚举、配置表，也不用提前登记。
 
 ```csharp
 namespace MyGame
@@ -24,9 +30,11 @@ namespace MyGame
 }
 ```
 
-### 3. 订阅并广播
+<a id="3-订阅并广播"></a>
 
-在同目录保存 **EventExample.cs**，挂到 EventExample 对象上：
+### 1.3 订阅并广播
+
+在同一目录中创建 **EventExample.cs**，然后挂到 EventExample 对象上：
 
 ```csharp
 using Core;
@@ -71,21 +79,25 @@ namespace MyGame
 }
 ```
 
-按下 Play，**Console 应输出一次 `Level completed.`。** Start 中先订阅再广播，不会漏掉首次通知。GameCore 在 Awake 初始化，其他对象的 OnEnable 可能比它更早，因此本例等到 Start 并检查是否就绪。
+按下 Play，**Console 应输出一次 `Level completed.`。** Start 中先订阅、再广播，所以不会漏掉第一次通知。GameCore 在 Awake 中初始化，而其他对象的 OnEnable 可能更早执行，因此本例等到 Start 时才使用服务，并先检查 Core 是否就绪。
 
-### 4. 从游戏中广播
+<a id="4-从游戏中广播"></a>
 
-在通关方法或其他游戏脚本中，Core 就绪后用这一行发送（需要 `using Core; using MyGame;`）：
+### 1.4 从游戏中广播
+
+Core 就绪后，可以在通关方法或其他游戏脚本中用下面这一行发送通知（需要 `using Core; using MyGame;`）：
 
 ```csharp
 GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 ```
 
-每次广播都会调用一次监听方法。发送方只需知道事件名称，不需要持有 EventExample 对象。RegisterEvent 订阅的是监听器，不是定义事件名。
+每广播一次，监听方法就会执行一次。发送方只需要知道事件名称，不需要拿到 EventExample 对象。RegisterEvent 的作用是订阅监听方法，事件名称已经由前面的字符串常量定义好了。
 
-销毁 EventExample 对象时，OnDestroy 移除订阅。要检查清理效果，先从游戏中广播，再在 Play 期间从 Hierarchy 删除 EventExample，重新广播应不再输出它的消息。仅禁用组件不会退订。
+销毁 EventExample 对象时，OnDestroy 会移除订阅。可以这样检查：先从游戏脚本广播一次，再在 Play 期间从 Hierarchy 中删除 EventExample，然后再次广播。这时应该不再输出它的消息。仅仅禁用组件不会退订。
 
-## 选择通知方式
+<a id="选择通知方式"></a>
+
+## 02 选择通知方式
 
 | 操作 | 调用 |
 | --- | --- |
@@ -94,42 +106,44 @@ GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 | 立即通知 | `DispatchNow(GameEvents.LevelCompleted)` |
 | 下次事件更新时通知 | `Dispatch(GameEvents.LevelCompleted)` |
 
-- 使用游戏自己的字符串常量，ID 不能是空白，处理方法不能为 null。
-- Core 就绪后，在 Unity 主线程使用服务。Core 已负责事件更新，不要手调 OnUpdate。
-- 需要接收通知时订阅，不再需要时向保存的管理器退订。禁用组件不会自动退订。
-- 需要移除 lambda 时保留原委托；新写一个 lambda 是另一个监听器。
-- 事件**不重放历史**。稍后创建的接收者需读取当前游戏状态，并订阅后续变化。
+- 用游戏自己的字符串常量定义事件 ID。ID 不能为空或只有空白字符，处理方法不能为 null。
+- 等 Core 就绪后，在 Unity 主线程使用事件服务。Core 已经负责更新事件，不要手动调用 OnUpdate。
+- 需要接收通知时订阅，不再需要时，通过之前保存的管理器引用退订。禁用组件不会自动退订。
+- 如果之后需要移除 lambda 监听器，先保存原来的委托。重新写一个 lambda 会得到另一个监听器，无法用它移除原来的订阅。
+- 事件**不会重放过去的通知**。稍后创建的接收者需要读取当前游戏状态，并订阅后续变化。
 
-## 前后用法
+<a id="前后用法"></a>
 
-原 sender/数据接口仍可使用；不需要来源或数据时，选择简短签名：
+## 03 前后用法
+
+原来带 sender 和数据的接口仍然可以使用。如果不需要知道通知来自哪里，也不需要附带数据，就用更简短的无参写法：
 
 | | 带来源/数据的监听器 | 无参通知监听器 |
 | --- | --- | --- |
 | 处理方法 | `void OnLevelCompleted(object sender, string type, BaseEventArgs args)` | `void OnLevelCompleted()` |
 | 发送 | `GameCore.Event.DispatchNow(this, GameEvents.LevelCompleted)` | `GameCore.Event.DispatchNow(GameEvents.LevelCompleted)` |
 
-登记与退订仍使用相同方法名。接收者需要来源或数据时保留原有 `HandlerEvent` 签名；Demo 的 [LevelView.cs](../Assets/GameContent/Demo/Scripts/UI/LevelView.cs) 仍按当前关卡的 sender 过滤通关通知。
+两种写法使用相同的订阅和退订方法。接收者需要来源或数据时，保留原来的 `HandlerEvent` 签名即可。例如，Demo 的 [LevelView.cs](../Assets/GameContent/Demo/Scripts/UI/LevelView.cs) 仍然通过 sender 判断通关通知是否来自当前关卡。
 
 <details>
 <summary>可选：将事件连接到 UI</summary>
 
-完整 UI 用法可看 Demo 的 `DemoEvents.VolumeChanged`：[DataManager.cs](../Assets/GameContent/Demo/Scripts/DataManager.cs) 在音量变化后广播；[SettingsView.cs](../Assets/GameContent/Demo/Scripts/UI/SettingsView.cs) 在 OnShow 订阅并通过 RefreshVolume() 读取当前状态，在 OnClose 退订。先订阅再刷新，后续变化就有人接收。准备创建窗口时再看 [UI](ui.zh-CN.md)。
+想看事件如何配合 UI，可以参考 Demo 的 `DemoEvents.VolumeChanged`：[DataManager.cs](../Assets/GameContent/Demo/Scripts/DataManager.cs) 在音量变化后广播；[SettingsView.cs](../Assets/GameContent/Demo/Scripts/UI/SettingsView.cs) 在 OnShow 中订阅，再调用 RefreshVolume() 读取当前状态，并在 OnClose 中退订。先订阅再刷新，就能接住后续的变化。准备创建窗口时，可以接着看 [UI](ui.zh-CN.md)。
 
 </details>
 
 <details>
 <summary>需要时再看：顺序、数据、异常与清理</summary>
 
-无参 Action 与三参 HandlerEvent 监听器共用登记顺序和一次派发快照。回调中的订阅变化影响后续派发（包括嵌套派发），不改变当前快照。重复订阅分别保留，一次 UnRegisterEvent 只移除一份。无参派发给 HandlerEvent 传入 null sender/数据；Action 监听器忽略原重载传入的 sender/数据。
+无参 Action 和三参 HandlerEvent 监听器都会按订阅顺序执行。每次派发开始时，会保存一份监听器快照；回调中新增或移除订阅，只影响之后的派发（包括嵌套派发），不会改变当前这份快照。重复订阅会分别保留，一次 UnRegisterEvent 只移除其中一份。使用无参接口派发时，HandlerEvent 收到的 sender 和数据都为 null；使用原来的重载派发时，Action 监听器会忽略 sender 和数据。
 
-每次事件更新取出开始时的待处理队列；处理中新增的延迟事件留到下一批，重入 OnUpdate 不会提前刷新。
+每次更新只处理更新开始时已经排队的事件。处理期间新加入队列的延迟事件会留到下一批，即使再次进入 OnUpdate，也不会提前处理它们。
 
-携带数据时，派生 BaseEventArgs、实现 Clear()，调用 `DispatchNow(sender, eventId, args)` 或 `Dispatch(sender, eventId, args)`。延迟队列保留原引用，不复制，也不自动调用 Clear()；接收者用完前不要修改、清空或回收。
+如果通知需要携带数据，创建 BaseEventArgs 的派生类并实现 Clear()，再调用 `DispatchNow(sender, eventId, args)` 或 `Dispatch(sender, eventId, args)`。延迟队列只保留原来的数据引用，不会复制数据，也不会自动调用 Clear()。在接收者用完之前，不要修改、清空或回收这份数据。
 
-异常会记录，下一条登记监听继续。一次登记传入的多播委托视为一个条目：其中某项抛出，跳过该条目剩余项。直接指向已销毁 Unity 对象的调用项会被跳过；同条目内其他有效调用项仍执行，除非前项抛异常。混合多播条目在退订前仍保留原委托引用。闭包仍需显式退订；目标检查不能保证捕获对象安全。
+监听器抛出异常时，框架会记录错误，并继续执行下一条订阅。如果一次订阅传入了多播委托，它会被视为一个条目；其中某个方法抛出异常后，该条目剩下的方法都会被跳过。直接绑定到已销毁 Unity 对象的方法也会被跳过，但同一条目中其他有效方法仍会执行，除非前面的方法已经抛出异常。混合了多种调用目标的多播条目会一直保留原委托引用，直到退订。使用闭包时仍需显式退订：检查委托目标并不能保证闭包捕获的对象仍然可用。
 
-管理器销毁时清空订阅/队列，并停止后续回调。向已清理的旧实例登记或派发会抛 ObjectDisposedException；UnRegisterEvent 仍可安全用于收尾。关键操作是否成功应通过返回值或完成回调确认。
+管理器销毁时，会清空订阅和事件队列，并停止后续回调。继续通过已经清理的旧实例订阅或派发，会抛出 ObjectDisposedException；不过，仍然可以安全调用 UnRegisterEvent 完成清理。要确认关键操作是否成功，应检查返回值或完成回调。
 
 </details>
 

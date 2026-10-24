@@ -4,13 +4,19 @@
 
 **Define a name → Subscribe → Broadcast → Unsubscribe.** Send a notification without knowing who listens. This example prints a message in Console; it needs no UI or configuration table.
 
-## Try it
+<a id="try-it"></a>
 
-### 1. Prepare the scene
+## 01 Try it
+
+<a id="1-prepare-the-scene"></a>
+
+### 1.1 Prepare the scene
 
 Use this repository's Unity project. Create an empty scene, drag [GameCore.prefab](../Assets/Framework/Prefabs/GameCore.prefab) into Hierarchy at the top level, and keep its settings. Create an empty GameObject named **EventExample**.
 
-### 2. Define the name
+<a id="2-define-the-name"></a>
+
+### 1.2 Define the name
 
 Save **GameEvents.cs** in `Assets/GameContent/MyGame/Scripts/` (create the folders if needed). The string constant is the event's name; no enum, table or advance registration is needed.
 
@@ -24,7 +30,9 @@ namespace MyGame
 }
 ```
 
-### 3. Subscribe and broadcast
+<a id="3-subscribe-and-broadcast"></a>
+
+### 1.3 Subscribe and broadcast
 
 Save **EventExample.cs** beside it, then attach it to the EventExample object:
 
@@ -73,7 +81,9 @@ namespace MyGame
 
 Press Play. **Console should print `Level completed.` once.** Start subscribes before broadcasting, so the first notification cannot be missed. GameCore initializes in Awake; a different object's OnEnable may run before that, so this example waits for Start and checks readiness.
 
-### 4. Broadcast from your game
+<a id="4-broadcast-from-your-game"></a>
+
+### 1.4 Broadcast from your game
 
 In a level-completion method or another game script, use this line after Core is ready (`using Core; using MyGame;`):
 
@@ -85,7 +95,9 @@ Each broadcast invokes the listener once. The sender only needs the event name, 
 
 Destroying the EventExample object calls OnDestroy and removes its subscription. To check cleanup, broadcast from your game, delete EventExample in Hierarchy during Play, then broadcast again: its message should stop. Disabling the component alone does not unsubscribe it.
 
-## Choose the notification
+<a id="choose-the-notification"></a>
+
+## 02 Choose the notification
 
 | Action | Call |
 | --- | --- |
@@ -100,7 +112,9 @@ Destroying the EventExample object calls OnDestroy and removes its subscription.
 - Keep a lambda delegate if you need to remove it later; a new lambda is a different listener.
 - Events have **no history replay**. A receiver created later must read current game state and subscribe to future changes.
 
-## Before and after
+<a id="before-and-after"></a>
+
+## 03 Before and after
 
 The original sender/data API remains available; use the shorter signature when you need neither:
 

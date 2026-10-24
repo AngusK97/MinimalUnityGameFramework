@@ -2,7 +2,7 @@
 
 [Overview](README.md) · [简体中文](Build-in%20Managers%20Usage.zh-CN.md)
 
-**Start with [Quick start](docs/quick-start.md)** to build your first window; use these pages for daily work. These guides match v0.3.0. The fixed [v0.2.0 guides](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md) retain the earlier Inspector/SO workflow.
+**Start with [Quick start](docs/quick-start.md)** to build your first window; use these pages for daily work. These guides match v0.3.1. The fixed [v0.2.0 guides](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md) retain the earlier Inspector/SO workflow.
 
 | Task | Guide |
 | --- | --- |
@@ -19,14 +19,16 @@
 
 For the Editor/package upgrade, see [Moving to Unity 6.6](docs/upgrading.md). Existing games can stay pinned to their older framework and Editor. Migrate a separate copy when choosing the current framework.
 
-## From v0.2.0 to Google Sheets
+<a id="from-v020-to-google-sheets"></a>
+
+## 01 From v0.2.0 to Google Sheets
 
 1. Back up the working game. Before removing the old setup, copy its UI names, prefab paths, resource names/types and module IDs. Keep the Unity assets and their meta files.
-2. Follow [Config setup](docs/config-setup.md#first-time-setup). Create the **UI**, **Resource** and **Scene** tabs you need. The old UI entry Name becomes the new **Id**; the new **Name** column is only a description. Combine resource modules into the Resource tab using its **Module** column.
+2. Follow [Config setup](docs/config-setup.md#01-first-time-setup). Create the **UI**, **Resource** and **Scene** tabs you need. The old UI entry Name becomes the new **Id**; the new **Name** column is only a description. Combine resource modules into the Resource tab using its **Module** column.
 3. Remove the old UI.asset, resource module SO assets and their obsolete generated definitions from the migration copy after preserving their values. Back up old generated C# and meta files outside Assets before importing: the new importer does not overwrite files it does not own. Remove obsolete SO editor tools if you copied framework files over an older installation. If missing generated types prevent compilation, temporarily comment their callers until the first update completes.
 4. Click **Framework → Config → Update Config**, then wait for compilation. Restore and update callers as below. Commit the new source settings, generated CSV/manifest, C#, JSON and meta files together. Google Sheets is now the editing source.
 
-| Earlier call or data | v0.3.0 |
+| Earlier call or data | v0.3.1 |
 | --- | --- |
 | `GameUI.RegisterAll()` / `DemoUI.RegisterAll()` | `GameConfig.LoadAndRegister()` after Core is ready, once per Core lifetime |
 | `GameUI.Shop` / `DemoUI.Menu` | `UIName.Shop` / `UIName.Menu` |
@@ -40,11 +42,15 @@ Load GameConfig before creating resource modules. Resource registration and load
 
 The Demo includes generated local data and an initially unbound ConfigSource.json, so it runs without Google credentials. To edit its tables, import its three CSV snapshots into Sheets tabs named **UI**, **Resource** and **Scene**, then bind your own folder through the Config window. The first connection requires all three tables to import successfully or keeps the entire bundled snapshot; later updates can retain individual tables. The CSV files are snapshots, not a second editing source.
 
-## Earlier directory migration
+<a id="earlier-directory-migration"></a>
+
+## 02 Earlier directory migration
 
 To move from **v0.1.0 to v0.2.0**, rename `Assets/GameResources` to `Assets/Framework`, preserving its directory `.meta`; move `Assets/Scripts` and its `.meta` inside it, then rename `Prefab` and its `.meta` to `Prefabs`. Update InitScene's path in the native Scene List to `Assets/Framework/Scenes/InitScene.unity`. The directory move preserves GUIDs and public APIs; `GameContent/Demo` stays in place. Pinned **v0.1.0** keeps the old layout.
 
-## Earlier API migration
+<a id="earlier-api-migration"></a>
+
+## 03 Earlier API migration
 
 | Earlier template | Current approach |
 | --- | --- |

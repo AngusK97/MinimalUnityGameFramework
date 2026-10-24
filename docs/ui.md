@@ -4,7 +4,9 @@
 
 **Open or close a named window. UIManager loads and releases its instance.**
 
-## Open a window
+<a id="open-a-window"></a>
+
+## 01 Open a window
 
 Complete [Quick start](quick-start.md) or create a [UI table](ui-tables.md). Call `MyGame.GameConfig.LoadAndRegister()` once after Core is ready; this example uses `MyGame.UIName.Menu`.
 
@@ -24,7 +26,9 @@ GameCore.UI.OpenUI(UILayer.First, MyGame.UIName.Menu, callback: view =>
 
 Use `First` for a normal screen, `Second` for a popup. Reserve `Transition` for the transition overlay.
 
-## Close a window
+<a id="close-a-window"></a>
+
+## 02 Close a window
 
 | Where | Call |
 | --- | --- |
@@ -34,7 +38,9 @@ Use `First` for a normal screen, `Second` for a popup. Reserve `Transition` for 
 
 **Expected result:** close and reopen the window. It disappears, its instance is released, then a new instance appears.
 
-## Put logic in the right hook
+<a id="put-logic-in-the-right-hook"></a>
+
+## 03 Put logic in the right hook
 
 | Hook on your `UIBase` subclass | Use it for |
 | --- | --- |

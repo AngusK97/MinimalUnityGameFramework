@@ -4,7 +4,9 @@
 
 **GameCore prepares the shared services. Your startup script starts the game.**
 
-## Set it up
+<a id="set-it-up"></a>
+
+## 01 Set it up
 
 1. Drag [GameCore.prefab](../Assets/Framework/Prefabs/GameCore.prefab) into the entry scene at Hierarchy's top level. Keep its settings.
 2. Create an empty object and attach your startup script.
@@ -27,7 +29,9 @@ private void Start()
 
 For generated tables, call `MyGame.GameConfig.LoadAndRegister()` here once per Core lifetime, after [generating config](config.md). Do this before constructing resource modules, opening UI or requesting a scene. The services-only InitScene does not load game configuration.
 
-## What it owns
+<a id="what-it-owns"></a>
+
+## 02 What it owns
 
 | Entry | Responsibility |
 | --- | --- |
@@ -39,7 +43,9 @@ For generated tables, call `MyGame.GameConfig.LoadAndRegister()` here once per C
 
 Core assembles services in `Awake()` and pumps UI requests and queued events in `Update()`. Unity drives shown views through `UIBase.OnUpdate()`.
 
-## A few things to keep in mind
+<a id="a-few-things-to-keep-in-mind"></a>
+
+## 03 A few things to keep in mind
 
 - The prefab provides Canvas layers, transition UI, EventSystem and an AudioListener. Keep one active set.
 - Keep Core across levels; restart gameplay through your controller, not by reinitializing Core.

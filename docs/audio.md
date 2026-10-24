@@ -4,7 +4,9 @@
 
 Play effects or control a music layer. The framework reuses audio sources.
 
-## Try it
+<a id="try-it"></a>
+
+## 01 Try it
 
 Complete the [resource example](resources.md) to register and load `MainResources` after Core is ready. Add this method to your button-handling component (`using Core; using Sound; using UnityEngine;`):
 
@@ -29,7 +31,9 @@ In the Button Inspector, expand **On Click ()**, click **+**, drag in the scene 
 
 `PlaySound` defaults to volume 1, pitch 1, no loop. For looping music, use `Play`.
 
-## Conventions
+<a id="conventions"></a>
+
+## 02 Conventions
 
 Core provides `UI`, `Background`, `Environment` and `Event` layers. Choose `SoundLayer` by purpose.
 

@@ -4,7 +4,9 @@
 
 Load a level behind an overlay, close the old UI and wait for your scene preparation.
 
-## Try it
+<a id="try-it"></a>
+
+## 01 Try it
 
 1. Save **Level01.unity** in `Assets/GameContent/MyGame/Content/Scenes/` with a camera and visible object. Remove the camera's extra AudioListener; Core has one. Select the saved **Level01.unity asset in Project** and check **Addressable** in its Inspector.
 2. Here is the **Scene** table. For your first connection, enter it at step 6 of [Config setup](config-setup.md). If already connected, open the existing **Scene** tab or create one if missing. Enter all rows from A1 in a new tab; in an existing tab, keep its first two rows and add only the **Level01** data row.
@@ -32,7 +34,9 @@ GameCore.Scene.TryTransition(
 
 **Expected result:** one click shows the overlay, closes the old window and displays the target scene. Single loading replaces the old scene; Core persists. Build Addressables for the Player target before testing outside the Editor. A load failure preserves old UI and shows Retry; check Console and the panel's error.
 
-## Conventions
+<a id="conventions"></a>
+
+## 02 Conventions
 
 - `TryTransition` and `TryTransitionAddress` return true when accepted. Busy or invalid requests return false without queuing and call `completed(false, error)` once immediately. The callback above therefore handles both rejection and later failure.
 - Old UI closes only after a successful load. If an accepted transition fails, inspect `LastError`, then use the Retry panel or `RetryTransition()`. A rejected request does not create a retry operation.

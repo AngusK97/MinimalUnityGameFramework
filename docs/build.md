@@ -4,7 +4,9 @@
 
 **Entry scene → Addressables → Player.** A Player is the app you can run outside the Editor.
 
-## Build the Demo
+<a id="build-the-demo"></a>
+
+## 01 Build the Demo
 
 1. Open **File → Build Profiles**. Under **Platforms**, select an installed target and **Switch Platform** if needed.
 2. Exit Play and wait for compilation. The bundled Demo config is ready; no cloud setup is needed. If you changed its connected Sheets source, run **Framework → Config → Update Config** first.
@@ -13,7 +15,9 @@
 
 The helper builds Addressables and uses DemoStart without changing the saved scene list. It is deleted with Demo.
 
-## Build your game
+<a id="build-your-game"></a>
+
+## 02 Build your game
 
 1. Open **File → Build Profiles**. Select your target under **Platforms** and **Switch Platform** if needed.
 2. Select **Scene List** on the left. Add `MyGame/Scenes/Start.unity`, put it first and enable it. Remove InitScene if unneeded; keep other native scenes your game uses. **Open Scene List** opens this same shared list.
@@ -37,7 +41,9 @@ Add a custom Build Profile. The shared list is enough for your first build.
 
 </details>
 
-## If something fails
+<a id="if-something-fails"></a>
+
+## 03 If something fails
 
 | Symptom | First check |
 | --- | --- |
@@ -53,7 +59,9 @@ Add a custom Build Profile. The shared list is enough for your first build.
 | Player shows only a background | Put your own entry first; the default saved list contains only InitScene. |
 | Scene load fails | Check startup config loading, the Scene row and Addressables content for the selected target. Raw string keys use TryTransitionAddress. |
 
-## Verification scope
+<a id="verification-scope"></a>
+
+## 04 Verification scope
 
 Checked on **2026-10-24** with Unity **6000.6.5f1**, Addressables **2.11.2** and uGUI **2.6.0**:
 
@@ -63,9 +71,9 @@ Checked on **2026-10-24** with Unity **6000.6.5f1**, Addressables **2.11.2** and
 - The Demo Player rendered its menu and opened Settings with Escape. **18 simulated Google transport groups** passed.
 - Real Google authentication and import passed in Unity with the three Demo tables: first connection, unchanged output, invalid-table retention and recovery. The cloud test values were restored.
 
-**Still unverified:** the full native mouse/keyboard game loop, audible output, other platforms and IL2CPP/release builds. Other platforms need their own build and device checks; this does not indicate a known incompatibility. No cloud credentials are bundled. Follow [first-time setup](config-setup.md#first-time-setup) to connect your own source.
+**Still unverified:** the full native mouse/keyboard game loop, audible output, other platforms and IL2CPP/release builds. Other platforms need their own build and device checks; this does not indicate a known incompatibility. No cloud credentials are bundled. Follow [first-time setup](config-setup.md#01-first-time-setup) to connect your own source.
 
-Validation helpers ran only in temporary copies and are not part of the framework. These results cover the code included in v0.3.0; older releases keep their own guides.
+Validation helpers ran only in temporary copies and are not part of the framework. These results cover the code included in v0.3.1; older releases keep their own guides.
 
 [Editor upgrades](upgrading.md) · Unity references: [Build Profiles](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profiles.html) and [Scene List](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profile-scene-list.html).
 

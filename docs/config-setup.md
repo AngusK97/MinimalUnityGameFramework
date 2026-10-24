@@ -4,11 +4,15 @@
 
 **Connect Google Sheets to Unity once, then use Update Config for later edits.** The bundled Demo runs without this setup; connect your own source when you want to edit tables.
 
-## First-time setup
+<a id="first-time-setup"></a>
+
+## 01 First-time setup
 
 You need a Google account and permission to create a Cloud project and a service account key. A service account is the account Unity uses to read your shared folder.
 
-### Prepare Google access
+<a id="prepare-google-access"></a>
+
+### 1.1 Prepare Google access
 
 1. **Create a Cloud project.** Open [Google Cloud Console](https://console.cloud.google.com/projectcreate), name it something like `MyGame Config` and create it. Select that project before continuing. [Google's project guide](https://developers.google.com/workspace/guides/create-project).
 
@@ -20,9 +24,11 @@ You need a Google account and permission to create a Cloud project and a service
 
 5. **Create and share a Drive folder.** In [Google Drive](https://drive.google.com/), create `MyGame Config`. Share it with the service account's email shown in Cloud Console—the same value as `client_email` in the key file—as **Viewer**. Uncheck **Notify people** and share. Keep general access restricted; invite designers as **Editor** if needed. This direct sharing needs no domain-wide delegation. [Google's sharing guide](https://developers.google.com/workspace/guides/create-credentials#access-google-workspace-files-directly-with-a-service-account).
 
-### Create and connect a table
+<a id="create-and-connect-a-table"></a>
 
-6. **Create your first table.** Inside the shared Drive folder, choose **New → Google Sheets → Blank spreadsheet**. Use the table from the tutorial you are following, such as **UI** with the [Quick start rows](quick-start.md#3-connect-and-update-the-ui-table), **Item** with the [ordinary-data example](config.md#add-a-table), or the Resource / Scene table from its guide. Rename the first tab accordingly and enter that example from A1. The workbook's name is up to you; the tab name becomes the table name. Put workbooks directly in the folder, without subfolders or shortcuts.
+### 1.2 Create and connect a table
+
+6. **Create your first table.** Inside the shared Drive folder, choose **New → Google Sheets → Blank spreadsheet**. Use the table from the tutorial you are following, such as **UI** with the [Quick start rows](quick-start.md#23-connect-and-update-the-ui-table), **Item** with the [ordinary-data example](config.md#03-add-a-table), or the Resource / Scene table from its guide. Rename the first tab accordingly and enter that example from A1. The workbook's name is up to you; the tab name becomes the table name. Put workbooks directly in the folder, without subfolders or shortcuts.
 
 7. **Connect Unity.** Create `Assets/GameContent/MyGame/` if needed. Open **Framework → Config**, select that folder in **Game**, enter **Namespace = MyGame**, and paste the folder ID into **Google Drive Folder ID**. In a URL such as `https://drive.google.com/drive/folders/FOLDER_ID`, copy only `FOLDER_ID`. Choose the downloaded key in **Service Account JSON**.
 

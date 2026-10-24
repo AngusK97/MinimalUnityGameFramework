@@ -2,15 +2,17 @@
 
 [框架总览](../README.zh-CN.md) · [开始使用](quick-start.zh-CN.md) · [English](core.md)
 
-**GameCore 准备公共服务，自己的启动脚本负责开始游戏。**
+**GameCore 负责准备共用服务，你的启动脚本负责开始游戏。**
 
-## 配置入口
+<a id="配置入口"></a>
+
+## 01 配置入口
 
 1. 将 [GameCore.prefab](../Assets/Framework/Prefabs/GameCore.prefab) 拖入入口场景，放在 Hierarchy 最外层，保留已有设置。
 2. 创建空对象，挂上自己的启动脚本。
-3. 在 `Start()` 中检查 `GameCore.IsReady`，再使用服务。
+3. 在 `Start()` 中检查 `GameCore.IsReady`，确认就绪后再使用服务。
 
-将此方法放入启动类（需要 `using Core; using UnityEngine;`）。完整的启动类及打开窗口的示例见[开始使用](quick-start.zh-CN.md)。
+把下面的方法放进启动类（需要 `using Core; using UnityEngine;`）。包含打开窗口逻辑的完整示例见[开始使用](quick-start.zh-CN.md)。
 
 ```csharp
 private void Start()
@@ -25,27 +27,31 @@ private void Start()
 }
 ```
 
-使用生成表时，先[生成配置](config.zh-CN.md)，再在此处调用 `MyGame.GameConfig.LoadAndRegister()`，每个 Core 生命周期一次。它应早于资源模块创建、UI 打开和场景请求。只初始化服务的 InitScene 不加载游戏配置。
+如果使用生成的配置表，先[生成配置](config.zh-CN.md)，再在这里调用 `MyGame.GameConfig.LoadAndRegister()`。每个 Core 生命周期只调用一次，并且要在创建资源模块、打开 UI 或请求切换场景之前完成。InitScene 只初始化服务，不会加载游戏配置。
 
-## 它负责什么
+<a id="它负责什么"></a>
+
+## 02 它负责什么
 
 | 入口 | 职责 |
 | --- | --- |
 | `GameCore.UI` | 窗口请求、实例与 UI 层级 |
 | `GameCore.Event` | 即时与排队通知 |
 | `GameCore.Resource` | 资源访问与已登记的资源模块 |
-| `GameCore.Scene` | 受控场景转场 |
+| `GameCore.Scene` | 场景加载、遮罩与转场流程 |
 | `GameCore.Sound` | 分层音频播放 |
 
-Core 在 `Awake()` 组装服务，在 `Update()` 处理 UI 请求和排队事件。Unity 通过 `UIBase.OnUpdate()` 更新已显示的窗口。
+Core 在 `Awake()` 中初始化各项服务，在 `Update()` 中处理 UI 请求和排队等待的事件。Unity 通过 `UIBase.OnUpdate()` 更新已经显示的窗口。
 
-## 几件需要记住的小事
+<a id="几件需要记住的小事"></a>
 
-- 预制体提供 Canvas 层级、转场 UI、EventSystem 和 AudioListener，只保留一套启用的设施。
-- 跨关卡保留 Core，通过自己的控制器重开玩法，不要重新初始化 Core。
-- 游戏规则、存档、UI 标识和导航放在自己的游戏目录；游戏选择首个场景，Core 不登记 Demo 菜单。
-- 五个管理器必须属于 Core 自身层级。结束生命周期时，销毁**整个 Core 根对象**。
+## 03 几件需要记住的小事
 
-**预期结果：** `GameCore.IsReady` 为 true。共用 InitScene 单独运行时只准备服务，不显示游戏菜单。
+- 预制体已经包含 Canvas 层级、转场 UI、EventSystem 和 AudioListener，运行时只保留一套启用的组件。
+- 切换关卡时保留 Core。需要重新开始游戏时，通过自己的控制器重置游戏，不要重新初始化 Core。
+- 游戏规则、存档、UI 标识和导航逻辑放在自己的游戏目录中。由游戏决定从哪个场景开始，Core 不会登记 Demo 菜单。
+- 五个管理器都必须放在 Core 自身的层级中。不再需要 Core 时，销毁**整个 Core 根对象**。
+
+**预期结果：** `GameCore.IsReady` 为 true。单独运行共用的 InitScene 时，只会准备服务，不会显示游戏菜单。
 
 下一步：[UI](ui.zh-CN.md)。

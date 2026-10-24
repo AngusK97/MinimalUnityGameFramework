@@ -4,7 +4,9 @@
 
 **Edit the Resource tab → Update Config → Load a module → Use main.Cue.** A module groups assets with the same loading lifetime. For a component's own fixed asset, an Inspector reference may be enough.
 
-## Add resources
+<a id="add-resources"></a>
+
+## 01 Add resources
 
 1. Put **cue.wav** in `Assets/GameContent/MyGame/Content/Audio/`. Select it in **Project** and check **Addressable** in its Inspector.
 2. Here is the **Resource** table. For your first connection, enter it at step 6 of [Config setup](config-setup.md). If already connected, open the existing **Resource** tab or create one if missing. Enter all rows from A1 in a new tab; in an existing tab, keep its first two rows and add only the **Cue** data row.
@@ -26,7 +28,9 @@
 
 Assets must exist and have loadable Addressables entries. Check **Addressable** for each referenced asset; its location under GameContent alone is not enough. For sprites, use a Single-mode texture or a standalone Sprite main asset; sliced sprites and other sub-assets are unsupported.
 
-## Use a module
+<a id="use-a-module"></a>
+
+## 02 Use a module
 
 After Core is ready, call `GameConfig.LoadAndRegister()`. Create and register each required resource module once, then load it explicitly. Follow the complete [Resources example](resources.md) for startup, failure and cleanup.
 
@@ -38,7 +42,9 @@ GameCore.Sound.PlaySound(SoundLayer.UI, main.Cue);
 
 This line needs `using Core; using Sound;`. Property access does not trigger loading. Adding a row requires no new startup registration; a new module needs explicit integration.
 
-## Change resources
+<a id="change-resources"></a>
+
+## 03 Change resources
 
 - **Add or replace:** edit the row, update config, then use the generated property. Keeping Id preserves callers.
 - **Move an asset:** update AssetPath and import again.

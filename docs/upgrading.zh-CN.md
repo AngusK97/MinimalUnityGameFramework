@@ -2,9 +2,11 @@
 
 [框架总览](../README.zh-CN.md) · [开始使用](quick-start.zh-CN.md) · [English](upgrading.md)
 
-**保留能运行的旧版，在另一份副本中迁移，再对比。** 已有游戏可以继续固定原框架与 Editor；是否采用当前基线，单独决定。
+**保留能正常运行的旧版，在另一份副本中迁移，再比较结果。** 已有游戏可以继续使用原来的框架和 Editor 版本，不必跟着本项目升级；是否采用下面这套版本，可以单独决定。
 
-## 当前基线
+<a id="当前基线"></a>
+
+## 01 当前基线
 
 | 项目 | 版本／选择 |
 | --- | --- |
@@ -15,26 +17,30 @@
 | 旧 VR 模块 | 从 manifest 移除 `com.unity.modules.vr` |
 | 渲染／输入 | 保留 Built-in Render Pipeline／旧 Input Manager |
 
-Editor 升级本身不要求改用 URP 或新输入系统。v0.3.0 还调整了配置与场景 ID API；采用这个框架版本时，按[用法索引与迁移](../Build-in%20Managers%20Usage.zh-CN.md)处理。
+升级 Editor 不要求同时改用 URP 或新输入系统。框架 v0.3.1 还调整了配置和场景 ID API；如果也要升级到这个框架版本，请按[用法索引与迁移](../Build-in%20Managers%20Usage.zh-CN.md)中的说明调整。
 
-## 在独立副本中迁移
+<a id="在独立副本中迁移"></a>
 
-1. 提交或备份能运行的工程，包括 Assets、Packages、ProjectSettings 和 meta 文件。保留可由原 Editor 打开的分支或副本，不要直接用新版打开唯一的工作副本。
-2. 通过 **Unity Hub → Unity 6.6（6000.6.5f1）** 打开迁移副本，等待包解析、资产导入和编译。迁移后的 manifest 与 lock 文件一起保留；不能把复用旧 Library 缓存当作干净导入已通过。
-3. 先核对上面的包变更和 Console 第一条错误，再决定是否需要改玩法代码。本次迁移不打开、升级或替换其他游戏仓库中的框架。
-4. 使用所选框架版本对应的配置流程。v0.3.0 先按[配置迁移](../Build-in%20Managers%20Usage.zh-CN.md#从-v020-迁移到-google-sheets)处理，再执行 **Framework → Config → Update Config**。生成快照、清单、C#、JSON 和 meta 一起维护。
-5. 在 **File → Build Profiles** 的 **Platforms** 中选择目标，需要时点击 **Switch Platform**，核对左侧共享的 **Scene List**。通过 **Build → New Build → Default Build Script** 重新构建 Addressables，再回目标平台构建新的 Player；不能用旧资源包或旧 Player 证明新组合已通过。
+## 02 在独立副本中迁移
 
-Unity 6 中，首个窗口的脚本通过 **Create → Scripting → MonoBehaviour Script** 创建。Build Profiles 替代旧 Build Settings 流程；[开始使用](quick-start.zh-CN.md)与[构建](build.zh-CN.md)已按当前标签说明。
+1. 提交或备份能正常运行的工程，包括 Assets、Packages、ProjectSettings 和 meta 文件。保留一个仍能用原 Editor 打开的分支或副本，不要直接用新版打开唯一的工作副本。
+2. 通过 **Unity Hub → Unity 6.6（6000.6.5f1）** 打开迁移副本，等待包解析、资产导入和编译完成。迁移后的 manifest 和 lock 文件要一起保留。如果沿用了旧的 Library 缓存，这次成功导入还不能证明从头导入也能通过。
+3. 先核对上面的包变更，并查看 Console 中的第一条错误，再决定是否需要修改游戏代码。迁移这份工程时，不要顺带打开、升级或替换其他游戏仓库中的框架。
+4. 使用与你选择的框架版本对应的配置流程。v0.3.1 需要先完成[配置迁移](../Build-in%20Managers%20Usage.zh-CN.md#01-从-v020-迁移到-google-sheets)，再执行 **Framework → Config → Update Config**。生成的快照、清单、C#、JSON 和 meta 文件要一起维护。
+5. 打开 **File → Build Profiles**，在 **Platforms** 中选择目标平台，需要切换时点击 **Switch Platform**，并核对左侧共享的 **Scene List**。通过 **Build → New Build → Default Build Script** 重新构建 Addressables，再回到目标平台构建新的 Player。旧资源包或旧 Player 能运行，并不代表新的 Editor 和包版本组合也已通过验证。
 
-## 使用迁移副本前检查
+在 Unity 6 中，为第一个窗口创建脚本时，使用 **Create → Scripting → MonoBehaviour Script**。构建流程也从原来的 Build Settings 改为 Build Profiles；[开始使用](quick-start.zh-CN.md)和[构建](build.zh-CN.md)教程都已使用当前菜单名称。
 
-- 运行 DemoStart：菜单 → Start → 键盘通关 → Play again → Menu → Settings，检查 Console、渐变与多轮运行。
-- 运行自己的入口和 UI，核对登记、生成 ID、事件和资源借用是否符合预期。
-- 在一次性副本中删除 `Assets/GameContent/Demo` 与 `Demo.meta`。保留 GameContent 和 `.gitkeep`，重新导入、运行自己的入口或只初始化服务的 InitScene，再构建资源内容与 Player，不应依赖任何 Demo 类型、资产或构建菜单。
-- 打开新的 Player，检查真实界面、输入和音频，记录实际验收的目标平台；编辑器检查不能代替设备检查。
+<a id="使用迁移副本前检查"></a>
 
-[验证范围](build.zh-CN.md#验证范围)区分此前基线检查与当前 main 的新配置流程。自己的游戏完成验收之前，继续保留旧分支或副本。
+## 03 使用迁移副本前检查
+
+- 运行 DemoStart，按这个顺序试一遍：菜单 → Start → 用键盘通关 → Play again → Menu → Settings。查看 Console 是否报错、渐变是否正常，并多跑几轮。
+- 运行自己的入口和 UI，检查登记、生成 ID、事件和借用的资源是否仍然符合预期。
+- 另建一份用于测试的副本，删除其中的 `Assets/GameContent/Demo` 和 `Demo.meta`，保留 GameContent 和 `.gitkeep`。重新导入，运行自己的入口或只初始化服务的 InitScene，再构建资源内容和 Player。整个过程都不应依赖 Demo 的类型、资产或构建菜单。
+- 打开新构建的 Player，实际检查界面、输入和音频，并记录测试过的目标平台。Editor 中通过检查，不能代替设备上的测试。
+
+[验证范围](build.zh-CN.md#04-验证范围)分别说明了之前的基线检查，以及当前 main 中的新配置流程。在自己的游戏通过验收之前，继续保留旧分支或副本。
 
 <details>
 <summary>Unity 参考资料</summary>

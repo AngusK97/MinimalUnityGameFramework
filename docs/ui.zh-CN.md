@@ -2,13 +2,15 @@
 
 [框架总览](../README.zh-CN.md) · [开始使用](quick-start.zh-CN.md) · [English](ui.md)
 
-**按名称打开或关闭窗口，UIManager 负责加载和释放实例。**
+**按名称打开或关闭窗口，实例的加载和释放交给 UIManager。**
 
-## 打开窗口
+<a id="打开窗口"></a>
 
-完成[开始使用](quick-start.zh-CN.md)，或创建 [UI 配置表](ui-tables.zh-CN.md)，在 Core 就绪后调用一次 `MyGame.GameConfig.LoadAndRegister()`。示例使用 `MyGame.UIName.Menu`。
+## 01 打开窗口
 
-需要 `using Core; using UI;`。将代码放在按钮点击方法，或启动脚本 `Start()` 的 `GameConfig.LoadAndRegister()` 之后：
+先完成[开始使用](quick-start.zh-CN.md)，或创建 [UI 配置表](ui-tables.zh-CN.md)。等 Core 就绪后，调用一次 `MyGame.GameConfig.LoadAndRegister()`。下面的示例使用 `MyGame.UIName.Menu`。
+
+需要 `using Core; using UI;`。把下面的代码放到按钮点击方法中，或者放进启动脚本的 `Start()`，接在 `GameConfig.LoadAndRegister()` 后面：
 
 ```csharp
 GameCore.UI.OpenUI(UILayer.First, MyGame.UIName.Menu, callback: view =>
@@ -24,44 +26,48 @@ GameCore.UI.OpenUI(UILayer.First, MyGame.UIName.Menu, callback: view =>
 
 普通界面用 `First`，弹窗用 `Second`；`Transition` 留给转场遮罩。
 
-## 关闭窗口
+<a id="关闭窗口"></a>
+
+## 02 关闭窗口
 
 | 调用位置 | 调用方式 |
 | --- | --- |
 | 游戏代码 | `GameCore.UI.CloseUI(MyGame.UIName.Menu)` |
 | 窗口内部 | `CloseSelf()` |
-| 一起关闭当前请求 | `GameCore.UI.CloseAll()` |
+| 关闭当前所有窗口（含加载中） | `GameCore.UI.CloseAll()` |
 
-**预期结果：** 关闭再打开窗口。窗口消失、实例释放，随后出现新实例。
+**预期结果：** 关闭窗口时，窗口消失，实例被释放；再次打开时，会创建一个新实例。
 
-## 将逻辑放入合适的钩子
+<a id="将逻辑放入合适的钩子"></a>
 
-| `UIBase` 子类中的钩子 | 用途 |
+## 03 在生命周期方法中编写逻辑
+
+| `UIBase` 子类中的方法 | 用途 |
 | --- | --- |
-| `OnInit()` | 缓存引用，读取继承的 `Data` |
+| `OnInit()` | 缓存引用，读取从 UIBase 继承的 `Data` |
 | `OnShow()` | 绑定按钮，订阅事件 |
 | `OnClose()` | 移除对应的绑定与订阅 |
-| `OnUpdate()` | 窗口显示期间的逐帧逻辑，由 Unity 驱动 |
+| `OnUpdate()` | 窗口显示期间每帧执行的逻辑，由 Unity 驱动 |
 
-保存预制体时，**RectTransform 根对象上只挂一个 UIBase 派生组件**。Core 提供父级 Canvas 和 EventSystem。
+保存预制体时，确保 **RectTransform 根对象上只挂一个继承 UIBase 的组件**。父级 Canvas 和 EventSystem 由 Core 提供。
 
 <details>
 <summary>请求行为与手动登记</summary>
 
-重复打开共享未完成的加载；窗口已打开时返回现有实例，不再调用 OnShow。首次请求决定层级和数据。失败或取消时回调收到 null；直接绑定到已销毁 Unity 对象的方法会跳过。
+同一个窗口还在加载时，重复打开会共用这次加载；已经打开时，会返回现有实例，不会再次调用 OnShow。窗口的层级和数据以第一次请求为准。打开失败或被取消时，回调收到 null；如果回调直接绑定到某个 Unity 对象的方法，而这个对象已经销毁，就会跳过该回调。
 
-CloseUI 取消排队或加载中的请求，并释放迟到实例。IsOpen 包含排队和加载状态，不只表示可见。CloseAll 处理调用时的请求快照；关闭钩子或回调中显式打开的新请求会保留。
+CloseUI 会取消仍在排队或加载中的请求；如果实例在取消后才加载完成，也会被释放。IsOpen 会把排队和加载中的请求算作已打开，所以返回 true 不代表窗口已经可见。CloseAll 只处理调用那一刻已有的请求；如果在关闭方法或回调中又主动打开了窗口，这些新请求会保留。
 
-Close、Release、CloseSelf 都会结束所属请求；框架没有窗口池。OnClose 要能处理 OnShow 只完成部分初始化的情况。重写 OnDestroy 时，清理后调用 base.OnDestroy()。不要手动调用 Update。
+Close、Release、CloseSelf 都会结束对应的打开请求，框架不提供窗口池。编写 OnClose 时，要考虑 OnShow 可能只完成了一部分初始化。重写 OnDestroy 时，完成自己的清理后，再调用 base.OnDestroy()。不要手动调用 Update。
 
-也可手动登记，替代生成的配置表：
+也可以不用生成的配置表，直接在代码中登记：
 
 ```csharp
 GameCore.UI.RegisterUiData(new UIData("Menu",
     "Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab"));
 ```
 
-Core 就绪后再登记。空标识与重复标识会被拒绝，不要再通过 GameConfig 登记相同标识。空地址可作为占位，OpenUI 会报告失败并回调 null。底层淡入淡出需单独协调；场景转场使用场景 API。
+等 Core 就绪后再登记。ID 不能为空，也不能重复；手动登记后，不要再通过 GameConfig 登记相同 ID。地址可以留空作为占位，但此时调用 OpenUI 会报告失败，并向回调传入 null。直接使用底层淡入淡出功能时，需要自己协调调用；场景转场请使用场景 API。
 
 </details>
 

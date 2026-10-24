@@ -2,28 +2,33 @@
 
 [English](README.md) · 简体中文
 
-**框架版本：** v0.3.0（Google Sheets 配置） · **Unity：** 6.6（6000.6.5f1，非 LTS）
+**框架版本：** v0.3.1（Google Sheets 配置） · **Unity：** 6.6（6000.6.5f1，非 LTS）
 
-[下载 v0.3.0（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.3.0.zip) · [开始使用](docs/quick-start.zh-CN.md)
+[下载 v0.3.1（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.3.1.zip) · [开始使用](docs/quick-start.zh-CN.md)
 
-本套教程对应 **v0.3.0**。版本变化见[发布说明](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.3.0)，旧工程按[迁移步骤](Build-in%20Managers%20Usage.zh-CN.md#从-v020-迁移到-google-sheets)升级。下载的代码与随包文档一起使用。
+这套教程适用于 **v0.3.1**。更新了什么，可以看[发布说明](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.3.1)；旧工程升级请看[迁移步骤](Build-in%20Managers%20Usage.zh-CN.md#01-从-v020-迁移到-google-sheets)。下载后，使用包内的文档即可。
 
-Hello there ~ 我是 Angus，一名游戏开发者。这是一个处理 UI、事件、资源、场景和音频的小 Unity 框架。先玩一下 Demo，再用同样的工具做自己的游戏。
+Hello there ~ 我是 Angus，一名游戏开发者。这是我写的一个小型 Unity 框架，帮你处理 UI、事件、资源、场景和音频。可以先玩一下 Demo，再用同样的工具做自己的游戏。
 
-> **简单即美。** 小一点，清楚一点，也容易修改一点。
+> **简单即美。** 容易上手，容易理解，也容易修改。
 
-## 设计哲学
+<a id="设计哲学"></a>
 
-- **让流程明确。** 登记自己的内容，再打开首个界面。
-- **知道谁来收尾。** Core 管服务，UI 管窗口，资源模块管自己加载的资产。
-- **先用 Unity 的工具。** 组件、Inspector 和普通 C# 足以解决大部分问题。
-- **按游戏需要增加。** 规则和数据留在游戏目录，需要共用时再提取。
+## 01 设计哲学
 
-## 宏观架构
+- **让常用操作直接。** 配置方便编辑，功能方便调用。
+- **让流程和归属清楚。** 何时初始化、加载和释放，每件事都有明确的负责者。
+- **同一份配置，只维护一个来源。** 修改源数据，让工具生成代码和运行数据。
+- **使用合适的现成工具。** 组件参数用 Inspector，批量配置用表格，游戏逻辑用普通 C#。
+- **按真实需要扩展。** 玩法留在自己的游戏里，出现重复需求时再提取公共能力。
 
-**GameCore** 提供五项公共服务，切场景时保持运行。自己的游戏和可删除的 Demo 使用同一套 API。
+<a id="宏观架构"></a>
 
-配置走另一条流程：**Google Sheets → 在编辑器中 Update Config → 本地数据 → 自己的游戏**。游戏运行时读取本地数据，不需要连接 Google。
+## 02 宏观架构
+
+**GameCore** 提供五个公共模块，切换场景时也会保留。你自己的游戏和 Demo 都通过同一套 API 使用它们。
+
+配置从表格进入游戏：**Google Sheets → 在 Unity 中点击 Update Config → 生成本地数据 → 游戏读取**。运行游戏时不需要连接 Google。
 
 ```mermaid
 flowchart TB
@@ -36,29 +41,33 @@ flowchart TB
     Core --> Audio["Sound"]
 ```
 
-**准备服务 → 加载配置并登记内容 → 打开首个界面 → 运行游戏。**
+**准备公共服务 → 加载配置、登记内容 → 打开第一个界面 → 开始游戏。**
 
-UI 通过 Resource 加载窗口；Scene 协调加载、渐变和 UI 收尾。启动与生命周期细节见 [Core](docs/core.zh-CN.md)。
+UI 通过 Resource 加载界面；Scene 负责场景加载、淡入淡出和旧界面的清理。初始化和退出时需要做什么，见 [Core](docs/core.zh-CN.md)。
 
-## 按需要选择模块
+<a id="按需要选择模块"></a>
 
-第一次来，可以从[自己的第一个窗口](docs/quick-start.zh-CN.md#创建第一个窗口)开始。有具体需求时，直接选下面的教程。[Google 连接](docs/config-setup.zh-CN.md)只在开始编辑表格时设置一次。
+## 03 按需要选择模块
 
-| 我想…… | 手册 | 入口 |
+第一次使用，可以跟着教程做[自己的第一个窗口](docs/quick-start.zh-CN.md#02-创建第一个窗口)。有具体需求时，直接查下面的表。需要编辑配置表时，再完成一次 [Google 连接设置](docs/config-setup.zh-CN.md)。
+
+| 我想…… | 教程 | 从哪里调用 |
 | --- | --- | --- |
 | 准备公共服务 | [Core](docs/core.zh-CN.md) | `GameCore.IsReady` |
 | 打开或关闭窗口 | [UI](docs/ui.zh-CN.md) | `GameCore.UI` |
 | 编辑和读取配置 | [配置表](docs/config.zh-CN.md) | **Update Config** → `GameConfig.LoadAndRegister()` |
-| 定义界面 | [UI 配置表](docs/ui-tables.zh-CN.md) | `UI` 标签 → `UIName.Shop` |
+| 登记 UI 界面 | [UI 配置表](docs/ui-tables.zh-CN.md) | `UI` 工作表 → `UIName.Shop` |
 | 发送通知 | [事件](docs/events.zh-CN.md) | `GameCore.Event` |
-| 加载与释放资产 | [资源](docs/resources.zh-CN.md) | `GameCore.Resource` |
-| 定义共享资产 | [资源配置表](docs/resource-tables.zh-CN.md) | `Resource` 标签 → `MainResources` |
-| 定义与切换场景 | [场景](docs/scenes.zh-CN.md) | `Scene` 标签 → `SceneName.Menu` |
+| 加载与释放资源 | [资源](docs/resources.zh-CN.md) | `GameCore.Resource` |
+| 登记资源 | [资源配置表](docs/resource-tables.zh-CN.md) | `Resource` 工作表 → `MainResources` |
+| 登记与切换场景 | [场景](docs/scenes.zh-CN.md) | `Scene` 工作表 → `SceneName.Menu` |
 | 播放声音 | [音频](docs/audio.zh-CN.md) | `GameCore.Sound` |
 
-## 内容放在哪里
+<a id="内容放在哪里"></a>
 
-公共代码放在 Framework，每个游戏保存自己的来源设置与生成配置。已有工程可参考[迁移说明](Build-in%20Managers%20Usage.zh-CN.md)。
+## 04 内容放在哪里
+
+公共代码放在 Framework。自己的场景、脚本、配置来源设置和生成数据，都放在各自的游戏目录里。旧工程调整目录时，可参考[迁移说明](Build-in%20Managers%20Usage.zh-CN.md)。
 
 ```text
 Assets/
@@ -71,13 +80,15 @@ Assets/
     └── MyGame/        自己的场景、内容、来源设置和生成数据
 ```
 
-阅读 Demo 可从 [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs)、[UI.csv](Assets/GameContent/Demo/Editor/Tables/Generated/UI.csv) 或 [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs) 开始。CSV 是生成快照；修改配置时编辑 Google Sheets。自己的游戏跑通后，可以[整体删除 Demo](docs/quick-start.zh-CN.md#删除-demo)。
+想看 Demo 怎么写，可以从 [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs)、[UI.csv](Assets/GameContent/Demo/Editor/Tables/Generated/UI.csv) 或 [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs) 开始。CSV 保存的是导表结果；需要改配置时，去 Google Sheets 修改。自己的游戏跑通后，可以[整体删除 Demo](docs/quick-start.zh-CN.md#03-删除-demo)。
 
-## 先体验一次
+<a id="先体验一次"></a>
 
-Demo 已附带本地生成数据，不需要 Google 账号或凭据即可运行。
+## 05 先体验一次
 
-1. 在 Unity Hub 用上面的 Editor 版本打开仓库根目录，等待导入和编译完成。
+Demo 自带运行所需的配置，不用设置 Google 账号或密钥。
+
+1. 在 Unity Hub 中，用上面的 Unity 版本打开工程根目录，等待导入和编译完成。
 2. 打开 `Assets/GameContent/Demo/Scenes/DemoStart.unity`，点击 Play。
 3. 点击 **Start**，用 **WASD / 方向键**把蓝色方块移到 GOAL。
 
@@ -87,13 +98,15 @@ Demo 已附带本地生成数据，不需要 Google 账号或凭据即可运行�
 
 **下一步：[创建自己的第一个窗口](docs/quick-start.zh-CN.md)** · [构建游戏](docs/build.zh-CN.md)
 
-## 环境与范围
+<a id="环境与范围"></a>
+
+## 06 环境与范围
 
 Addressables **2.11.2** · uGUI **2.6.0** · Built-in 渲染管线 · 旧 Input Manager。
 
-上面的下载与教程使用 **v0.3.0**，这一版加入 Google Sheets 配置。`0.x` 的 API 仍可能变化。旧游戏可以继续固定原版本，使用随包文档。按需查看 [Editor 升级](docs/upgrading.zh-CN.md)、[旧 API 迁移](Build-in%20Managers%20Usage.zh-CN.md)和[已验证范围](docs/build.zh-CN.md#验证范围)。
+上面的下载链接和教程适用于 **v0.3.1**，已经包含 Google Sheets 配置。`0.x` 阶段的 API 仍可能调整，已有游戏可以继续使用原来的版本和文档。需要升级时，再查看 [Unity 升级](docs/upgrading.zh-CN.md)、[旧 API 迁移](Build-in%20Managers%20Usage.zh-CN.md)和[已验证范围](docs/build.zh-CN.md#04-验证范围)。
 
-玩法参数可以继续放在 Inspector 或游戏自己的 ScriptableObject。文本／本地化与声音播放配置表暂缓，当前包含 AudioClip 资源登记。存档、全局暂停、平台输入和发布验收，按自己的游戏需要补充。
+玩法参数可以继续放在 Inspector 或游戏自己的 ScriptableObject 中。文本／本地化和声音播放参数暂时没有专用表，AudioClip 资源已经可以在资源表中登记。存档、全局暂停、不同平台的输入，以及正式发布前的验证，按自己游戏的需要补充。
 
 ---
 

@@ -2,11 +2,13 @@
 
 [框架总览](../README.zh-CN.md) · [开始使用](quick-start.zh-CN.md) · [English](audio.md)
 
-播放音效或控制音乐层，框架负责复用音源。
+用音频层播放音效、控制音乐，框架会帮你复用音源。
 
-## 试试看
+<a id="试试看"></a>
 
-完成[资源示例](resources.zh-CN.md)，在 Core 就绪后登记并加载 `MainResources`。将此方法加入按钮处理组件（需要 `using Core; using Sound; using UnityEngine;`）：
+## 01 试试看
+
+先完成[资源示例](resources.zh-CN.md)，在 Core 就绪后登记并加载 `MainResources`。然后把下面的方法加到处理按钮点击的组件中（需要 `using Core; using Sound; using UnityEngine;`）：
 
 ```csharp
 public void PlayClick()
@@ -23,15 +25,17 @@ public void PlayClick()
 }
 ```
 
-在 Button Inspector 展开 **On Click ()**，点击 **+**，拖入挂有该组件的场景对象，再选择 **你的组件 → PlayClick()**。
+在 Button 的 Inspector 中展开 **On Click ()**，点击 **+**，拖入挂有该组件的场景对象，再选择 **你的组件 → PlayClick()**。
 
-**预期结果：** 加载后点击按钮，听到 cue.wav；模块或音效不可用时，Console 提示先加载 MainResources。
+**预期结果：** 资源加载完成后，点击按钮就能听到 cue.wav。如果模块或音效还不可用，Console 会提示先加载 MainResources。
 
-`PlaySound` 默认音量 1、音高 1、不循环；循环音乐用 `Play`。
+`PlaySound` 默认以音量 1、音高 1 播放一次。需要循环播放音乐时，使用 `Play`。
 
-## 使用约定
+<a id="使用约定"></a>
 
-Core 提供 `UI`、`Background`、`Environment`、`Event` 四层，按用途选择 `SoundLayer`。
+## 02 使用约定
+
+Core 提供 `UI`、`Background`、`Environment`、`Event` 四个音频层，按声音的用途选择 `SoundLayer`。
 
 | 操作 | 调用 |
 | --- | --- |
@@ -40,29 +44,29 @@ Core 提供 `UI`、`Background`、`Environment`、`Event` 四层，按用途选�
 | 停止并清空背景层音频 | `GameCore.Sound.StopSound(SoundLayer.Background)` |
 
 - 暂停只影响指定层。
-- 已暂停或满池时，新请求被丢弃，不排队、不抢占声音。
-- Stop 清除播放和 clip 引用，保留暂停状态；调用 UnPauseSound 后才能重新接收播放。
-- 音频不加载资产，卸载资源模块前先停止相关播放。
+- 如果这一层已暂停，或音源池已满，新的播放请求会被丢弃，不会排队，也不会打断正在播放的声音来腾出音源。
+- Stop 会停止播放并清除 clip 引用，但不会解除暂停。暂停的层要调用 UnPauseSound 后，才能再次接受播放请求。
+- 音频服务不负责加载资产。卸载资源模块前，先停止使用其中音效的播放。
 
 <details>
 <summary>需要时再看：音源数量与复用规则</summary>
 
-循环音乐先加载 AudioClip，再调用 `GameCore.Sound.Play`，传入 `SoundLayer.Background`、该 clip、音量 `0.5f`、音高 `1f` 和 `isLoop: true`。
+要循环播放音乐，先加载 AudioClip，再调用 `GameCore.Sound.Play`，传入 `SoundLayer.Background`、该 clip、音量 `0.5f`、音高 `1f` 和 `isLoop: true`。
 
-每个 SourceAgent 的 `Max Sources` 默认 16，限制扩容，不影响已有音源。复用时重设 clip、loop、pitch、volume。
+每个 SourceAgent 的 `Max Sources` 默认是 16，只限制继续创建音源，不影响已有音源。复用音源时，会重新设置 clip、loop、pitch、volume。
 
-扩容复制首个有效音源的混音、空间和监听器设置。`AudioListener.pause` 时，仅 `ignoreListenerPause` 音源可用。缺少层配置会警告并跳过播放。
+新建音源会复制第一个有效音源的混音、空间和监听器设置。`AudioListener.pause` 生效时，只有启用了 `ignoreListenerPause` 的音源可用。如果缺少对应层的配置，框架会记录警告并跳过播放。
 
-游戏负责全局暂停、保存音量和跨场景音频策略；切场景不自动停止全部层。
+全局暂停、音量保存，以及切换场景时哪些声音继续播放，都由游戏自己处理。切换场景不会自动停止所有音频层。
 
 </details>
 
 <details>
 <summary>需要时再看：直接操作 AudioSource</summary>
 
-`SourceAgent.GetAudioSource()` 可能返回 null。借到后立即使用，它不是预留的播放句柄。
+`SourceAgent.GetAudioSource()` 可能返回 null。获取到音源后应立即使用，这个方法不会为你预留音源供以后播放。
 
-原生 Pause、PlayDelayed、PlayScheduled 绕过层暂停保证。`SourceAgent.Play(clip)` 表示是否受理，不保证设备可听；普通玩法使用层接口。
+直接调用原生的 Pause、PlayDelayed、PlayScheduled 后，音频层无法保证暂停行为符合预期。`SourceAgent.Play(clip)` 的返回值只表示是否接受了播放请求，不保证设备实际发出了声音。一般的游戏逻辑使用音频层接口即可。
 
 </details>
 
