@@ -85,21 +85,21 @@ namespace MyGame
 
 等待编译完成，将 **EventExample.cs** 拖到 EventExample 对象的 Inspector 上。保存场景，按下 Play。
 
-**成功标志：** Console 输出一次 `Level completed.`。Start 中先订阅、再广播，所以不会漏掉第一次通知。GameCore 在 Awake 中初始化，而其他对象的 OnEnable 可能更早执行，因此这里等到 Start 再使用服务，并先检查 Core 是否就绪。
+**成功标志：** Console 输出一次 `Level completed.`。我们在 Start 中先订阅、再广播，这样监听方法就能收到第一次通知。GameCore 在 Awake 中初始化，其他对象的 OnEnable 可能比它更早执行，所以这里等到 Start 再使用服务，并先检查 Core 是否就绪。
 
 <a id="4-从游戏中广播"></a>
 
 ### 1.4 从游戏中广播
 
-接到自己的游戏里时，把下面这一行放进通关方法，或其他需要发通知的方法中。调用时 Core 必须已经就绪；脚本顶部加上 `using Core;` 和 `using MyGame;`：
+在自己的游戏里发这条通知，只要把下面这一行放进通关方法，或其他需要发通知的方法。调用时 Core 必须已经就绪，脚本顶部要加上 `using Core;` 和 `using MyGame;`：
 
 ```csharp
 GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 ```
 
-每广播一次，监听方法就会执行一次。发送方只需要知道事件名称，不需要拿到 EventExample 对象。RegisterEvent 的作用是订阅监听方法，事件名称已经由前面的字符串常量定义好了。
+在这个例子里，每广播一次，就会调用一次 OnLevelCompleted。发通知时只需要知道事件名称，不需要拿到 EventExample 对象。名称是前面在 GameEvents 里定义的常量。RegisterEvent 告诉框架：收到这个事件时，调用哪个方法。
 
-销毁 EventExample 对象时，OnDestroy 会移除订阅。等游戏接上这条通知后，可以这样检查：先广播一次，再在 Play 期间从 Hierarchy 中删除 EventExample，然后再次广播。这时应该不再输出它的消息。仅仅禁用组件不会退订。
+销毁 EventExample 对象时，OnDestroy 会移除订阅。等游戏能发出这条通知后，可以试试：先广播一次，再在 Play 期间从 Hierarchy 中删除 EventExample，然后再次广播。这时应该不再输出它的消息。仅仅禁用组件不会退订。
 
 <a id="选择通知方式"></a>
 
@@ -115,21 +115,21 @@ GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 - 用游戏自己的字符串常量定义事件 ID。ID 不能为空或只有空白字符，处理方法不能为 null。
 - 等 Core 就绪后，在 Unity 主线程使用事件服务。Core 已经负责更新事件，不要手动调用 OnUpdate。
 - 需要接收通知时订阅，不再需要时，通过之前保存的管理器引用退订。禁用组件不会自动退订。
-- 如果之后需要移除 lambda 监听器，先保存原来的委托。重新写一个 lambda 会得到另一个监听器，无法用它移除原来的订阅。
-- 事件**不会重放过去的通知**。稍后创建的接收者需要读取当前游戏状态，并订阅后续变化。
+- 用 lambda 订阅时，如果之后还要退订，就先保存这个委托。重新写一个 lambda 会得到另一个监听器，无法用它移除原来的订阅。
+- 事件**不会重放过去的通知**。后来创建的接收者需要读取当前游戏状态，并订阅后续变化。
 
 <a id="前后用法"></a>
 
 ## 03 前后用法
 
-原来带 sender 和数据的接口仍然可以使用。如果不需要知道通知来自哪里，也不需要附带数据，就用更简短的无参写法：
+原来带 sender 和数据的接口还可以继续用。如果接收者不需要知道通知来自哪里，也不需要读取数据，就用更简短的无参写法：
 
 | | 带来源/数据的监听器 | 无参通知监听器 |
 | --- | --- | --- |
 | 处理方法 | `void OnLevelCompleted(object sender, string type, BaseEventArgs args)` | `void OnLevelCompleted()` |
 | 发送 | `GameCore.Event.DispatchNow(this, GameEvents.LevelCompleted)` | `GameCore.Event.DispatchNow(GameEvents.LevelCompleted)` |
 
-两种写法使用相同的订阅和退订方法。接收者需要来源或数据时，保留原来的 `HandlerEvent` 签名即可。例如，Demo 的 [LevelView.cs](../Assets/GameContent/Demo/Scripts/UI/LevelView.cs) 仍然通过 sender 判断通关通知是否来自当前关卡。
+两种写法用的是相同的订阅和退订方法。需要知道来源或读取数据时，继续用原来的 `HandlerEvent` 签名就好。例如，Demo 的 [LevelView.cs](../Assets/GameContent/Demo/Scripts/UI/LevelView.cs) 就是通过 sender 判断通关通知是否来自当前关卡。
 
 <details>
 <summary>可选：将事件连接到 UI</summary>

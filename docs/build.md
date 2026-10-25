@@ -11,9 +11,9 @@
 1. Open **File → Build Profiles**. Under **Platforms**, select an installed target and **Switch Platform** if needed.
 2. Exit Play and wait for compilation. The bundled Demo config is ready; no cloud setup is needed. If you changed its source workbook, select Demo in **Framework → Config**, then click **Update Config** on the left side of Unity's top toolbar first.
 3. Choose **Demo → Build Player**, then select an output location.
-4. Open the app. Check the menu, then Start → keyboard win → Play again → Menu → Settings → Quit.
+4. Open the app and check the menu. Then try the full loop: Start → reach the goal with the keyboard → Play again → Menu → Settings → Quit.
 
-The helper builds Addressables and uses DemoStart without changing the saved scene list. It is deleted with Demo.
+This helper builds Addressables and starts the app from DemoStart. It leaves your saved scene list alone, and is removed when you delete Demo.
 
 <a id="build-your-game"></a>
 
@@ -21,7 +21,7 @@ The helper builds Addressables and uses DemoStart without changing the saved sce
 
 1. Open **File → Build Profiles**. Select your target under **Platforms** and **Switch Platform** if needed.
 2. Select **Scene List** on the left. Add `MyGame/Scenes/Start.unity`, put it first and enable it. Remove InitScene if unneeded; keep other native scenes your game uses. **Open Scene List** opens this same shared list.
-3. If you changed the active source tables or local asset paths, select your game in **Framework → Config**, then click **Update Config** on the left side of Unity's top toolbar and wait for compilation. Review any retained-table warnings before building.
+3. If you changed the active source tables or local asset paths, select your game in **Framework → Config**, then click **Update Config** on the left side of Unity's top toolbar and wait for compilation. Before building, check any warnings about tables that kept their previous version.
 4. Open **Window → Asset Management → Addressables → Groups**. Choose **Build → New Build → Default Build Script** and wait for success.
 5. Return to your target under **Platforms**, choose **Build** and an output location.
 6. Open the built app. Your own first screen should appear. Try its UI, input, sound and transitions.
@@ -30,7 +30,7 @@ The helper builds Addressables and uses DemoStart without changing the saved sce
 
 *Step 2 example — Build Profiles → Scene List: MyGame/Scenes/Start is enabled as the first scene.*
 
-The build checks committed local snapshots, generated file ownership and current assets. It does not reimport Excel or contact Google, and needs no key. It cannot detect source edits you have not imported. Missing UI placeholders, invalid assets or altered generated files block the Player build.
+The build checks committed local snapshots, generated file ownership and current assets. It does not reimport Excel or contact Google, and needs no key. It cannot see source edits you have not imported yet. The Player build stops if a UI placeholder still has no asset, an asset is invalid or a generated file has been changed.
 
 Rebuild Addressables after resource or platform changes. **Use Asset Database (fastest)** is for Editor Play only; Player still needs built content.
 
@@ -47,7 +47,7 @@ Add a custom Build Profile. The shared list is enough for your first build.
 
 | Symptom | First check |
 | --- | --- |
-| No Demo menu | Open DemoStart.unity. InitScene deliberately initializes services only. |
+| No Demo menu | Open DemoStart.unity. InitScene only initializes services; it does not open a menu. |
 | GameConfig/UIName/MainResources is missing | Restore generated files and manifest from the same revision, or temporarily comment callers, fix compilation and run Update Config; then restore callers. |
 | Update Config is disabled | Exit Play and wait for any update, import or compilation to finish. Resolve Console compile errors before continuing. |
 | The toolbar opens Config instead of updating | Select a game and its source folder. A Google source also needs an existing local key file. |

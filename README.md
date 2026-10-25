@@ -8,7 +8,9 @@ English · [简体中文](README.zh-CN.md)
 
 These guides match **v0.5.0**. See the [release notes](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.5.0) and [migration steps](Build-in%20Managers%20Usage.md). Keep downloaded code and guides together.
 
-Hello there ~ I'm Angus, a game developer. I put this framework together to handle UI, events, resources, scenes and audio in small Unity games. I hope it saves you some repeated work and leaves more time for your own gameplay.
+Hello there ~ I'm Angus, a game developer.
+
+I made this small framework to take care of UI, events, resources, scenes and audio in my games, and wanted to share it with you. I hope it saves you some repeated work and leaves more time for your own gameplay.
 
 > **Simple is beautiful.** Easy to start, easy to understand, easy to change.
 
@@ -16,11 +18,13 @@ Hello there ~ I'm Angus, a game developer. I put this framework together to hand
 
 ## 01 Philosophy
 
-- **Keep everyday tasks direct.** Make configuration easy to edit and features easy to call.
-- **Make flow and ownership clear.** Initialization, loading and cleanup each have an explicit owner.
-- **Keep one source for each configuration.** Edit the source; let tools generate code and runtime data.
+A few ideas guide how I build it:
+
+- **Keep everyday work straightforward.** Configuration should be easy to edit, and features easy to call.
+- **Make the flow easy to follow.** Say when initialization, loading and cleanup happen, and which code handles each.
+- **Edit each configuration in one place.** Change the source; let tools generate code and runtime data.
 - **Use the right existing tools.** Inspector for component settings, sheets for bulk configuration, ordinary C# for game logic.
-- **Grow from real needs.** Keep gameplay in your game. Extract shared code when the same need comes up again.
+- **Add things when you need them.** Start with gameplay code in your own game. Move it into shared code when you need it again.
 
 <a id="the-big-picture"></a>
 
@@ -43,7 +47,7 @@ flowchart TB
 
 **Prepare services → Load config and register content → Open the first screen → Run the game.**
 
-UI loads windows through Resource. Scene coordinates loading, fades and UI cleanup. Startup and lifecycle details are in [Core](docs/core.md).
+UI loads windows through Resource. Scene coordinates loading, fades and UI cleanup. When you are ready to connect your own game, follow [Core](docs/core.md) to set up startup and cleanup.
 
 <a id="pick-the-module-you-need"></a>
 
@@ -67,7 +71,7 @@ New here? Follow [Quick start](docs/quick-start.md) to play the Demo and make yo
 
 ## 04 Where things belong
 
-Shared code stays in Framework; each game owns its source settings and generated configuration. Existing projects can follow [migration notes](Build-in%20Managers%20Usage.md).
+Keep the shared framework in Framework. Keep your scenes, scripts, source settings and generated data together in your own game folder so they are easy to find. Existing projects can follow [migration notes](Build-in%20Managers%20Usage.md).
 
 ```text
 Assets/
@@ -106,7 +110,7 @@ Addressables **2.11.2** · uGUI **2.6.0** · Built-in rendering · old Input Man
 
 The download and guides above use **v0.5.0**, with local Excel as the default config source and Google Sheets as an option. `0.x` APIs may change. Existing games can keep their pinned version and its bundled guides. See [Editor upgrades](docs/upgrading.md), [older API migration](Build-in%20Managers%20Usage.md) and [what has been verified](docs/build.md#04-verification-scope).
 
-Gameplay parameters can stay in the Inspector or game-owned ScriptableObjects. Text/localization and sound-playback tables are deferred; AudioClip resource registration is included. Saves, full-game pause, platform input and release validation are left to your game's needs.
+For gameplay settings, use the Inspector or your game's own ScriptableObjects. Text/localization and sound-playback tables are not included yet; you can already register AudioClip assets in the resource table. Add saves, full-game pause and platform input as your game needs them, and test on the platforms you plan to release for.
 
 ---
 

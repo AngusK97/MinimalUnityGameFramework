@@ -47,7 +47,7 @@ public void GoToLevel()
 ```
 
 5. 保存脚本，等待编译完成。双击 `Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab` 进入 Prefab Mode，选中根对象，通过 **GameObject → UI → Legacy → Button** 添加按钮。把按钮放到能看见的位置，将文字改为 **Go to level**。在 Button 的 **On Click ()** 中点击 **+**，把 **预制体 Hierarchy 中的 MyMenuView 根对象**拖入对象栏，选择 **MyMenuView → GoToLevel()**，然后保存预制体并退出 Prefab Mode。
-6. 打开 `Assets/GameContent/MyGame/Scenes/Start.unity`，按 Play，再点击菜单中的 **Go to level**。从这个入口开始运行，Core 和配置才会在点击按钮前准备好。
+6. 打开 `Assets/GameContent/MyGame/Scenes/Start.unity`，按 Play，再点击菜单中的 **Go to level**。从这个入口开始运行，这样点击按钮时，Core 和配置都已经准备好了。
 
 **预期结果：** 点击一次按钮后，遮罩出现，旧窗口关闭，然后显示 Level01 中的物体。Single 模式会用新场景替换旧场景，Core 则会保留下来。在 Editor 外测试前，先为 Player 的目标平台构建 Addressables。如果加载失败，旧 UI 会保留，并显示 Retry 面板；错误原因可以在 Console 和面板中查看。
 
@@ -65,7 +65,7 @@ public void GoToLevel()
 
 传入 `enterScene: scene => PrepareScene(scene)`，就可以让转场等待自己的准备工作。这个方法需要返回 `IEnumerator`，参数类型是 `UnityEngine.SceneManagement.Scene`（需要 `using System.Collections;`）。
 
-准备协程会在场景激活、旧 UI 清理完成后执行，等它结束才会隐藏遮罩。你可以在这里等待资源和 HUD 的回调，也可以使用嵌套协程。如果协程抛出异常，这次转场会被判定为失败。
+准备协程会在场景激活、旧 UI 清理完成后执行，等它结束才会隐藏遮罩。你可以在这里等待资源和 HUD 的回调，也可以使用嵌套协程。如果协程抛出异常，这次转场就会失败。
 
 Single 模式下，新场景激活后，旧场景已经被替换。此时即使准备工作失败，也无法恢复旧场景，但仍可通过错误面板重试。`RetryTransition()` 会重新加载场景并执行准备工作，不会回滚游戏进度。
 
@@ -76,9 +76,9 @@ timeScale=0 时，使用 realtime 等待，或轮询回调是否完成。框架�
 <details>
 <summary>需要时再看：完成时机、生命周期与低层 API</summary>
 
-对于已接受的转场，完成回调会在遮罩隐藏、转场状态恢复为空闲后执行，此时可以发起下一次转场。请求被拒绝时，回调会同步执行，不会打断正在进行的转场。通知过程中抛出的异常只会被记录，不会改变转场结果；直接绑定到已销毁 Unity 对象的方法会被跳过。
+转场请求被接受后，完成回调会等到遮罩隐藏、服务恢复空闲才执行。你可以在这个回调里发起下一次转场。请求被拒绝时，回调会同步执行，不会打断正在进行的转场。通知过程中如果抛出异常，会记录错误，但不改变转场结果；直接绑定到已销毁 Unity 对象的方法会被跳过。
 
-框架不会自动重置游戏的暂停状态、卸载所有模块或停止所有音频，也不支持中途取消加载或回滚场景。禁用或销毁管理器时，每次转场只会完成一次收尾。之后才返回的加载结果如果失败，会释放句柄；如果成功，则保留新加载的活动场景。
+框架不会自动重置游戏的暂停状态、卸载所有模块或停止所有音频，也不支持中途取消加载或回滚场景。禁用或销毁管理器时，每次转场只会完成一次收尾。如果加载结果在这之后才返回，失败时会释放句柄，成功时会保留新加载的活动场景。
 
 `TryTransition(string)` 会按已登记的场景 ID 查找地址。遇到未知 ID 时，它会返回 false，不会把这个字符串当作 Addressables 地址来尝试加载。如果要直接传入 Addressables 地址，调用 `TryTransitionAddress(key, ...)`。旧版代码中直接传入字符串地址的地方，也要改用这个方法。
 

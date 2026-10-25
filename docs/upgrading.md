@@ -2,7 +2,7 @@
 
 [Overview](../README.md) · [Quick start](quick-start.md) · [简体中文](upgrading.zh-CN.md)
 
-**Keep a working copy, migrate another, then compare.** An existing game can stay on its pinned framework and Editor; adopting this baseline is a separate decision.
+**Keep your working copy and try the upgrade in a separate copy.** Your game can keep using its current framework and Editor. Choose when to move to the versions below, then compare the results.
 
 <a id="current-baseline"></a>
 
@@ -24,10 +24,10 @@ The Editor upgrade itself does not require URP or a new input system. Moving fro
 ## 02 Migrate a separate copy
 
 1. Commit or back up the working project, including Assets, Packages, ProjectSettings and their meta files. Keep a branch or copy that still opens in its original Editor. Do not open that only working copy with the newer Editor.
-2. Open the migration copy with **Unity Hub → Unity 6.6 (6000.6.5f1)**. Wait for package resolution, asset import and compilation. Keep the migrated manifest and lock file together; do not reuse an older Library cache as proof of a clean import.
-3. Check the package changes above and the first Console error before changing gameplay code. This migration does not open, upgrade or replace the framework inside any other game's repository.
+2. Open the migration copy with **Unity Hub → Unity 6.6 (6000.6.5f1)**. Wait for package resolution, asset import and compilation. Keep the migrated manifest and lock file together. If you reused an older Library cache, a successful import does not yet show that a fresh import will work.
+3. Check the package changes above and the first Console error before changing gameplay code. Keep this work in the migration copy; do not open, upgrade or replace the framework in another game's repository along the way.
 4. Keep the config workflow that belongs to your chosen framework version. When moving from v0.2.0, first follow [config migration](../Build-in%20Managers%20Usage.md#01-from-v020-to-google-sheets). In v0.5.0, use **Framework → Config** for setup and **Update Config** on the left side of Unity's top toolbar for daily updates. Local Excel is the default for new games; existing Google sources stay Google until you explicitly switch. Keep local workbooks, source settings, generated snapshots, manifest, C#, JSON and meta files together.
-5. In **File → Build Profiles**, select the target under **Platforms** and use **Switch Platform** if needed. Check the shared **Scene List** on the left. Rebuild Addressables with **Build → New Build → Default Build Script**, then return to the target platform and build a new Player. Do not assume old bundles or an old Player certify the new Editor/package combination.
+5. In **File → Build Profiles**, select the target under **Platforms** and use **Switch Platform** if needed. Check the shared **Scene List** on the left. Rebuild Addressables with **Build → New Build → Default Build Script**, then return to the target platform and build a new Player. Old bundles or an old Player may still run, but that does not tell you whether the new Editor and packages work together.
 
 Unity 6 uses **Create → Scripting → MonoBehaviour Script** for the first-window scripts. Build Profiles replaces the old Build Settings workflow; [Quick start](quick-start.md) and [Build](build.md) use the current labels.
 
@@ -35,12 +35,12 @@ Unity 6 uses **Create → Scripting → MonoBehaviour Script** for the first-win
 
 ## 03 Check before using the migrated copy
 
-- Run DemoStart: menu → Start → keyboard win → Play again → Menu → Settings. Check Console errors, fades and repeated runs.
+- Run DemoStart: menu → Start → reach the goal with the keyboard → Play again → Menu → Settings. Watch for Console errors, check the fades and try the loop a few times.
 - Run your own entry and UI. Confirm registration, generated IDs, events and borrowed resources still behave as expected.
 - In a disposable copy, delete `Assets/GameContent/Demo` and `Demo.meta`. Keep GameContent and its `.gitkeep`; reimport, run your own entry or the services-only InitScene, and rebuild content/Player. No Demo type, asset or build menu should be required.
 - Open the new Player and check the real UI, input and audio. Record which target was tested; an Editor check alone is not a device check.
 
-The [verification scope](build.md#04-verification-scope) separates earlier baseline checks from the new main config workflow. Keep the older branch/copy until your game's own acceptance is complete.
+The [verification scope](build.md#04-verification-scope) separates earlier baseline checks from the new main config workflow. Keep the older branch or copy until you have finished testing your own game.
 
 <details>
 <summary>Unity references</summary>

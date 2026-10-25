@@ -2,13 +2,13 @@
 
 [Overview](../README.md) · [Quick start](quick-start.md) · [简体中文](scenes.zh-CN.md)
 
-Load a level behind an overlay, close the old UI and wait for your scene preparation.
+Keep the screen covered while a level loads, then close the old UI and finish preparing the new scene before showing it.
 
 <a id="try-it"></a>
 
 ## 01 Try it
 
-Start with the [first-window example](quick-start.md#02-create-your-first-window). This adds a level button to your existing **MyMenuView.prefab** and uses **MyGameEntry.cs** to load your config.
+Start with the [first-window example](quick-start.md#02-create-your-first-window). Here, you’ll add a level button to your existing **MyMenuView.prefab** and keep using **MyGameEntry.cs** to load your config.
 
 1. Create a scene with a camera and a visible object on the **Default** layer. On the camera, set **Depth = 2** and **Culling Mask = Default**, then remove its **AudioListener**; Core already has one. Core's background camera renders at Depth 1, so a default camera would be covered by its background. Save as `Assets/GameContent/MyGame/Content/Scenes/Level01.unity`, select the saved asset in Project, and check **Addressable** in its Inspector.
 
@@ -28,7 +28,7 @@ This is the Demo's WorldCamera. Match its Depth and Culling Mask for this exampl
 | string | string | string |
 | Level01 | First level | Assets/GameContent/MyGame/Content/Scenes/Level01.unity |
 
-3. Save the local workbook, or wait for Google Sheets to finish saving. Select **MyGame** in **Framework → Config**, click **Update Config**, and wait for the result and compilation. This generates `SceneName.Level01 = "Level01"`. Your existing **MyGameEntry.cs** calls `GameConfig.LoadAndRegister()` after Core is ready, registering this ID with its Addressables address; keep that single call.
+3. Save the local workbook, or wait for Google Sheets to finish saving. Select **MyGame** in **Framework → Config**, click **Update Config**, and wait for the result and compilation. This generates `SceneName.Level01 = "Level01"`. Your existing **MyGameEntry.cs** calls `GameConfig.LoadAndRegister()` after Core is ready. That connects this ID to its Addressables address, so keep that single call.
 4. Open `Assets/GameContent/MyGame/Scripts/MyMenuView.cs`. Add `using Core;` at the top, keep `using UnityEngine;`, and add this method **inside the MyMenuView class**, alongside `OnShow()`:
 
 ```csharp
@@ -55,7 +55,7 @@ public void GoToLevel()
 
 ## 02 Conventions
 
-- `TryTransition` and `TryTransitionAddress` return true when accepted. Busy or invalid requests return false without queuing and call `completed(false, error)` once immediately. The callback above therefore handles both rejection and later failure.
+- `TryTransition` and `TryTransitionAddress` return true when they accept a request. If a transition is already running or the request is invalid, they return false without queuing it and immediately call `completed(false, error)` once. The callback above handles both rejected requests and failures during a transition.
 - Old UI closes only after a successful load. If an accepted transition fails, inspect `LastError`, then use the Retry panel or `RetryTransition()`. A rejected request does not create a retry operation.
 - Keep transition controllers persistent or use static methods; Single unloads old-scene callback targets.
 - Check `IsTransitioning` in gameplay input. The overlay blocks UGUI raycasts, not keyboard/controller code.
@@ -65,7 +65,7 @@ public void GoToLevel()
 
 Pass `enterScene: scene => PrepareScene(scene)`. Your method returns `IEnumerator` and takes `UnityEngine.SceneManagement.Scene` (`using System.Collections;`).
 
-Preparation runs after activation and old UI cleanup; the overlay stays until it finishes. Wait for resource/HUD callbacks here. Nested enumerators work; exceptions fail the transition.
+Preparation starts after the new scene is active and the old UI has been cleaned up. The overlay stays until preparation finishes, so you can wait here for resource and HUD callbacks. Nested enumerators also work. If a coroutine throws an exception, the transition fails.
 
 Preparation failure after Single activation cannot restore the old scene. The error panel still allows retry; `RetryTransition()` retries loading and preparation, not game-progress rollback.
 
@@ -76,9 +76,9 @@ At timeScale=0, use realtime waits or callback polling. Framework fades use unsc
 <details>
 <summary>When needed: completion, lifetime and low-level APIs</summary>
 
-For an accepted transition, completion runs after the overlay hides and busy clears, so it can submit another transition. Rejection calls completion synchronously and leaves any current transition running. Notification exceptions are logged without changing the result. Direct callbacks on destroyed Unity objects are skipped.
+For an accepted transition, the completion callback runs after the overlay hides and the service is idle again. You can start another transition from that callback. A rejected request calls completion synchronously and leaves any current transition running. Exceptions from notifications are logged without changing the result. Callbacks bound directly to destroyed Unity objects are skipped.
 
-The framework does not reset gameplay pause, unload all modules, stop all audio, cancel loading midway or roll back scenes. Disabling/destroying the manager settles once; late failures release handles and late successes leave the new active scene loaded.
+The framework does not reset gameplay pause, unload all modules, stop all audio, cancel loading midway or roll back scenes. Disabling or destroying the manager finishes the current transition once. If the load returns later, a failure releases its handle; a success leaves the new active scene loaded.
 
 `TryTransition(string)` resolves a registered scene ID. Unknown IDs return false; it does not guess an Addressables address. For an intentional raw key, use `TryTransitionAddress(key, ...)`. Older calls that passed a string address must move to that method.
 

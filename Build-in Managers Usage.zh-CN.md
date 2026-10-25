@@ -6,7 +6,7 @@
 
 **从 v0.3.x／v0.4.x 升级到 v0.5.0：** 旧设置中已有 Google `FolderId` 的游戏会继续使用 Google，不会在升级时自动改成本地 Excel。表格格式和运行 API 不变，新游戏默认使用 **Local Excel**。已有游戏想改用本地工作簿时，先将相同的表导出为 `.xlsx`，再按[切换已有来源](docs/config-setup.zh-CN.md#03-切换已有来源)操作；目标表必须全部通过检查，表名和结构与原配置一致。
 
-日常更新仍点击顶部工具栏左侧的 **Update Config**，在 **Framework → Config** 中选择游戏和来源。两种来源共用进度、结果及按表保留旧版的流程。
+日常更新仍点击顶部工具栏左侧的 **Update Config**，在 **Framework → Config** 中选择游戏和来源。两种来源的进度和结果窗口一样；某张表检查不通过时，都会保留它上次成功导入的版本。
 
 | 想做什么 | 教程 |
 | --- | --- |
@@ -44,9 +44,9 @@ Unity 和依赖包怎么升级，见[升级到 Unity 6.6](docs/upgrading.zh-CN.m
 
 旧的带前缀 UI ID 不会自动保留。存档或消息里如果也用了这些 ID，需要一起修改。UI、Resource 和 Scene 表的 ID 必须是合法的 ASCII C# 标识符，不能带句点。一个正在运行的游戏中，已登记的 UI ID 不能重复，场景 ID 也一样。
 
-创建资源模块前，先加载 GameConfig。资源仍需要在代码中登记和加载：`new MainResources()`、`GameCore.Resource.RegisterResourceModule(main)`，再调用 `main.LoadResources(...)`。完整写法见[资源](docs/resources.zh-CN.md)；访问 `main.Cue` 不会自动加载。
+创建资源模块前，先加载 GameConfig，再在代码中创建、登记并加载模块：`new MainResources()`、`GameCore.Resource.RegisterResourceModule(main)`，再调用 `main.LoadResources(...)`。完整写法见[资源](docs/resources.zh-CN.md)；访问 `main.Cue` 不会自动加载。
 
-Demo 现在附带 `Editor/Tables/Source/Demo.xlsx`，默认从这个本地来源更新。在 **Framework → Config** 中选择 Demo，修改工作簿后更新即可。已有游戏继续使用各自的来源设置。生成的 CSV 仍是导表快照，不手动修改。
+Demo 现在附带 `Editor/Tables/Source/Demo.xlsx`，默认从这个本地来源更新。在 **Framework → Config** 中选择 Demo，修改并保存工作簿后，再点更新。已有游戏继续使用各自的来源设置。生成的 CSV 保存导表结果，需要修改时回到源表中改。
 
 <a id="较早的目录迁移"></a>
 
@@ -69,4 +69,4 @@ Demo 现在附带 `Editor/Tables/Source/Demo.xlsx`，默认从这个本地来源
 
 Demo 使用 `Demo.MainResources`（`Id = "Demo.Main"`）：将 `MainResourceModule` 查找改为 `MainResources`，将 `main.GetRes<AudioClip>(MainResource.Cue)` 改为 `main.Cue`。重复登记模块会抛异常；获取已登记模块时，若指定的类型不匹配，会抛出 `InvalidOperationException`。
 
-事件支持无参 Action 监听，以及 `DispatchNow(eventId)` / `Dispatch(eventId)` 调用。原来带 sender 和数据的重载仍可使用。事件名在自己的游戏里定义成字符串常量即可，不需要提前登记；订阅后记得在对应的清理阶段退订。具体例子见[事件](docs/events.zh-CN.md)。
+你可以用无参 Action 订阅事件，再通过 `DispatchNow(eventId)` / `Dispatch(eventId)` 发送通知。原来带 sender 和数据的重载仍可使用。事件名在自己的游戏里定义成字符串常量即可，不需要提前登记；订阅后记得在对应的清理阶段退订。具体例子见[事件](docs/events.zh-CN.md)。

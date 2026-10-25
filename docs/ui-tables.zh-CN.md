@@ -9,7 +9,7 @@
 ## 01 添加窗口
 
 1. 将 UI 预制体保存到自己游戏的 `Content/Prefabs/UI/`。根对象必须使用 RectTransform，并且只挂一个继承 UIBase 的组件。在 **Project** 中选中已保存的预制体，勾选 Inspector 中的 **Addressable**。
-2. 下面是 **UI** 表的示例。第一次使用时，按[配置接入](config-setup.zh-CN.md)新建本地工作簿，填入这些内容。如果已经接入，在当前来源中打开已有的 **UI** 工作表标签，没有就创建一个。新建的工作表从 A1 开始填入全部内容；已有的工作表保留前两行，只添加 **Shop** 这一行数据。
+2. 下面是 **UI** 表的示例。第一次使用时，按[配置接入](config-setup.zh-CN.md)新建本地工作簿，填入这些内容。如果已经选好来源，就打开其中的 **UI** 工作表，没有就新建一个。新建的工作表从 A1 开始填入全部内容；已有的工作表保留前两行，只添加 **Shop** 这一行数据。
 
 | Id | Name | PrefabPath |
 | --- | --- | --- |
@@ -18,7 +18,7 @@
 
 3. 第一次连接时，用上面的表按[配置接入](config-setup.zh-CN.md)完成设置。如果已经连接，先确认 **Framework → Config** 中选的是 **MyGame**。保存工作簿（Google Sheets 则等云端保存完成），再点击顶部工具栏左侧的 **Update Config**，等待更新结果和编译完成。
 
-**成功标志：** `MyGame/Scripts/Generated/UIName.g.cs` 中有 `Shop = "Shop"`。工具还会生成 UITable、UIConfig 和本地 JSON 数据。`Name` 只用于说明，不会生成字段。
+**成功标志：** `MyGame/Scripts/Generated/UIName.g.cs` 中有 `Shop = "Shop"`。工具还会生成 UITable、UIConfig 和本地 JSON 数据。`Name` 留给自己和组员看，不会变成代码中的字段。
 
 <a id="使用配置"></a>
 
@@ -30,7 +30,7 @@
 GameCore.UI.OpenUI(UILayer.First, MyGame.UIName.Shop);
 ```
 
-生成的配置会把 `Shop` 对应到它的 Addressables 地址。游戏命名空间用于区分 C# 类型，不会给运行时的 UI ID 添加前缀。
+生成的配置会把 `Shop` 对应到它的 Addressables 地址。命名空间可以区分不同游戏的 C# 类型，但运行时的 UI ID 不会加上这个前缀。
 
 <a id="修改窗口"></a>
 
@@ -41,6 +41,6 @@ GameCore.UI.OpenUI(UILayer.First, MyGame.UIName.Shop);
 - **删除或重命名 Id：** 更新配置后，同步修改调用代码和自己保存过的 ID。
 - **提交：** 把本地工作簿、来源设置、生成的 CSV、清单、C#、JSON 和 meta 一起提交。需要修改时，改当前使用的源表，不要手动改生成文件。
 
-预制体缺失时，导入只会给出警告，所以可以提前准备 ID。但要等资产准备好并重新更新配置后，窗口才能打开。类型不符、根对象上的 UIBase 组件不符合要求，或 Addressables 条目不可用，都会报错。**缺少 UI 预制体时无法构建 Player**；构建前先补齐资产或删除占位行。
+还没有预制体时，导入只会给出警告，可以先把 ID 填好。之后做好预制体，再更新一次配置，窗口才能打开。类型不符、根对象上的 UIBase 组件不符合要求，或 Addressables 条目不可用，都会报错。**缺少 UI 预制体时无法构建 Player**；构建前先补齐资产或删除占位行。
 
 部分更新、生成文件的位置和恢复方法见[配置表](config.zh-CN.md)，窗口的具体行为见 [UI](ui.zh-CN.md)。

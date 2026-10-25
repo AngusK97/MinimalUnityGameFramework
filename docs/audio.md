@@ -2,7 +2,7 @@
 
 [Overview](../README.md) · [Quick start](quick-start.md) · [简体中文](audio.zh-CN.md)
 
-Play effects or control a music layer. The framework reuses audio sources.
+Play a sound effect or control your background music through audio layers. The framework takes care of reusing audio sources.
 
 <a id="try-it"></a>
 
@@ -27,7 +27,7 @@ public void PlayClick()
 
 In the Button Inspector, expand **On Click ()**, click **+**, drag in the scene object with this component, then select **your component → PlayClick()**.
 
-**Expected result:** after loading, clicking plays cue.wav. If the module or clip is unavailable, Console tells you to load MainResources.
+**Expected result:** once the resources have loaded, clicking the button plays cue.wav. If the module or clip is unavailable, Console reminds you to load MainResources first.
 
 `PlaySound` defaults to volume 1, pitch 1, no loop. For looping music, use `Play`.
 
@@ -35,7 +35,7 @@ In the Button Inspector, expand **On Click ()**, click **+**, drag in the scene 
 
 ## 02 Conventions
 
-Core provides `UI`, `Background`, `Environment` and `Event` layers. Choose `SoundLayer` by purpose.
+Core provides `UI`, `Background`, `Environment` and `Event` layers. Choose the `SoundLayer` that matches what the sound is for.
 
 | Action | Call |
 | --- | --- |
@@ -44,8 +44,8 @@ Core provides `UI`, `Background`, `Environment` and `Event` layers. Choose `Soun
 | Stop and clear its clips | `GameCore.Sound.StopSound(SoundLayer.Background)` |
 
 - Pause affects only the chosen layer.
-- Paused/full layers drop new requests without queuing or stealing voices.
-- Stop clears playback and clip references but keeps pause state; call UnPauseSound to accept playback again.
+- If a layer is paused, or has no available source and cannot create another, it drops new requests. It does not queue them or interrupt another sound to make room.
+- Stop ends playback and clears clip references, but leaves the pause state unchanged. If the layer is paused, call UnPauseSound before playing again.
 - Audio does not load assets. Stop related playback before unloading its resource module.
 
 <details>
@@ -53,11 +53,11 @@ Core provides `UI`, `Background`, `Environment` and `Event` layers. Choose `Soun
 
 For looping music, load the AudioClip, then call `GameCore.Sound.Play` with `SoundLayer.Background`, the clip, volume `0.5f`, pitch `1f` and `isLoop: true`.
 
-Each SourceAgent's `Max Sources` defaults to 16, limiting expansion, not existing sources. Reuse resets clip, loop, pitch and volume.
+Each SourceAgent's `Max Sources` defaults to 16. Once it reaches this number, it stops creating new sources; it does not remove existing ones. Reusing a source resets its clip, loop, pitch and volume.
 
-Expanded sources copy the first valid source's mixer, spatial and listener settings. During `AudioListener.pause`, only `ignoreListenerPause` sources are usable. Missing layers log a warning and skip playback.
+New sources copy the first valid source's mixer, spatial and listener settings. During `AudioListener.pause`, only `ignoreListenerPause` sources are usable. Missing layers log a warning and skip playback.
 
-Your game owns global pause, saved volume and cross-scene audio policy. Scene changes do not automatically stop all layers.
+Your game decides how global pause works, how to save volume settings and which sounds continue across scenes. Scene changes do not automatically stop all layers.
 
 </details>
 
@@ -66,7 +66,7 @@ Your game owns global pause, saved volume and cross-scene audio policy. Scene ch
 
 `SourceAgent.GetAudioSource()` may return null. Use borrowed sources immediately; they are not reserved playback handles.
 
-Native Pause, PlayDelayed and PlayScheduled bypass layer pause guarantees. `SourceAgent.Play(clip)` reports acceptance, not device audibility. Use layer APIs for ordinary gameplay.
+If you call the native Pause, PlayDelayed or PlayScheduled methods directly, the layer can no longer guarantee its pause behavior. `SourceAgent.Play(clip)` tells you whether the request was accepted, not whether the device produced sound. For ordinary gameplay, use the layer APIs.
 
 </details>
 

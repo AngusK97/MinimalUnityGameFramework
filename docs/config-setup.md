@@ -15,12 +15,12 @@
 3. Enter the example from A1: field names in row 1, field types in row 2, data from row 3. Remove unused blank sheets and enter values without formulas.
 4. Save as `MyGame.xlsx` directly inside the Source folder. The workbook name is up to you; sheet names become table names and must be unique across the folder. The importer reads `.xlsx` files directly in this folder, ignores Excel's `~$` temporary files, and does not scan subfolders.
 
-The bundled `Assets/GameContent/Demo/Editor/Tables/Source/Demo.xlsx` is a working example. To start your own game from it, copy only the sheets you need and replace Demo IDs and asset paths with your own. Keep your source under your game's Editor folder so it is not included as a runtime asset.
+You can open `Assets/GameContent/Demo/Editor/Tables/Source/Demo.xlsx` to see a working example. To start your own game from it, copy only the sheets you need and replace Demo IDs and asset paths with your own. Keep your source under your game's Editor folder so it is not included as a runtime asset.
 
 ### 1.2 Connect Unity
 
 1. Open **Framework → Config**. Drag the **MyGame folder** from Project into **Game**. Enter **Namespace = MyGame** and choose **Source = Local Excel**. Namespace is the C# namespace for generated code; keep it the same for this game.
-2. Keep **Excel folder = Editor/Tables/Source**, or click **Choose folder…** to select another folder inside this game's Editor directory. The path is relative to the game root; the generated-output folder cannot be used as a source.
+2. Keep **Excel folder = Editor/Tables/Source**, or click **Choose folder…** to select another folder inside this game's Editor directory. The path starts from your game’s root folder. Choose a folder for your source workbooks, not the folder containing generated files.
 3. Click **Update Config**. Wait for the progress window, result and any compilation. Use **Open report** for details, then return to your table's tutorial to check its generated output.
 
 <img src="images/config-setup.jpg" alt="Unity Config setup with Local Excel selected and a game-owned source folder" width="480">
@@ -55,9 +55,9 @@ Use this source when your team wants to edit tables together online. You need a 
 
 1. Inside the shared Drive folder, choose **New → Google Sheets → Blank spreadsheet**. Rename the first tab for your table and enter the same headers, types and data used in the local Excel examples. Put native Google Sheets workbooks directly in the folder, without subfolders or shortcuts. An uploaded `.xlsx` must be converted to Google Sheets for this source.
 2. Create `Assets/GameContent/MyGame/` if needed. Open **Framework → Config**, select that game folder and set **Namespace = MyGame**, then choose **Source = Google Sheets**. Paste the folder ID into **Google Drive Folder ID**. From `https://drive.google.com/drive/folders/FOLDER_ID`, copy only `FOLDER_ID`. Select your downloaded key in **Service Account JSON**.
-3. For a new game, click **Update Config**. If this game already has an applied source, follow section 03 to switch. Wait for the result and any compilation, then return to your table's tutorial.
+3. For a new game, click **Update Config**. If this game has already imported tables, follow section 03 to switch sources. Wait for the result and any compilation, then return to your table's tutorial.
 
-The source settings are stored in the game's ConfigSource.json. The key's file path stays in this computer's Unity Editor preferences; the key is not copied into the project. Select a locally stored key again on another computer.
+The tool saves your source settings in the game's ConfigSource.json. It remembers the key’s file path in this computer's Unity Editor preferences and does not copy the key into the project. On another computer, select the key stored on that computer.
 
 <details>
 <summary>Google setup problems</summary>
@@ -74,7 +74,7 @@ The importer requests read-only Drive metadata and Sheets access; it does not ed
 
 These steps use **Demo**. For your own game, use its folder and namespace instead. Demo already uses local Excel; Google setup is only needed when you choose Google Sheets.
 
-Stop Play mode first. Include every currently applied table in the destination, with the **same table names, field names, field types and column order**. Save table additions, removals and header changes for after the switch. Keep one copy of each table and use literal values, not formulas. Your game code stays the same.
+Stop Play mode first. Put every table the game currently uses in the new source, keeping the **same table names, field names, field types and column order**. Save table additions, removals and header changes for after the switch. Keep one copy of each table and use literal values, not formulas. Your game code stays the same.
 
 ### 3.1 Google Sheets → local Excel
 
@@ -98,6 +98,6 @@ From now on: **edit Google Sheets → wait for cloud saving to finish → Update
 ### 3.3 Check the result
 
 - **Success:** the result says `Config is up to date`, and Config retains the new source. The toolbar's Update Config now reads only that source. Run the same Demo and check that its menu and level still work.
-- **Failure:** the previous source and generated output stay unchanged. Click **Open report**, add missing tables, move duplicate workbooks out, or fix field and asset errors as directed, then retry in Config. All tables must pass together; a source switch cannot apply only some tables.
+- **Failure:** the previous source and generated output stay unchanged. Click **Open report**, add missing tables, move duplicate workbooks out, or fix field and asset errors as directed, then retry in Config. Every table must pass the checks before the source can switch. It cannot switch just some of them.
 
-Switching does not delete the original files. **Local and Google sources do not sync automatically or act as fallbacks.** After success, edit only the active source; daily updates still retain the previous version of invalid tables. Make schema changes or add and remove tables after the switch succeeds.
+Switching does not delete the original files. **Local and Google sources do not sync automatically or act as fallbacks.** After the switch succeeds, edit only the selected source. In later updates, tables with errors still keep their previous version. Wait until the switch succeeds before changing headers or adding and removing tables.

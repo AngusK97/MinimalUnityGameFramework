@@ -18,15 +18,15 @@ Demo 已附带 `Editor/Tables/Source/Demo.xlsx` 和生成配置，本地编辑�
 
 <img src="images/config-toolbar.jpg" alt="Unity 顶部工具栏左侧的 Update Config 按钮，Play 保持居中" width="900">
 
-每次更新都会读取当前来源中的表格内容，只写入内容有变化的生成文件。
+每次更新都会读取你选中的来源。生成文件的内容有变化时，工具才会重新写入。
 
-更新时不用选择“已完成的表”，也没有额外的发布步骤。只要结构符合要求，即使组员还没编辑完，内容也可能被导入。导入尚未完成的改动前，先和组员沟通。
+不用先把表标为“已完成”，也不用另行发布。只要数据通过检查，即使组员还在编辑，也可能被导入。导入未完成的改动前，先和组员确认一下。
 
 <a id="查看结果"></a>
 
 ### 1.1 查看结果
 
-读取、检查和写入表格时，会显示 Unity 原生进度窗口。开始写入前可以点击 **Cancel**，取消后不会应用本次表格改动。
+Unity 读取、检查和写入表格时，会显示进度窗口。开始写入前可以点击 **Cancel**，这样表格就会保持原样。
 
 进度窗口关闭后，会弹出结果窗口，说明本次是**更新成功**、**部分更新**还是**失败**。点击 **Open report** 查看详细报告。如果生成 C# 代码触发编译，结果会在编译完成后显示，不用为了查看结果再更新一次。
 
@@ -39,7 +39,7 @@ Demo 已附带 `Editor/Tables/Source/Demo.xlsx` 和生成配置，本地编辑�
 
 <img src="images/config-progress.jpg" alt="Unity 原生 Update Config 进度窗口" width="600">
 
-以下截图使用 Demo 表。**更新成功：** 所有表通过校验，当前版本已生效。
+下面用 Demo 表举例。**更新成功：** 所有表都通过检查，更新后的数据已经保存到工程中。
 
 <img src="images/config-success.jpg" alt="Unity Config 结果窗口显示 Demo 表更新成功" width="600">
 
@@ -90,7 +90,7 @@ foreach (var item in MyGame.ItemTable.All)
 
 保存脚本，等待编译完成，再从自己的入口场景运行。**Console 应先显示 `20`，再显示 `Small potion`。** 将表中的价格改为 30，保存并更新配置，重新运行后应显示 30。
 
-**ItemTable** 用来查表，**ItemConfig** 代表其中一行。如果 ID 不存在，`Get` 会抛出异常；查询的 ID 可能不存在时，用 `TryGet(id, out var row)`。没有加载配置就读取数据，也会报错。
+用 **ItemTable** 查表，每一行都是一个 **ItemConfig**。如果 ID 不存在，`Get` 会抛出异常。不确定 ID 是否存在时，用 `TryGet(id, out var row)`。先加载配置，再读取数据，否则会报错。
 
 `GameConfig.LoadAndRegister()` 加载本地表数据，并登记 UI 和场景 ID。资源模块还需要在代码中登记和加载；使用 `main.Cue` 前，先按[资源教程](resources.zh-CN.md)完成这些步骤。
 
@@ -106,7 +106,7 @@ foreach (var item in MyGame.ItemTable.All)
 | 第 2 行 | 字段类型：`string`、`int`、`float`、`bool` 或 `ref:TableName` |
 | 第 3 行起 | 数据；每个 `Id` 非空，且在本表内唯一 |
 
-下面在 WPS 中打开的 Demo.xlsx **UI** 工作表展示了这一布局：第 1 行是字段名，第 2 行是类型，第 3 行起是数据。上方“添加一张表”使用的是普通数据 Item 示例。
+下面是在 WPS 中打开的 Demo.xlsx **UI** 工作表：第 1 行是字段名，第 2 行是类型，第 3 行起是数据。上方“添加一张表”使用的是普通数据 Item 示例。
 
 <img src="images/config-local-sheet.jpg" alt="WPS 中打开的 Demo.xlsx UI 工作表，显示字段名、string 类型和 UI 数据行" width="900">
 
@@ -131,7 +131,7 @@ foreach (var item in MyGame.ItemTable.All)
 
 UI 预制体缺失时只会给出警告，所以可以先准备 ID。不过，预制体准备好并重新更新配置后，这个 UI 才能正常打开。构建 Player 前，必须补齐资产或删除占位行，再更新配置。资产类型错误、UIBase 组件设置不符合要求，或 Addressables 条目不可用，都会报错。当前版本中，Resource 或 Scene 资产缺失也会报错。
 
-每张表作为一个整体更新。出错的表会保留上次成功生成的代码和数据；第一次导入就失败时，没有旧版可保留。如果新表通过 `ref:TableName` 引用了本次未能导入的改动，这张表的改动也不会生效。最终保留下来的各张表，引用关系必须全部有效。保留旧版不会恢复已经删除的 Unity 资产，工具也会检查旧表引用的本地资产；如果旧表中的资源或场景已经不可用，本次更新会停止。
+更新一张表时，会更新整张表的内容。出错的表保留上次成功生成的代码和数据；如果第一次导入就失败，就没有旧版可用。如果新表通过 `ref:TableName` 引用了本次未能导入的改动，这张表也要等相关问题修好后才能更新。最终留下的表之间，所有引用都必须有效。保留旧表不会找回已经删除的 Unity 资产。工具也会检查旧表引用的本地资产；如果其中的资源或场景不可用，本次更新就会停止。
 
 所以，一次更新中可能有些表已更新，有些表保留了旧版。无法读取源表文件夹时，更新会停止；Google 身份验证或文件夹列表读取失败也一样。提交前先看报告：检查通过只说明结构和引用正确，不代表玩法设计已经完成。
 
@@ -154,6 +154,6 @@ Assets/GameContent/MyGame/
 
 </details>
 
-只有少量玩法参数时，继续用 Inspector 或自己的 ScriptableObject 就好；有大量结构相同的数据时，再考虑配置表。专门的文本／本地化配置和声音播放配置留待后续，当前已支持登记 AudioClip 资源。
+只有少量玩法参数时，继续用 Inspector 或自己的 ScriptableObject 就好；有大量结构相同的数据时，再考虑配置表。目前还没有专门的文本、本地化或声音播放配置表，不过已经可以登记 AudioClip 资源。
 
 下一步：[UI](ui.zh-CN.md) · [资源](resources.zh-CN.md) · [场景](scenes.zh-CN.md) · [构建](build.zh-CN.md)

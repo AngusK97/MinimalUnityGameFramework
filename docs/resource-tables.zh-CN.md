@@ -2,14 +2,14 @@
 
 [框架总览](../README.zh-CN.md) · [配置接入](config-setup.zh-CN.md) · [English](resource-tables.md)
 
-**编辑并保存 Resource 工作表 → Update Config → 加载模块 → 使用 main.Cue。** 一个模块用来管理需要一起加载、一起释放的资产。如果只是组件固定使用的资产，通常在 Inspector 中直接引用就够了。
+**编辑并保存 Resource 工作表 → Update Config → 加载模块 → 使用 main.Cue。** 一个模块用来管理需要一起加载、一起释放的资产。如果一个组件一直用同一个资产，通常在 Inspector 中直接引用就够了。
 
 <a id="添加资源"></a>
 
 ## 01 添加资源
 
 1. 将 **cue.wav** 放入 `Assets/GameContent/MyGame/Content/Audio/`。在 **Project** 选中它，勾选 Inspector 中的 **Addressable**。
-2. 下面是 **Resource** 表的示例。第一次使用时，按[配置接入](config-setup.zh-CN.md)新建本地工作簿，填入这些内容。如果已经接入，在当前来源中打开已有的 **Resource** 工作表标签，没有就创建一个。新建的工作表从 A1 开始填入全部内容；已有的工作表保留前两行，只添加 **Cue** 这一行数据。
+2. 下面是 **Resource** 表的示例。第一次使用时，按[配置接入](config-setup.zh-CN.md)新建本地工作簿，填入这些内容。如果已经选好来源，就打开其中的 **Resource** 工作表，没有就新建一个。新建的工作表从 A1 开始填入全部内容；已有的工作表保留前两行，只添加 **Cue** 这一行数据。
 
 | Id | Name | Type | Module | AssetPath |
 | --- | --- | --- | --- | --- |
@@ -18,7 +18,7 @@
 
 3. 第一次连接时，用上面的表按[配置接入](config-setup.zh-CN.md)完成设置。如果已经连接，先确认 **Framework → Config** 中选的是 **MyGame**。保存工作簿（Google Sheets 则等云端保存完成），再点击顶部工具栏左侧的 **Update Config**，等待更新结果和编译完成。
 
-**成功标志：** 已生成 `MyGame/Scripts/Generated/MainResources.g.cs`，其中包含 `Id = "MyGame.Main"` 和 `AudioClip Cue` 属性。工具还会生成 ResourceTable、ResourceConfig 和本地 JSON。`Name` 只用于说明，不会生成字段。
+**成功标志：** 已生成 `MyGame/Scripts/Generated/MainResources.g.cs`，其中包含 `Id = "MyGame.Main"` 和 `AudioClip Cue` 属性。工具还会生成 ResourceTable、ResourceConfig 和本地 JSON。`Name` 留给自己和组员看，不会变成代码中的字段。
 
 | Type | 属性类型 |
 | --- | --- |
@@ -32,7 +32,7 @@
 
 ## 02 使用模块
 
-先按[资源示例](resources.zh-CN.md)创建、登记并加载模块。如果已有 **MyGameEntry.cs**，按其中的合并说明接入即可。每次 Core 启动，配置只加载一次，每个模块只登记一次。
+先按[资源示例](resources.zh-CN.md)创建、登记并加载模块。如果已有 **MyGameEntry.cs**，照着示例把需要的代码加进去就好。每次 Core 启动，配置只加载一次，每个模块只登记一次。
 
 示例中的 `main` 是一个 `MainResources` 字段。加载成功后会调用 `PlayCue()`，把下面这行放在这个回调方法中：
 

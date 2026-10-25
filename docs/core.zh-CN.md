@@ -12,7 +12,7 @@
 2. 创建空对象，挂上自己的启动脚本。
 3. 在 `Start()` 中检查 `GameCore.IsReady`，确认就绪后再使用服务。
 
-把下面的方法放进启动类（需要 `using Core; using UnityEngine;`）。包含打开窗口逻辑的完整示例见[开始使用](quick-start.zh-CN.md)。
+把下面的方法放进启动类，在文件顶部添加 `using Core; using UnityEngine;`。想看从启动到打开窗口的完整写法，可以参考[开始使用](quick-start.zh-CN.md)。
 
 ```csharp
 private void Start()
@@ -27,7 +27,7 @@ private void Start()
 }
 ```
 
-如果使用生成的配置表，先[生成配置](config.zh-CN.md)，再在这里调用 `MyGame.GameConfig.LoadAndRegister()`。每个 Core 生命周期只调用一次，并且要在创建资源模块、打开 UI 或请求切换场景之前完成。InitScene 只初始化服务，不会加载游戏配置。
+如果使用生成的配置表，先[生成配置](config.zh-CN.md)，再在这里调用 `MyGame.GameConfig.LoadAndRegister()`。每个 Core 生命周期只调用一次，放在创建资源模块、打开 UI 或切换场景之前。InitScene 只初始化服务，不会加载游戏配置。
 
 <a id="它负责什么"></a>
 
@@ -50,7 +50,7 @@ Core 在 `Awake()` 中初始化各项服务，在 `Update()` 中处理 UI 请求
 - 预制体已经包含 Canvas 层级、转场 UI、EventSystem 和 AudioListener，运行时只保留一套启用的组件。
 - 切换关卡时保留 Core。需要重新开始游戏时，通过自己的控制器重置游戏，不要重新初始化 Core。
 - 游戏规则、存档、UI 标识和导航逻辑放在自己的游戏目录中。由游戏决定从哪个场景开始，Core 不会登记 Demo 菜单。
-- 五个管理器都必须放在 Core 自身的层级中。不再需要 Core 时，销毁**整个 Core 根对象**。
+- 五个管理器都要放在 Core 的层级里。不再需要 Core 时，销毁**整个 Core 根对象**。
 
 **预期结果：** `GameCore.IsReady` 为 true。单独运行共用的 InitScene 时，只会准备服务，不会显示游戏菜单。
 

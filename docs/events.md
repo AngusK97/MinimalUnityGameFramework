@@ -85,21 +85,21 @@ namespace MyGame
 
 Wait for compilation, then drag **EventExample.cs** onto the EventExample object's Inspector. Save the scene and press Play.
 
-**Success:** Console prints `Level completed.` once. Start subscribes before broadcasting, so the first notification cannot be missed. GameCore initializes in Awake; a different object's OnEnable may run before that, so this example waits for Start and checks readiness.
+**Success:** Console prints `Level completed.` once. In Start, we subscribe before broadcasting, so the listener is ready for the first notification. GameCore initializes in Awake, and another object's OnEnable may run before that. That's why this example waits for Start and checks that Core is ready.
 
 <a id="4-broadcast-from-your-game"></a>
 
 ### 1.4 Broadcast from your game
 
-When you add this to your game, put the following line inside a level-completion method or wherever you want to send the notification. Core must be ready; add `using Core;` and `using MyGame;` at the top of that script:
+To send the same notification from your game, put this line inside a level-completion method or another method that needs to send it. Core must be ready before you call it. Add `using Core;` and `using MyGame;` at the top of that script:
 
 ```csharp
 GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 ```
 
-Each broadcast invokes the listener once. The sender only needs the event name, not the EventExample object. RegisterEvent subscribes a listener; it does not define the name.
+In this example, each broadcast calls OnLevelCompleted once. You only need the event name to send it; you don't need a reference to the EventExample object. The name comes from the constant in GameEvents. RegisterEvent tells the framework which method to call when that event is sent.
 
-Destroying the EventExample object calls OnDestroy and removes its subscription. Once your game sends this notification, you can check cleanup: broadcast once, delete EventExample in Hierarchy during Play, then broadcast again. Its message should stop. Disabling the component alone does not unsubscribe it.
+When you destroy the EventExample object, OnDestroy removes its subscription. Once your game sends this notification, try broadcasting once, deleting EventExample in Hierarchy during Play, then broadcasting again. Its message should stop. Disabling the component alone does not unsubscribe it.
 
 <a id="choose-the-notification"></a>
 
@@ -112,24 +112,24 @@ Destroying the EventExample object calls OnDestroy and removes its subscription.
 | Notify immediately | `DispatchNow(GameEvents.LevelCompleted)` |
 | Notify at the next event update | `Dispatch(GameEvents.LevelCompleted)` |
 
-- Use game-owned string constants. IDs cannot be blank; handlers cannot be null.
+- Define event IDs as string constants in your game. IDs cannot be blank; handlers cannot be null.
 - Use services after Core is ready, on Unity's main thread. Core drives the event update; do not call OnUpdate yourself.
 - Subscribe when the receiver needs notifications; unsubscribe from the saved manager when it stops listening. Disabling a component does not unsubscribe it.
-- Keep a lambda delegate if you need to remove it later; a new lambda is a different listener.
-- Events have **no history replay**. A receiver created later must read current game state and subscribe to future changes.
+- If you'll need to unsubscribe a lambda later, save the delegate. Writing a new lambda creates a different listener.
+- Events **don't replay past notifications**. A receiver created later needs to read the current game state and subscribe to future changes.
 
 <a id="before-and-after"></a>
 
 ## 03 Before and after
 
-The original sender/data API remains available; use the shorter signature when you need neither:
+You can still send a source and data with the original API. If the receiver doesn't need either, use the shorter, parameterless form:
 
 | | Sender/data listener | Notification-only listener |
 | --- | --- | --- |
 | Handler | `void OnLevelCompleted(object sender, string type, BaseEventArgs args)` | `void OnLevelCompleted()` |
 | Send | `GameCore.Event.DispatchNow(this, GameEvents.LevelCompleted)` | `GameCore.Event.DispatchNow(GameEvents.LevelCompleted)` |
 
-Registration and removal keep the same method names. Retain the original `HandlerEvent` signature when a receiver needs a source or payload: Demo's [LevelView.cs](../Assets/GameContent/Demo/Scripts/UI/LevelView.cs) filters completion by the active level's sender.
+Both forms use the same methods to subscribe and unsubscribe. Keep the original `HandlerEvent` signature when a receiver needs a source or data. For example, the Demo's [LevelView.cs](../Assets/GameContent/Demo/Scripts/UI/LevelView.cs) uses sender to check that a completion notification came from the current level.
 
 <details>
 <summary>Optional: connect events to UI</summary>

@@ -10,7 +10,7 @@
 
 先在当前来源的[资源表](resource-tables.zh-CN.md)中添加 Cue 行，填写 **Type = AudioClip**、**Module = Main**，保存工作簿（Google Sheets 则等云端保存完成），再点击顶部工具栏左侧的 **Update Config**。工具会生成 `MyGame.MainResources`，ID 为 `MyGame.Main`。等编译完成后再继续。
 
-单独试这个例子时，在 `Assets/GameContent/MyGame/Scripts/` 创建 **MyResourceStartup.cs**，挂到空的根对象上，与共用的 GameCore 预制体并排放置。
+想单独试这个例子的话，在 `Assets/GameContent/MyGame/Scripts/` 创建 **MyResourceStartup.cs**，挂到空的根对象上，与共用的 GameCore 预制体并排放置。
 
 如果已有 **MyGameEntry.cs**，直接改那个脚本。补上 `using Sound;`，把 `main` 字段和 `PlayCue`、`OnLoadFailed`、`OnDestroy` 方法放进类中，再把从 `main = new MainResources()` 开始的三行接在 `Start()` 已有的 `GameConfig.LoadAndRegister()` 后面。只保留原来那次配置加载，不再挂第二个启动脚本：
 
@@ -64,9 +64,9 @@ namespace MyGame
 }
 ```
 
-**预期结果：** 整个模块加载成功后，会播放 cue.wav；加载失败或被取消时，会输出错误。销毁这个资源所有者时，会停止整个 UI 音频层并卸载模块。在自己的游戏中，要等所有借用者用完资源、依赖这些资源的实例也销毁后，再卸载模块。因此，资源所有者至少要存活到这些使用者不再需要资源为止。
+**预期结果：** 整个模块加载成功后，会播放 cue.wav；加载失败或被取消时，会输出错误。销毁挂着这个脚本的对象，会停止整个 UI 音频层并卸载模块。在自己的游戏中，要让负责资源的对象一直保留到大家都用完。卸载前，先停止使用这些资产，并销毁依赖它们的实例。
 
-Resource 服务会保留已登记的模块，Start 结束后仍然可以访问。启动代码登记后，其他组件可以查找并保存同一个模块实例；查找本身不会加载资源（需要 `using Core;`）：
+Start 结束后，Resource 仍会保留已登记的模块。登记之后，其他组件可以查找并保存同一个实例。查找不会自动加载资源（需要 `using Core;`）：
 
 ```csharp
 var main = GameCore.Resource.GetResourceModule<MyGame.MainResources>(MyGame.MainResources.Id);
@@ -78,7 +78,7 @@ var main = GameCore.Resource.GetResourceModule<MyGame.MainResources>(MyGame.Main
 
 ## 02 使用约定
 
-- 模块 ID 由游戏定义，确定后应保持稳定。生成的内部资源编号不能用作存档或网络通信中的标识。
+- 给模块取一个稳定的 ID。生成的内部资源编号不要用在存档或网络消息中。
 - 生成的快照、清单、代码和 JSON 要一起提交，详见[资源配置表](resource-tables.zh-CN.md)。你也可以继续手写 BaseResourceModule 派生类。
 - 等加载成功的回调执行时或执行后，再使用资产；加载失败由 `failedCallback` 处理。
 - 共用模块只能由所有者卸载。卸载前，先停止相关音频，并销毁依赖这些资源的实例，不要卸载正在播放的 clip。
@@ -87,7 +87,7 @@ var main = GameCore.Resource.GetResourceModule<MyGame.MainResources>(MyGame.Main
 <details>
 <summary>需要时再看：共享批次、取消与卸载</summary>
 
-同时调用多次 `LoadResources` 时，这些调用会共用同一批加载操作。只有整组资源都加载成功后，资产才可用。如果模块已经就绪，成功回调可能会同步执行。`GetResource<T>` 在资源未就绪、编号不存在或类型不符时返回默认值。
+同时调用多次 `LoadResources` 时，这些调用会共用同一批加载操作。只有整组资源都加载成功后，资产才可用。如果模块已经就绪，成功回调可能会立即执行，在 `LoadResources` 返回前就完成。`GetResource<T>` 在资源未就绪、编号不存在或类型不符时返回默认值。
 
 `UnloadResources` 会立即让当前批次失效，取消对整组资源的等待。之后才返回的加载结果会自行释放，不影响新的加载批次。重写这个方法时，必须调用 `base.UnloadResources()`。
 
@@ -102,7 +102,7 @@ var main = GameCore.Resource.GetResourceModule<MyGame.MainResources>(MyGame.Main
 
 `InstantiateGameObjectAsync` 会通过有效的完成回调把结果交给接收方，由接收方在用完后调用 `ReleaseInstance(handle)`。如果没有回调，或回调直接绑定的 Unity 对象已销毁，工具会自行释放结果。
 
-即使回调抛出异常，接收方仍然负责释放这次操作。工具只记录异常，不会再次通知，也不会释放接收方可能已经保存的句柄。从模块中借用资产不会增加一份独立引用，因此借用者不应单独释放它。
+如果你的回调抛出异常，仍然需要由你释放这次操作。工具只记录异常，不会再次调用回调，也不会释放你可能已经保存的句柄。使用模块里的资产不会多出一份引用，所以不要单独释放它。
 
 </details>
 

@@ -2,14 +2,14 @@
 
 [Overview](../README.md) · [Config setup](config-setup.md) · [简体中文](resource-tables.zh-CN.md)
 
-**Edit and save the Resource tab → Update Config → Load a module → Use main.Cue.** Put assets in one module when you want to load and release them together. For a component's own fixed asset, an Inspector reference may be enough.
+**Edit and save the Resource tab → Update Config → Load a module → Use main.Cue.** Put assets in one module when you want to load and release them together. If a component always uses the same asset, an Inspector reference is often enough.
 
 <a id="add-resources"></a>
 
 ## 01 Add resources
 
 1. Put **cue.wav** in `Assets/GameContent/MyGame/Content/Audio/`. Select it in **Project** and check **Addressable** in its Inspector.
-2. Here is the **Resource** table. For your first setup, create a local workbook with these rows using [Config setup](config-setup.md). If already connected, open the active source's existing **Resource** tab or create one if missing. Enter all rows from A1 in a new tab; in an existing tab, keep its first two rows and add only the **Cue** data row.
+2. Here is an example **Resource** table. If this is your first table, create a local workbook with these rows using [Config setup](config-setup.md). If you already have a source, open its **Resource** tab, or add one if it is missing. Enter all rows from A1 in a new tab; in an existing tab, keep its first two rows and add only the **Cue** data row.
 
 | Id | Name | Type | Module | AssetPath |
 | --- | --- | --- | --- | --- |
@@ -18,7 +18,7 @@
 
 3. For your first connection, follow [Config setup](config-setup.md) using the table above. If already connected, check that **MyGame** is selected in **Framework → Config**. Save the workbook (or wait for Google Sheets to finish saving), then click **Update Config** on the left side of Unity's top toolbar. Wait for the result and compilation.
 
-**Success:** `MyGame/Scripts/Generated/MainResources.g.cs` exists. It exposes `Id = "MyGame.Main"` and an `AudioClip Cue` property. The tool also generates ResourceTable, ResourceConfig and local JSON. `Name` is a description for people; it is not a generated field.
+**Success:** `MyGame/Scripts/Generated/MainResources.g.cs` exists. It exposes `Id = "MyGame.Main"` and an `AudioClip Cue` property. The tool also generates ResourceTable, ResourceConfig and local JSON. Use `Name` to describe the asset for yourself and your teammates. It does not become a field in the generated code.
 
 | Type | Property type |
 | --- | --- |
@@ -46,11 +46,11 @@ This line needs `using Core; using Sound;`. Property access does not trigger loa
 
 ## 03 Change resources
 
-- **Add or replace:** edit the row, save, update config, then use the generated property. Keeping Id preserves callers.
+- **Add or replace:** edit the row, save, update config, then use the generated property. If you keep the same Id, your existing calls can stay as they are.
 - **Move an asset:** update AssetPath, save and update config.
 - **Rename or delete Id/Module:** update config, then fix callers and module registration. The module ID is `<namespace>.<Module>`.
 - **Commit:** include the local workbook, source settings, generated CSV, manifest, C#, JSON, assets and meta files together. Resolve conflicts in the active source and update config again; do not merge generated files by hand.
 
-Start with **Main**. Use other Module values, such as **Level01**, when assets need a different lifetime. Missing or wrong-type assets are errors; [Config tables](config.md) explains retained versions and recovery. Generated internal resource numbers are not save or network IDs.
+Start with **Main**. Use other Module values, such as **Level01**, when you need to load and release some assets separately. Missing or wrong-type assets are errors; [Config tables](config.md) explains retained versions and recovery. Generated internal resource numbers are not save or network IDs.
 
 Next: [Register, load and release the module](resources.md).

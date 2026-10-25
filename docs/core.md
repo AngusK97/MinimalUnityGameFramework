@@ -8,11 +8,11 @@
 
 ## 01 Set it up
 
-1. Drag [GameCore.prefab](../Assets/Framework/Prefabs/GameCore.prefab) into the entry scene at Hierarchy's top level. Keep its settings.
+1. Drag [GameCore.prefab](../Assets/Framework/Prefabs/GameCore.prefab) into your entry scene as a root object in the Hierarchy. Keep the prefab's settings.
 2. Create an empty object and attach your startup script.
 3. Check `GameCore.IsReady` in `Start()` before using services.
 
-Add this method to your startup class (`using Core; using UnityEngine;`). For a complete class that opens a window, see [Quick start](quick-start.md).
+Add this method inside your startup class, with `using Core; using UnityEngine;` at the top of the file. For a complete example that opens a window, see [Quick start](quick-start.md).
 
 ```csharp
 private void Start()
@@ -27,7 +27,7 @@ private void Start()
 }
 ```
 
-For generated tables, call `MyGame.GameConfig.LoadAndRegister()` here once per Core lifetime, after [generating config](config.md). Do this before constructing resource modules, opening UI or requesting a scene. The services-only InitScene does not load game configuration.
+If you use generated tables, first [generate the config](config.md), then call `MyGame.GameConfig.LoadAndRegister()` here. Call it once per Core lifetime, before creating resource modules, opening UI or requesting a scene. InitScene prepares services only; it does not load your game configuration.
 
 <a id="what-it-owns"></a>
 
@@ -41,7 +41,7 @@ For generated tables, call `MyGame.GameConfig.LoadAndRegister()` here once per C
 | `GameCore.Scene` | Controlled scene transitions |
 | `GameCore.Sound` | Layered audio playback |
 
-Core assembles services in `Awake()` and pumps UI requests and queued events in `Update()`. Unity drives shown views through `UIBase.OnUpdate()`.
+Core initializes its services in `Awake()` and processes UI requests and queued events in `Update()`. Unity updates visible windows through `UIBase.OnUpdate()`.
 
 <a id="a-few-things-to-keep-in-mind"></a>
 
@@ -50,7 +50,7 @@ Core assembles services in `Awake()` and pumps UI requests and queued events in 
 - The prefab provides Canvas layers, transition UI, EventSystem and an AudioListener. Keep one active set.
 - Keep Core across levels; restart gameplay through your controller, not by reinitializing Core.
 - Keep rules, saves, UI IDs and navigation in your game directory. Your game chooses its first scene; Core registers no demo menu.
-- All five managers must belong to Core's hierarchy. End its lifetime by destroying the **whole Core root**.
+- Keep all five managers in Core's hierarchy. When you no longer need Core, destroy the **whole Core root**.
 
 **Expected result:** `GameCore.IsReady` is true. The shared InitScene alone prepares services without a game menu.
 

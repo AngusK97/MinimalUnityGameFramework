@@ -15,12 +15,12 @@
 3. 从 A1 开始填写示例：第 1 行是字段名，第 2 行是字段类型，第 3 行起是数据。删除多余的空白工作表，单元格直接填值，不使用公式。
 4. 将文件保存为 `MyGame.xlsx`，直接放在 Source 文件夹内。工作簿名可以自定，工作表名会成为配置表名，整个文件夹内不能重名。工具只读取该文件夹中的 `.xlsx`，忽略 Excel 的 `~$` 临时文件，不扫描子文件夹。
 
-随包的 `Assets/GameContent/Demo/Editor/Tables/Source/Demo.xlsx` 可以直接打开参考。做自己的游戏时，只复制需要的工作表，再把 Demo 的 ID 和资产路径换成自己的。源表放在自己游戏的 Editor 目录中，不会作为运行资产打包。
+可以打开 `Assets/GameContent/Demo/Editor/Tables/Source/Demo.xlsx`，看看一张填好的表是什么样。做自己的游戏时，只复制需要的工作表，再把 Demo 的 ID 和资产路径换成自己的。源表放在自己游戏的 Editor 目录中，不会作为运行资产打包。
 
 ### 1.2 接入 Unity
 
 1. 打开 **Framework → Config**，把 Project 中的 **MyGame 文件夹**拖到 **Game** 栏。填写 **Namespace = MyGame**，选择 **Source = Local Excel**。Namespace 是生成代码的 C# 命名空间，同一个游戏保持不变。
-2. 保留 **Excel folder = Editor/Tables/Source**，或点击 **Choose folder…** 选择这个游戏 Editor 目录内的其他文件夹。路径以游戏根目录为起点，不能把生成文件目录当作来源。
+2. 保留 **Excel folder = Editor/Tables/Source**，或点击 **Choose folder…** 选择这个游戏 Editor 目录内的其他文件夹。路径从游戏根目录开始。这里选存放源工作簿的文件夹，不要选存放生成文件的文件夹。
 3. 点击 **Update Config**，等待进度窗口、更新结果和编译完成。用 **Open report** 查看详情，再回到对应教程检查生成结果。
 
 <img src="images/config-setup.jpg" alt="Unity Config 设置窗口，已选择 Local Excel 和游戏自己的源表文件夹" width="480">
@@ -57,9 +57,9 @@
 
 1. 在共享的 Drive 文件夹中选择 **New → Google Sheets → Blank spreadsheet**。把第一个标签改成配置表名，按本地 Excel 示例填写相同的字段名、类型和数据。原生 Google Sheets 工作簿直接放在这个文件夹中，不使用子文件夹或快捷方式。上传的 `.xlsx` 需要先转换为 Google Sheets。
 2. 如果还没有游戏目录，先创建 `Assets/GameContent/MyGame/`。打开 **Framework → Config**，选择这个游戏文件夹，设置 **Namespace = MyGame**，再选择 **Source = Google Sheets**。在 **Google Drive Folder ID** 中填写文件夹 ID。例如地址是 `https://drive.google.com/drive/folders/FOLDER_ID`，只复制 `FOLDER_ID`。在 **Service Account JSON** 中选择下载的密钥。
-3. 新游戏点击 **Update Config**。如果这个游戏已经有生效的来源，按第 03 节切换。等待结果和编译完成，再回到对应教程继续。
+3. 新游戏点击 **Update Config**。如果这个游戏已经导入过配置表，按第 03 节切换来源。等待结果和编译完成，再回到对应教程继续。
 
-来源设置保存在游戏自己的 ConfigSource.json 中。密钥文件路径只保存在本机 Unity Editor 偏好设置里，密钥不会复制进工程。换电脑后，需要重新选择本机存放的密钥。
+工具把来源设置保存在游戏自己的 ConfigSource.json 中。它只在这台电脑的 Unity Editor 偏好设置里记住密钥路径，不会把密钥复制进工程。换电脑后，再选择那台电脑上存放的密钥。
 
 <details>
 <summary>Google 接入问题</summary>
@@ -76,7 +76,7 @@
 
 下面以 **Demo** 为例；自己的游戏把 Demo 换成对应的游戏目录和命名空间。Demo 默认使用本地 Excel，只有改用 Google 时才需要连接 Google。
 
-切换前先停止 Play。目标来源要包含当前全部配置表，**表名、字段名、字段类型和列顺序保持一致**；这次先不增删表或改表头。每张表只保留一份，单元格直接填值，不使用公式。游戏调用代码不用改。
+切换前先停止 Play。把游戏当前使用的全部配置表放到新来源中，**表名、字段名、字段类型和列顺序保持一致**；这次先不增删表或改表头。每张表只保留一份，单元格直接填值，不使用公式。游戏调用代码不用改。
 
 ### 3.1 Google Sheets → 本地 Excel
 
@@ -100,6 +100,6 @@
 ### 3.3 成功与失败怎么看
 
 - **成功：** 结果窗口显示 `Config is up to date`，Config 中保留新来源。以后顶部的 Update Config 只读取这个来源；切换前后运行同一个 Demo，检查菜单和关卡正常即可。
-- **失败：** 原来源和生成结果保持不变。点击 **Open report**，按提示补齐缺少的表、移走重复工作簿，或修正字段和资产错误，再到 Config 重试。切换必须整套通过，不会只切换其中几张表。
+- **失败：** 原来源和生成结果保持不变。点击 **Open report**，按提示补齐缺少的表、移走重复工作簿，或修正字段和资产错误，再到 Config 重试。所有表都通过检查后，才能切换来源，不能只切换其中几张。
 
-切换不会删除原文件，**本地与 Google 也不会自动同步或互相替补**。成功后只编辑选中的来源；日常更新仍按表保留出错表的旧版。需要改表头或增删表时，等切换成功后再操作。
+切换不会删除原文件，**本地与 Google 也不会自动同步或互相替补**。切换成功后，只编辑选中的来源。以后更新时，出错的表仍会保留旧版。需要改表头或增删表，等切换成功后再做。

@@ -2,7 +2,7 @@
 
 [框架总览](../README.zh-CN.md) · [开始使用](quick-start.zh-CN.md) · [English](build.md)
 
-**设置入口场景 → 构建 Addressables → 构建 Player。** Player 就是构建后可以脱离 Editor 运行的游戏。
+**设置入口场景 → 构建 Addressables → 构建 Player。** Player 就是构建好的游戏，可以在 Editor 外独立运行。
 
 <a id="构建-demo"></a>
 
@@ -21,7 +21,7 @@
 
 1. 打开 **File → Build Profiles**，在 **Platforms** 中选择目标平台，需要切换时点击 **Switch Platform**。
 2. 点击左侧的 **Scene List**，添加 `MyGame/Scenes/Start.unity`，将它移到第一项并勾选。如果不需要 InitScene，就从列表中移除它，保留游戏使用的其他原生场景。**Open Scene List** 打开的也是这份共享列表。
-3. 如果当前源表内容或本地资产路径有变化，先在 **Framework → Config** 中选择自己的游戏，再点击顶部工具栏左侧的 **Update Config**，等待编译完成。构建前，检查导入报告里是否有保留旧版表的警告，并确认这些表的状态。
+3. 如果当前源表内容或本地资产路径有变化，先在 **Framework → Config** 中选择自己的游戏，再点击顶部工具栏左侧的 **Update Config**，等待编译完成。构建前看一下导入报告：如果有表保留了旧版，确认这是不是你要使用的内容。
 4. 打开 **Window → Asset Management → Addressables → Groups**，选择 **Build → New Build → Default Build Script**，等待成功。
 5. 回到 **Platforms**，选中目标平台，点击 **Build** 并选择输出位置。
 6. 打开构建好的游戏，应该能看到自己的第一个界面。再试试 UI、输入、声音和场景切换。
@@ -30,7 +30,7 @@
 
 *第 2 步示例：Build Profiles → Scene List，MyGame/Scenes/Start 已勾选，并放在第一项。*
 
-构建时会检查已提交的本地快照、生成文件的归属，以及当前资产是否可用。这个过程不会重新导入 Excel 或访问 Google，也不需要密钥，因此无法发现尚未导入的源表修改。如果 UI 占位对应的资产仍然缺失、资产无效，或生成文件被修改，Player 构建就会被阻止。
+构建时会检查已提交的本地快照、生成文件的归属，以及当前资产是否可用。它不会重新导入 Excel 或访问 Google，也不需要密钥。如果改了源表却还没导入，这一步是检查不出来的。如果 UI 占位仍缺少对应资产、资产无效，或生成文件被修改，Player 构建就会停下来。
 
 修改资源或切换平台后，要重新构建 Addressables。**Use Asset Database (fastest)** 只适用于 Editor 中的 Play 模式，Player 仍然需要构建好的资源内容。
 

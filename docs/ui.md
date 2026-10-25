@@ -10,7 +10,7 @@
 
 This example uses the `Menu` window from [Quick start](quick-start.md). If you followed [UI tables](ui-tables.md) instead, replace `Menu` with `Shop` in the open and close examples below.
 
-In **MyGameEntry.cs**, replace the existing OpenUI call in `Start()` with this code, after `GameConfig.LoadAndRegister()`. Keep that config call only once per Core lifetime. You can also open the window from a button handler after startup (`using Core; using UI;`):
+In **MyGameEntry.cs**, replace the existing OpenUI call in `Start()` with this code, after `GameConfig.LoadAndRegister()`. Load config once after Core starts; do not add a second config call. You can also open the window from a button handler after startup (`using Core; using UI;`):
 
 ```csharp
 GameCore.UI.OpenUI(UILayer.First, MyGame.UIName.Menu, callback: view =>
@@ -54,9 +54,9 @@ Save the prefab with **one UIBase-derived component on its RectTransform root**.
 <details>
 <summary>Request behavior and manual registration</summary>
 
-Duplicate opens share a pending load; an open window returns its instance without another OnShow. The first request sets layer and data. Failed/cancelled callbacks receive null; directly bound methods on destroyed Unity targets are skipped.
+If you open the same window while it is loading, the calls share that load. If it is already open, you get the existing instance without another OnShow. The first call sets its layer and data. A failed or cancelled open calls back with null. If a callback is bound directly to a method on a destroyed Unity object, it is skipped.
 
-CloseUI cancels queued/loading requests and releases late instances. IsOpen includes queued/loading states, not just visible windows. CloseAll handles its initial request snapshot; requests explicitly opened by close hooks/callbacks survive.
+CloseUI also cancels queued or loading windows. If an instance finishes loading after cancellation, it is released. IsOpen returns true for queued and loading windows too, so it does not tell you whether a window is visible. CloseAll handles the requests that exist when you call it. Windows opened from a close method or callback stay open.
 
 Close, Release and CloseSelf all end the window’s open request. Windows are released, not pooled. OnClose must also work if OnShow only finished some of its setup. If you override OnDestroy, call base.OnDestroy() after your cleanup. Do not manually call Update.
 
@@ -67,7 +67,7 @@ GameCore.UI.RegisterUiData(new UIData("Menu",
     "Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab"));
 ```
 
-Register after Core is ready. Empty IDs and duplicate IDs are rejected; do not register the same IDs again through GameConfig. An empty address is a placeholder: OpenUI reports failure and calls back with null. Low-level fades require separate coordination; use the scene API for scene transitions.
+Register after Core is ready. Empty IDs and duplicate IDs are rejected; do not register the same IDs again through GameConfig. An empty address is a placeholder: OpenUI reports failure and calls back with null. If you call the low-level fades yourself, you need to coordinate them. Use the scene API for scene transitions.
 
 </details>
 

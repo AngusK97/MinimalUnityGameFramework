@@ -18,15 +18,15 @@
 4. 点击 **Play again** 重新开始，点击 **Menu** 返回菜单。用 **Settings / Escape** 打开音量设置，再用 **Done / Escape** 保存并关闭。
 5. 再点一次 Play 停止运行，然后继续制作自己的内容。
 
-**成功标志：** MINIMAL LOOP 菜单和关卡正常运行。打开设置时，只会暂停 Demo 的移动和计时。Demo 已包含生成配置，运行不需要 Google 账号、密钥或网络。
+**成功标志：** MINIMAL LOOP 菜单和关卡正常运行。打开设置时，只会暂停 Demo 的移动和计时。Demo 的配置已经生成好了，运行不需要 Google 账号、密钥或网络。
 
 <a id="创建第一个窗口"></a>
 
 ## 02 创建第一个窗口
 
-第一次跟着做时，先保留示例中的名称，按这个顺序完成：**视图 → Prefab → 本地 Excel → Update Config → 启动入口**。
+第一个窗口先用示例里的名称。我们按这个顺序来做：**视图 → Prefab → 本地 Excel → Update Config → 启动入口**。
 
-准备一个能保存 `.xlsx` 的表格编辑器即可，不需要 Google 账号。[第 2.3 节](#23-连接并更新-ui-配置表)会创建自己的 UI 工作簿并接入 Unity。
+另外准备一个能保存 `.xlsx` 的表格编辑器，不需要 Google 账号。到[第 2.3 节](#23-连接并更新-ui-配置表)时，我们再创建自己的 UI 工作簿，并连接到 Unity。
 
 <a id="1-创建视图"></a>
 
@@ -73,14 +73,14 @@ namespace MyGame
 
 ### 2.3 连接并更新 UI 配置表
 
-在表格编辑器中新建空白工作簿，把第一张工作表改名为 **UI**。从 A1 开始填写下面三行：第 1 行是字段名，第 2 行是类型，第 3 行是你的第一个窗口。
+接下来，在表格编辑器中新建空白工作簿，把第一张工作表改名为 **UI**。从 A1 开始填写下面三行：第 1 行是字段名，第 2 行是类型，第 3 行填写刚做好的窗口。
 
 | Id | Name | PrefabPath |
 | --- | --- | --- |
 | string | string | string |
 | Menu | My first menu | Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab |
 
-1. 将工作簿保存为 `Assets/GameContent/MyGame/Editor/Tables/Source/MyGame.xlsx`。单元格直接填写值，不使用公式，删除多余的空白工作表。
+1. 将工作簿保存为 `Assets/GameContent/MyGame/Editor/Tables/Source/MyGame.xlsx`。在单元格里直接填值，不要用公式，再删掉多余的空白工作表。
 2. 打开 **Framework → Config**，把 Project 中的 **MyGame 文件夹**拖到 **Game** 栏，填写 **Namespace = MyGame**，选择 **Source = Local Excel**。保留 **Excel folder = Editor/Tables/Source**；需要手动选择时，点击 **Choose folder…**。
 3. 点击 **Update Config**，等待更新结果和编译完成。以后改表，保存工作簿后点击顶部工具栏左侧的 **Update Config** 即可。
 
@@ -88,13 +88,13 @@ namespace MyGame
 
 **成功标志：** UI 表更新成功，`Assets/GameContent/MyGame/Scripts/Generated/UIName.g.cs` 中出现 `Menu = "Menu"`。
 
-**先更新再继续：** 下一步的脚本会用到生成的 GameConfig 和 UIName。后续修改方法见 [UI 配置表](ui-tables.zh-CN.md)。
+**确认更新成功后，再往下做。** 下一步的脚本会用到生成的 GameConfig 和 UIName。以后想修改或添加窗口，可以看 [UI 配置表](ui-tables.zh-CN.md)。
 
 <a id="4-添加游戏入口"></a>
 
 ### 2.4 添加游戏入口
 
-在 `MyGame/Scripts/` 中，用刚才的脚本菜单创建 **MyGameEntry.cs**。用下面的代码替换整个文件，保存后等待编译完成：
+现在让游戏启动时打开这个窗口。在 `MyGame/Scripts/` 中，用刚才的脚本菜单创建 **MyGameEntry.cs**。用下面的代码替换整个文件，保存后等待编译完成：
 
 ```csharp
 using Core;
@@ -137,7 +137,7 @@ namespace MyGame
 
 ![MyGame Start 场景显示 My first menu、GameEntry 和公共 GameCore](images/first-window.png)
 
-如果没有成功，先检查 GameCore、MyGameEntry 是否放对、挂好，再检查 UI 表是否生成成功。更多排查方法见[构建与排错](build.zh-CN.md)。
+如果窗口没有打开，先看看场景里有没有 GameCore、MyGameEntry 是否挂好了，再检查 UI 表是否生成成功。还没找到原因的话，可以看[构建与排错](build.zh-CN.md)。
 
 <a id="删除-demo"></a>
 

@@ -18,28 +18,28 @@ The toolbar uses the last game selected on this computer for this project. If no
 
 <img src="images/config-toolbar.jpg" alt="Unity top toolbar with Update Config on the left and Play centered" width="900">
 
-Each update reads the current contents of the active source and writes only generated outputs whose contents have changed.
+Each update reads your selected source. It only rewrites generated files when their contents have changed.
 
-There is no completed-table selection or extra publish step. A valid row can be imported while someone is still editing it, so agree with teammates before importing an unfinished change.
+You do not need to mark tables as finished or publish them first. If the data passes validation, it can be imported while a teammate is still editing. Check with them before importing unfinished work.
 
 <a id="read-the-result"></a>
 
 ### 1.1 Read the result
 
-The native progress window stays open while Unity reads, checks and applies tables. You can **Cancel** before changes are applied; cancellation leaves this update's table changes unapplied.
+Unity shows a progress window while it reads, checks and writes the tables. Click **Cancel** before writing begins to leave the tables unchanged.
 
 After progress closes, a result dialog shows **success**, **partial update** or **failure**. Use **Open report** for details. If generated C# triggers compilation, the result appears after compilation; you do not need to update again to see it.
 
-Valid tables update; an invalid table keeps its last successful version. Fix its reported error and update again.
+Tables that pass the checks update. Tables with errors keep their last successful version. Fix the errors listed in the report, then update again.
 
 <details>
 <summary>See progress and result examples</summary>
 
-The same progress window is used for both sources. This example shows a Google Sheets update:
+Both sources use the same progress window. Here it is reading Google Sheets:
 
 <img src="images/config-progress.jpg" alt="Unity native Update Config progress window" width="600">
 
-These examples use the Demo tables. **Successful update:** all tables passed validation and their current versions are applied.
+These examples use the Demo tables. **Successful update:** all tables passed the checks, and their updated data is saved in your project.
 
 <img src="images/config-success.jpg" alt="Unity Config result dialog showing a successful update of the Demo tables" width="600">
 
@@ -90,9 +90,9 @@ foreach (var item in MyGame.ItemTable.All)
 
 Save the script, wait for compilation, then run your entry scene. **Console should print `20`, then `Small potion`.** Change the price to 30 in the table, save, update configuration and run again: it should now print 30.
 
-**ItemTable** looks up rows; **ItemConfig** represents one row. `Get` throws if the ID does not exist; use `TryGet(id, out var row)` when absence is expected. Reading before loading is an error.
+Use **ItemTable** to look up rows; each row is an **ItemConfig**. `Get` throws if the ID does not exist. If you are not sure an ID exists, use `TryGet(id, out var row)`. Load the table before reading it, or the query will fail.
 
-`GameConfig.LoadAndRegister()` loads local table data and registers UI and scene IDs. Resource modules still need explicit registration and loading; follow [Resources](resources.md) before using `main.Cue`.
+`GameConfig.LoadAndRegister()` loads local table data and registers UI and scene IDs. You still need to register and load resource modules in your code; follow [Resources](resources.md) before using `main.Cue`.
 
 <a id="table-format"></a>
 
@@ -106,7 +106,7 @@ Use one tab per table. Table names must be unique across all workbooks in the se
 | 2 | Field types: `string`, `int`, `float`, `bool`, or `ref:TableName` |
 | 3 onward | Data; each `Id` is non-empty and unique within the table |
 
-The Demo.xlsx **UI** sheet, shown here in WPS, demonstrates this layout: field names in row 1, types in row 2, and data from row 3. The ordinary-data example above uses Item.
+The Demo.xlsx **UI** sheet, shown here in WPS, demonstrates this layout: field names in row 1, types in row 2, and data from row 3. The example above uses the same layout for Item.
 
 <img src="images/config-local-sheet.jpg" alt="Demo.xlsx UI sheet open in WPS showing field names, string types and UI data rows" width="900">
 
@@ -131,11 +131,11 @@ All fields in these tables use `string`. Their `Name` column is for people and g
 
 A missing UI prefab produces a warning, so its ID can be prepared before the prefab exists. Player builds require you to finish the prefab or remove its placeholder row and update config. Opening that UI cannot succeed until the prefab is ready and you update config again. A wrong asset type, invalid UIBase component setup or unusable Addressables entry is an error. Missing Resource or Scene assets are errors in this version.
 
-Each table updates as a unit. An invalid table keeps its last successful code and data; on the first import it has no older version to keep. If a new table depends on a rejected change through `ref:TableName`, the dependent change also stays back. The final combination must have valid references. This does not restore a Unity asset someone deleted. Retained tables are checked against local assets too; an unusable retained resource or scene stops the update.
+The tool updates whole tables. A table with errors keeps its last successful code and data; if its first import fails, there is no older version to keep. If a new table uses `ref:TableName` to reference a change that failed to import, its update must wait too. All references must still work across the tables that remain. Keeping an older table does not restore deleted Unity assets. The tool checks those older tables against local assets too; if a resource or scene they reference is unusable, the update stops.
 
 The result can therefore contain both updated and retained tables. An unreadable source folder stops the update; Google authentication or folder-listing failures do too. Read the report before committing; successful validation checks structure and references, not whether the game design is finished.
 
-Generated outputs belong to the selected game:
+You will find the generated files in the selected game’s folder:
 
 ```text
 Assets/GameContent/MyGame/
@@ -148,12 +148,12 @@ Assets/GameContent/MyGame/
 └── Resources/Config/MyGame/     Local JSON data (namespace folder)
 ```
 
-Treat generated CSV, C# and JSON as read-only. Commit them together with the manifest, source settings, local source workbooks and Unity meta files so teammates can run the same version without source access. The manifest records the source and applied versions. Local import reports stay under `Library/FrameworkConfig/Reports/`, outside Git.
+Do not edit the generated CSV, C# or JSON files by hand. Commit them together with the manifest, source settings, local source workbooks and Unity meta files so teammates can run the same version without source access. The manifest records the source and applied versions. Local import reports stay under `Library/FrameworkConfig/Reports/`, outside Git.
 
 Edit or resolve conflicts in the active source, then run **Update Config** again; do not combine generated files by hand. Renaming or deleting fields, tables, IDs or modules can break handwritten C# callers. Fix those compile errors after generation. Moving an asset also requires updating its path in the source table and importing again.
 
 </details>
 
-Small gameplay values can stay in the Inspector or your own ScriptableObjects. Use tables when many rows share a structure. Dedicated text/localization and sound-playback configuration are deferred; AudioClip resource registration is available now.
+Small gameplay values can stay in the Inspector or your own ScriptableObjects. Use tables when many rows share a structure. There are no dedicated tables for text, localization or sound playback yet. You can already register AudioClip resources.
 
 Next: [UI](ui.md) · [Resources](resources.md) · [Scenes](scenes.md) · [Build](build.md)
