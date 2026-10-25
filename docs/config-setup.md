@@ -72,8 +72,32 @@ The importer requests read-only Drive metadata and Sheets access; it does not ed
 
 ## 03 Switch an existing source
 
-Prepare the destination with the **same table names, field names, field types and column order** as the currently applied tables. For example, import Demo.xlsx into native Google Sheets before switching Demo to Google, or download your Google workbook as `.xlsx` into your game's Source folder before switching to local Excel.
+These steps use **Demo**. For your own game, use its folder and namespace instead. Demo already uses local Excel; Google setup is only needed when you choose Google Sheets.
 
-Open **Framework → Config**, choose the destination source and folder, then click **Switch Source**. The main button changes to this label when the destination differs from the applied source. Every destination table must pass validation, and its table names and schema must match the applied configuration. A failed check leaves the active source and generated configuration unchanged; switching does not retain selected tables from the old source.
+Stop Play mode first. Include every currently applied table in the destination, with the **same table names, field names, field types and column order**. Save table additions, removals and header changes for after the switch. Keep one copy of each table and use literal values, not formulas. Your game code stays the same.
 
-After a successful switch, daily **Update Config** uses only the new source and again allows per-table retention. There is no automatic synchronization or fallback between local and Google sources. Make later schema changes in the active source and update normally.
+### 3.1 Google Sheets → local Excel
+
+1. **Download the workbooks.** Open each active Google workbook and choose **File → Download → Microsoft Excel (.xlsx)**. Download every workbook and keep all configuration tabs. [Google's download guide](https://support.google.com/docs/answer/9330963?hl=en).
+2. **Put them in Source.** Place the files directly in `Assets/GameContent/Demo/Editor/Tables/Source/`; create the folder if needed. Move any existing Demo.xlsx or old workbooks outside Source as a backup before adding the downloaded versions. Do not leave duplicate table names across old and new files or put files in subfolders.
+3. **Choose local Excel.** Open **Framework → Config**, select **Game = Demo**, keep **Namespace = Demo**, and set **Source = Local Excel**, **Excel folder = Editor/Tables/Source**.
+4. **Click Switch Source.** Wait for the result and any compilation. After success, reopen Config and confirm Source is Local Excel.
+
+From now on: **edit local Excel → save → Update Config**. No Google key or manual CSV export is needed.
+
+### 3.2 Local Excel → Google Sheets
+
+1. **Prepare Google access.** For your first connection, complete [2.1 Prepare Google access](#21-prepare-google-access) to get a shared folder and service account JSON. Reuse an existing working connection if you have one.
+2. **Upload and convert the workbooks.** Save your local files. In the shared Drive folder, choose **New → File upload** and upload every `.xlsx` from Source. Open each with Google Sheets, then choose **File → Save as Google Sheets**. If uploads are already converted automatically, skip the second conversion. [Google's conversion guide](https://support.google.com/docs/answer/9331167?hl=en).
+3. **Check the destination folder.** Keep the converted native Google Sheets files directly in the shared folder, with the same tab names and first two rows. Move any old workbooks containing the same table names outside that folder as a backup. The tool reads native Google Sheets files only; uploaded `.xlsx` files do not count as source tables.
+4. **Choose Google Sheets.** Open **Framework → Config**, select **Game = Demo**, keep **Namespace = Demo**, and set **Source = Google Sheets**. Enter the ID at the end of the shared folder URL in **Google Drive Folder ID**. In **Service Account JSON**, select your local key file stored outside the project.
+5. **Click Switch Source.** Wait for the result and any compilation. After success, reopen Config and confirm Source is Google Sheets.
+
+From now on: **edit Google Sheets → wait for cloud saving to finish → Update Config**. You do not need to upload Excel files again for later edits.
+
+### 3.3 Check the result
+
+- **Success:** the result says `Config is up to date`, and Config retains the new source. The toolbar's Update Config now reads only that source. Run the same Demo and check that its menu and level still work.
+- **Failure:** the previous source and generated output stay unchanged. Click **Open report**, add missing tables, move duplicate workbooks out, or fix field and asset errors as directed, then retry in Config. All tables must pass together; a source switch cannot apply only some tables.
+
+Switching does not delete the original files. **Local and Google sources do not sync automatically or act as fallbacks.** After success, edit only the active source; daily updates still retain the previous version of invalid tables. Make schema changes or add and remove tables after the switch succeeds.

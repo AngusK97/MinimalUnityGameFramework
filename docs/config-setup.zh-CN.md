@@ -74,8 +74,32 @@
 
 ## 03 切换已有来源
 
-先准备目标来源，确保它与当前生效配置的**表名、字段名、字段类型和列顺序一致**。例如，将 Demo.xlsx 导入为原生 Google Sheets 后再把 Demo 切到 Google；从 Google 切回本地时，先将工作簿下载为 `.xlsx`，放到游戏自己的 Source 文件夹。
+下面以 **Demo** 为例；自己的游戏把 Demo 换成对应的游戏目录和命名空间。Demo 默认使用本地 Excel，只有改用 Google 时才需要连接 Google。
 
-打开 **Framework → Config**，选择目标来源和文件夹，再点击 **Switch Source**；目标与当前生效来源不同时，主按钮会自动显示这个名称。目标中的所有表都必须通过检查，表名和结构也必须与当前配置一致。检查失败时，原来的有效来源和生成配置保持不变；切换时不会混入旧来源中的部分表。
+切换前先停止 Play。目标来源要包含当前全部配置表，**表名、字段名、字段类型和列顺序保持一致**；这次先不增删表或改表头。每张表只保留一份，单元格直接填值，不使用公式。游戏调用代码不用改。
 
-切换成功后，日常 **Update Config** 只读取新来源，并继续按表保留出错表的旧版。两种来源之间不会自动同步，也不会在读取失败时互相替补。后续需要改表结构时，在当前来源中修改并正常更新即可。
+### 3.1 Google Sheets → 本地 Excel
+
+1. **下载表格。** 打开当前使用的 Google 工作簿，选择 **文件 → 下载 → Microsoft Excel（.xlsx）**。有多个工作簿就分别下载，保留其中全部配置工作表。[Google 下载说明](https://support.google.com/docs/answer/9330963?hl=zh-Hans)。
+2. **放入 Source。** 将下载的文件直接放到 `Assets/GameContent/Demo/Editor/Tables/Source/`，目录不存在就创建。若已有 Demo.xlsx 或旧工作簿，先移到 Source 外备份，再放入下载版本；不要让新旧文件包含同名工作表，也不要放进子文件夹。
+3. **选择本地来源。** 打开 **Framework → Config**，选择 **Game = Demo**，保持 **Namespace = Demo**，设置 **Source = Local Excel**、**Excel folder = Editor/Tables/Source**。
+4. **点击 Switch Source。** 等待更新结果和编译完成。结果成功后，重新打开 Config，确认 Source 为 Local Excel。
+
+之后只需：**改本地 Excel → 保存 → Update Config**。不再需要 Google 密钥，也不用把 Excel 手动转成 CSV。
+
+### 3.2 本地 Excel → Google Sheets
+
+1. **准备 Google 连接。** 第一次使用时，先完成 [2.1 准备 Google 访问权限](#21-准备-google-访问权限)，取得共享文件夹和服务账号 JSON；已有可用连接就沿用。
+2. **上传并转换表格。** 保存本地工作簿，在共享 Drive 文件夹中选择 **新建 → 上传文件**，上传 Source 内的全部 `.xlsx`。逐个用 Google Sheets 打开，选择 **文件 → 另存为 Google 表格（Save as Google Sheets）**；如果上传时已经自动转换，就不用再转一次。[Google 转换说明](https://support.google.com/docs/answer/9331167?hl=zh-Hans)。
+3. **检查目标文件夹。** 确认转换后的原生 Google 表格直接位于共享文件夹中，底部工作表名称和前两行内容保持不变。若文件夹中已有同名配置表的旧工作簿，先移到该文件夹外备份。工具只读取原生 Google 表格，上传的 `.xlsx` 不算配置来源。
+4. **选择 Google 来源。** 打开 **Framework → Config**，选择 **Game = Demo**，保持 **Namespace = Demo**，设置 **Source = Google Sheets**。在 **Google Drive Folder ID** 中填写共享文件夹链接最后的 ID，在 **Service Account JSON** 中选择工程外的本机密钥文件。
+5. **点击 Switch Source。** 等待更新结果和编译完成。结果成功后，重新打开 Config，确认 Source 为 Google Sheets。
+
+之后只需：**改 Google Sheets → 等待云端保存完成 → Update Config**。不用每次重新上传 Excel。
+
+### 3.3 成功与失败怎么看
+
+- **成功：** 结果窗口显示 `Config is up to date`，Config 中保留新来源。以后顶部的 Update Config 只读取这个来源；切换前后运行同一个 Demo，检查菜单和关卡正常即可。
+- **失败：** 原来源和生成结果保持不变。点击 **Open report**，按提示补齐缺少的表、移走重复工作簿，或修正字段和资产错误，再到 Config 重试。切换必须整套通过，不会只切换其中几张表。
+
+切换不会删除原文件，**本地与 Google 也不会自动同步或互相替补**。成功后只编辑选中的来源；日常更新仍按表保留出错表的旧版。需要改表头或增删表时，等切换成功后再操作。
