@@ -87,6 +87,22 @@ namespace FrameworkConfig.Editor
             return fullPath;
         }
 
+        public static string LocalSourceFolder(string root, ConfigSource source)
+        {
+            string relative = source.LocalFolder?.TrimEnd('/');
+
+            if (string.IsNullOrEmpty(relative) || !relative.StartsWith("Editor/", StringComparison.Ordinal)
+                || relative.Split('/').Any(part => part == ".")
+                || string.Equals(relative, "Editor/Tables/Generated", StringComparison.OrdinalIgnoreCase)
+                || relative.StartsWith("Editor/Tables/Generated/", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("Choose a source folder inside this game's Editor folder, separate from Tables/Generated.");
+            }
+
+            // Validate the folder itself as well as its parents without following links.
+            return Path.GetDirectoryName(InGame(root, relative + "/.source-check"));
+        }
+
         public static ConfigManifest ReadManifest(string root)
         {
             string path = InGame(root, ManifestPath);
@@ -133,7 +149,7 @@ namespace FrameworkConfig.Editor
                 if (Hash(content) != file.Value)
                 {
                     throw new InvalidOperationException("Generated file was edited: " + file.Key
-                        + ". Restore it from Git, then change the Google Sheet instead.");
+                        + ". Restore it from Git, then change the source table instead.");
                 }
 
                 result.Add(file.Key, content);

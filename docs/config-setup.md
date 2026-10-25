@@ -2,17 +2,41 @@
 
 [Overview](../README.md) · [Config tables](config.md) · [Quick start](quick-start.md) · [简体中文](config-setup.zh-CN.md)
 
-**Connect Google Sheets to Unity once, then use Update Config for later edits.** The bundled Demo runs without this setup; connect your own source when you want to edit tables.
+**Choose a source once, then use Update Config for later edits.** Local Excel is the default. Google Sheets is available for online collaboration; each game uses one active source.
 
 <a id="first-time-setup"></a>
 
 ## 01 First-time setup
 
-You need a Google account and permission to create a Cloud project and a service account key. A service account is the account Unity uses to read your shared folder.
+### 1.1 Prepare a local workbook
+
+1. Create `Assets/GameContent/MyGame/Editor/Tables/Source/` in your Unity project.
+2. In a spreadsheet editor, create a blank workbook. Rename its first sheet **UI** for the [first-window example](quick-start.md#23-connect-and-update-the-ui-table), or **Item** for the [ordinary-data example](config.md#03-add-a-table).
+3. Enter the example from A1: field names in row 1, field types in row 2, data from row 3. Remove unused blank sheets and enter values without formulas.
+4. Save as `MyGame.xlsx` directly inside the Source folder. The workbook name is up to you; sheet names become table names and must be unique across the folder. The importer reads `.xlsx` files directly in this folder, ignores Excel's `~$` temporary files, and does not scan subfolders.
+
+The bundled `Assets/GameContent/Demo/Editor/Tables/Source/Demo.xlsx` is a working example. To start your own game from it, copy only the sheets you need and replace Demo IDs and asset paths with your own. Keep your source under your game's Editor folder so it is not included as a runtime asset.
+
+### 1.2 Connect Unity
+
+1. Open **Framework → Config**. Set **Game = MyGame**, **Namespace = MyGame**, and **Source = Local Excel**.
+2. Keep **Excel folder = Editor/Tables/Source**, or click **Choose folder…** to select another folder inside this game's Editor directory. The path is relative to the game root; the generated-output folder cannot be used as a source.
+3. Click **Update Config**. Wait for the progress window, result and any compilation. Use **Open report** for details, then return to your table's tutorial to check its generated output.
+
+<img src="images/config-setup.jpg" alt="Unity Config setup with Local Excel selected and a game-owned source folder" width="480">
+
+The screenshot uses Demo; select **MyGame** for these steps. Settings are saved in `MyGame/Editor/ConfigSource.json`. The local folder is stored relative to the game root, such as `Editor/Tables/Source`. Commit the workbook, settings, generated outputs and Unity meta files together.
+
+For later edits, save the workbook and click **Update Config** on the left side of Unity's top toolbar. It uses the last selected game on this computer and opens Config if setup is incomplete. Use **Framework → Config** to change games or settings.
+
+## 02 Google Sheets (optional)
+
+Use this source when your team wants to edit tables together online. You need a Google account and permission to create a Cloud project and a service account key. Unity uses that service account to read the shared folder.
 
 <a id="prepare-google-access"></a>
+<a id="11-prepare-google-access"></a>
 
-### 1.1 Prepare Google access
+### 2.1 Prepare Google access
 
 1. **Create a Cloud project.** Open [Google Cloud Console](https://console.cloud.google.com/projectcreate), name it something like `MyGame Config` and create it. Select that project before continuing. [Google's project guide](https://developers.google.com/workspace/guides/create-project).
 
@@ -25,31 +49,31 @@ You need a Google account and permission to create a Cloud project and a service
 5. **Create and share a Drive folder.** In [Google Drive](https://drive.google.com/), create `MyGame Config`. Share it with the service account's email shown in Cloud Console—the same value as `client_email` in the key file—as **Viewer**. Uncheck **Notify people** and share. Keep general access restricted; invite designers as **Editor** if needed. This direct sharing needs no domain-wide delegation. [Google's sharing guide](https://developers.google.com/workspace/guides/create-credentials#access-google-workspace-files-directly-with-a-service-account).
 
 <a id="create-and-connect-a-table"></a>
+<a id="12-create-and-connect-a-table"></a>
 
-### 1.2 Create and connect a table
+### 2.2 Create and connect a table
 
-6. **Create your first table.** Inside the shared Drive folder, choose **New → Google Sheets → Blank spreadsheet**. Use the table from the tutorial you are following, such as **UI** with the [Quick start rows](quick-start.md#23-connect-and-update-the-ui-table), **Item** with the [ordinary-data example](config.md#03-add-a-table), or the Resource / Scene table from its guide. Rename the first tab accordingly and enter that example from A1. The workbook's name is up to you; the tab name becomes the table name. Put workbooks directly in the folder, without subfolders or shortcuts.
+1. Inside the shared Drive folder, choose **New → Google Sheets → Blank spreadsheet**. Rename the first tab for your table and enter the same headers, types and data used in the local Excel examples. Put native Google Sheets workbooks directly in the folder, without subfolders or shortcuts. An uploaded `.xlsx` must be converted to Google Sheets for this source.
+2. Create `Assets/GameContent/MyGame/` if needed. Open **Framework → Config**, select that game folder and set **Namespace = MyGame**, then choose **Source = Google Sheets**. Paste the folder ID into **Google Drive Folder ID**. From `https://drive.google.com/drive/folders/FOLDER_ID`, copy only `FOLDER_ID`. Select your downloaded key in **Service Account JSON**.
+3. For a new game, click **Update Config**. If this game already has an applied source, follow section 03 to switch. Wait for the result and any compilation, then return to your table's tutorial.
 
-7. **Connect Unity.** Create `Assets/GameContent/MyGame/` if needed. Open **Framework → Config**. The dialog shows all setup fields without a foldout. Select that folder in **Game**, enter **Namespace = MyGame**, and paste the folder ID into **Google Drive Folder ID**. In a URL such as `https://drive.google.com/drive/folders/FOLDER_ID`, copy only `FOLDER_ID`. Choose the downloaded key in **Service Account JSON**.
-
-8. **Click Update Config.** A native progress window shows the update, followed by a result dialog. Wait for any compilation and confirm your table updated; use **Open report** for details. Return to the tutorial you came from to check its generated file and continue. You only need the table used by that tutorial.
-
-The folder ID and namespace are saved in `Assets/GameContent/MyGame/Editor/ConfigSource.json`. The last selected game and the key's file path stay in this computer's Unity Editor preferences; the key is not copied into the project. On another computer, select a locally stored key again.
-
-For later edits, click **Update Config** on the left side of Unity's top toolbar. It uses the selected game and opens this dialog if setup is incomplete or the key file is missing. Return to **Framework → Config** whenever you need to change games or settings.
-
-<img src="images/config-update.jpg" alt="Unity Config dialog with Game, Namespace, Google Drive Folder ID, Service Account JSON and Update Config" width="480">
-
-The setup fields are shown here with Demo selected. Select **MyGame** for the steps above.
+The source settings are stored in the game's ConfigSource.json. The key's file path stays in this computer's Unity Editor preferences; the key is not copied into the project. Select a locally stored key again on another computer.
 
 <details>
-<summary>Setup problems and starting from the Demo</summary>
+<summary>Google setup problems</summary>
 
-- **Key creation is disabled:** a school or organization policy may block service account keys. Ask its administrator whether this project can use a key. The current importer requires a service account JSON key. See [Google's key policy guidance](https://docs.cloud.google.com/iam/docs/keys-create-delete#allow-service-account-key-creation).
-- **Folder not found / access denied:** check the folder ID, both enabled APIs, and that the folder is shared with the exact service account email. Being able to open it in your own browser does not grant Unity access.
-- **No tables:** use native Google Sheets files directly inside the selected folder. An uploaded `.xlsx`, shortcut or workbook in a subfolder is not a source in this version.
-- **Connect the bundled Demo:** import all three CSV snapshots from `Assets/GameContent/Demo/Editor/Tables/Generated/` into Google Sheets tabs named **UI**, **Resource** and **Scene**, then set your folder ID in the Config window. The first connection requires all three tables to import successfully; otherwise the whole bundled snapshot stays unchanged. Later updates allow per-table retention. These are starting copies, not a public cloud template; change Demo asset paths when adapting them to your own game.
+- **Key creation is disabled:** a school or organization policy may block keys. Ask its administrator whether the project can use one. Local Excel needs no key. [Google's key policy guidance](https://docs.cloud.google.com/iam/docs/keys-create-delete#allow-service-account-key-creation).
+- **Folder not found / access denied:** check the folder ID, both enabled APIs, and sharing with the exact service account email. Access in your own browser does not grant Unity access.
+- **No tables:** use native Google Sheets files directly inside the selected folder. Convert uploaded `.xlsx` files first.
 
-The importer requests read-only Drive metadata and Sheets access. It does not edit your cloud tables. Folder sharing is inherited by its files; school or workplace sharing policies may restrict service-account access. See [Google Drive's folder sharing guide](https://support.google.com/drive/answer/7166529?hl=en).
+The importer requests read-only Drive metadata and Sheets access; it does not edit cloud tables. Folder sharing is inherited by its files, subject to school or workplace policies. [Google's folder sharing guide](https://support.google.com/drive/answer/7166529?hl=en).
 
 </details>
+
+## 03 Switch an existing source
+
+Prepare the destination with the **same table names, field names, field types and column order** as the currently applied tables. For example, import Demo.xlsx into native Google Sheets before switching Demo to Google, or download your Google workbook as `.xlsx` into your game's Source folder before switching to local Excel.
+
+Open **Framework → Config**, choose the destination source and folder, then click **Switch Source**. The main button changes to this label when the destination differs from the applied source. Every destination table must pass validation, and its table names and schema must match the applied configuration. A failed check leaves the active source and generated configuration unchanged; switching does not retain selected tables from the old source.
+
+After a successful switch, daily **Update Config** uses only the new source and again allows per-table retention. There is no automatic synchronization or fallback between local and Google sources. Make later schema changes in the active source and update normally.

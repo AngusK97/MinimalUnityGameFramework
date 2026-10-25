@@ -8,7 +8,7 @@
 
 ## 01 Try it
 
-First add the Cue row to your Google Sheets [Resource table](resource-tables.md), with **Type = AudioClip** and **Module = Main**, then click **Update Config** on the left side of Unity's top toolbar. This generates `MyGame.MainResources` with ID `MyGame.Main`. Wait for compilation.
+First add the Cue row to your [Resource table](resource-tables.md), with **Type = AudioClip** and **Module = Main**, then click **Update Config** on the left side of Unity's top toolbar. This generates `MyGame.MainResources` with ID `MyGame.Main`. Wait for compilation.
 
 Create **MyResourceStartup.cs** in `Assets/GameContent/MyGame/Scripts/`. Use it as the startup owner on one empty object alongside the shared GameCore prefab. If MyGameEntry already loads config, merge this example into that entry so `GameConfig.LoadAndRegister()` runs only once:
 

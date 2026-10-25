@@ -6,13 +6,13 @@
 
 Use the downloaded framework project as the starting point for your game. The steps below keep its packages and settings, and add your content under `GameContent/MyGame/`.
 
-This page follows **v0.4.1**. For the fixed SO-based release, use the [v0.2.0 guide](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md).
+This page follows **v0.5.0**. For the fixed SO-based release, use the [v0.2.0 guide](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md).
 
 <a id="run-the-demo"></a>
 
 ## 01 Run the Demo
 
-1. [Download v0.4.1 (ZIP)](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.4.1.zip) and extract it. In Unity Hub, open the folder containing Assets, Packages and ProjectSettings. Wait for import and compilation.
+1. [Download v0.5.0 (ZIP)](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.5.0.zip) and extract it. In Unity Hub, open the folder containing Assets, Packages and ProjectSettings. Wait for import and compilation.
 2. Open **Window → Asset Management → Addressables → Groups**. Set **Play Mode Script → Use Asset Database (fastest)**.
 3. Open `Assets/GameContent/Demo/Scenes/DemoStart.unity` and press Play. Choose **Start** and move to GOAL with **WASD / arrows**.
 4. **Play again** restarts; **Menu** returns; **Settings / Escape** opens volume settings; **Done / Escape** saves and closes them.
@@ -24,9 +24,9 @@ This page follows **v0.4.1**. For the fixed SO-based release, use the [v0.2.0 gu
 
 ## 02 Create your first window
 
-Use the names below on your first pass: **view → prefab → Google Sheets → Update Config → startup**.
+Use the names below on your first pass: **view → prefab → local Excel → Update Config → startup**.
 
-Before you begin, prepare a Google account and permission to create a Cloud project and service account key. If your team already has a source folder, use its connection details. The [one-time setup](config-setup.md) happens in [section 2.3](#23-connect-and-update-the-ui-table), using your UI table.
+You need a spreadsheet editor that can save `.xlsx` files. No Google account is needed. [Section 2.3](#23-connect-and-update-the-ui-table) creates your own UI workbook and connects it to Unity.
 
 <a id="1-create-the-view"></a>
 
@@ -37,7 +37,7 @@ Create these folders under `Assets/GameContent/MyGame/`:
 ```text
 Scenes/
 Content/Prefabs/UI/
-Editor/Tables/
+Editor/Tables/Source/
 Scripts/
 ```
 
@@ -73,15 +73,18 @@ namespace MyGame
 
 ### 2.3 Connect and update the UI table
 
-Your first table is **UI**. Use these three rows, starting at A1:
+Create a blank workbook in your spreadsheet editor and rename its first sheet **UI**. Enter these three rows from A1: row 1 contains field names, row 2 contains types, and row 3 contains your first window.
 
 | Id | Name | PrefabPath |
 | --- | --- | --- |
 | string | string | string |
 | Menu | My first menu | Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab |
 
-- **First connection:** follow [Connect Google Sheets](config-setup.md). In its step 6, enter the UI rows above. Finish the update, then return here.
-- **Already connected:** open the UI tab in a workbook directly inside your source folder; create it if needed. Keep existing headers and add or update the Menu row. Click **Update Config** on the left side of Unity's top toolbar and wait for the result and compilation. If another game is selected, first choose **MyGame** in **Framework → Config**.
+1. Save the workbook as `Assets/GameContent/MyGame/Editor/Tables/Source/MyGame.xlsx`. Use literal values, without formulas, and remove unused blank sheets.
+2. Open **Framework → Config**. Set **Game = MyGame**, **Namespace = MyGame**, and **Source = Local Excel**. Keep **Excel folder = Editor/Tables/Source**; **Choose folder…** lets you select the folder on disk if needed.
+3. Click **Update Config**, then wait for the result and compilation. For later edits, save the workbook and use **Update Config** on the left side of Unity's top toolbar.
+
+You can also copy the UI sheet from `Demo/Editor/Tables/Source/Demo.xlsx` into your workbook as a layout example. Replace its data rows with the Menu row above; your game uses its own prefab and generated code. For Google Sheets or source switching, see [Config setup](config-setup.md).
 
 **Success:** the UI table updated and `Assets/GameContent/MyGame/Scripts/Generated/UIName.g.cs` contains `Menu = "Menu"`.
 

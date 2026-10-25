@@ -5,8 +5,18 @@ namespace FrameworkConfig.Editor
 {
     internal sealed class ConfigSource
     {
+        public string Source = "";
+        public string LocalFolder = "Editor/Tables/Source";
         public string FolderId = "";
         public string Namespace = "MyGame";
+
+        // Settings written before local Excel support have no Source field.
+        [JsonIgnore]
+        public string Kind => string.IsNullOrEmpty(Source)
+            ? (string.IsNullOrEmpty(FolderId) ? "LocalExcel" : "GoogleSheets") : Source;
+
+        [JsonIgnore]
+        public string Identity => Kind == "LocalExcel" ? "local:" + LocalFolder : "google:" + FolderId;
     }
 
     internal sealed class SheetSnapshot
@@ -68,6 +78,12 @@ namespace FrameworkConfig.Editor
         public int GeneratorVersion = CurrentVersion;
         public string Namespace;
         public string FolderId;
+        public string SourceId;
+
+        [JsonIgnore]
+        public string Identity => !string.IsNullOrEmpty(SourceId) ? SourceId
+            : (string.IsNullOrEmpty(FolderId) ? "" : "google:" + FolderId);
+
         public List<AppliedTable> Tables = new();
         public Dictionary<string, string> SharedFiles = new();
     }

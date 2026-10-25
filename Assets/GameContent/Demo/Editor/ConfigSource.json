@@ -1,4 +1,6 @@
 {
+  "Source": "LocalExcel",
+  "LocalFolder": "Editor/Tables/Source",
   "FolderId": "",
   "Namespace": "Demo"
 }

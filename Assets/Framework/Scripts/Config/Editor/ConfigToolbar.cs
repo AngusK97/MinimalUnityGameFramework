@@ -31,7 +31,7 @@ namespace FrameworkConfig.Editor
         private static MainToolbarElement CreateButton()
         {
             return new MainToolbarButton(
-                new MainToolbarContent("Update Config", "Update configuration from Google Sheets."),
+                new MainToolbarContent("Update Config", "Update configuration from your source tables."),
                 ConfigUpdateCommand.RunFromToolbar)
             {
                 enabled = ConfigUpdateCommand.CanUpdate

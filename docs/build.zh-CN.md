@@ -9,7 +9,7 @@
 ## 01 构建 Demo
 
 1. 打开 **File → Build Profiles**，在 **Platforms** 中选择已安装的目标平台，需要切换时点击 **Switch Platform**。
-2. 退出 Play，等待编译完成。Demo 已经附带可用配置，不用先设置云端来源。如果修改过它连接的 Sheets 内容，先在 **Framework → Config** 中选择 Demo，再点击顶部工具栏左侧的 **Update Config**。
+2. 退出 Play，等待编译完成。Demo 已经附带可用配置，不用先设置云端来源。如果修改过它的源工作簿，先在 **Framework → Config** 中选择 Demo，再点击顶部工具栏左侧的 **Update Config**。
 3. 选择 **Demo → Build Player**，再选择输出位置。
 4. 打开构建好的游戏，检查菜单，再按这个顺序试一遍：Start → 用键盘通关 → Play again → Menu → Settings → Quit。
 
@@ -21,7 +21,7 @@
 
 1. 打开 **File → Build Profiles**，在 **Platforms** 中选择目标平台，需要切换时点击 **Switch Platform**。
 2. 点击左侧的 **Scene List**，添加 `MyGame/Scenes/Start.unity`，将它移到第一项并勾选。如果不需要 InitScene，就从列表中移除它，保留游戏使用的其他原生场景。**Open Scene List** 打开的也是这份共享列表。
-3. 如果 Google Sheets 内容或本地资产路径有变化，先在 **Framework → Config** 中选择自己的游戏，再点击顶部工具栏左侧的 **Update Config**，等待编译完成。构建前，检查导入报告里是否有保留旧版表的警告，并确认这些表的状态。
+3. 如果当前源表内容或本地资产路径有变化，先在 **Framework → Config** 中选择自己的游戏，再点击顶部工具栏左侧的 **Update Config**，等待编译完成。构建前，检查导入报告里是否有保留旧版表的警告，并确认这些表的状态。
 4. 打开 **Window → Asset Management → Addressables → Groups**，选择 **Build → New Build → Default Build Script**，等待成功。
 5. 回到 **Platforms**，选中目标平台，点击 **Build** 并选择输出位置。
 6. 打开构建好的游戏，应该能看到自己的第一个界面。再试试 UI、输入、声音和场景切换。
@@ -30,7 +30,7 @@
 
 *第 2 步示例：Build Profiles → Scene List，MyGame/Scenes/Start 已勾选，并放在第一项。*
 
-构建时会检查已提交的本地快照、生成文件的归属，以及当前资产是否可用。这个过程不访问 Google，也不需要密钥，因此无法发现尚未导入的云端修改。如果 UI 占位对应的资产仍然缺失、资产无效，或生成文件被修改，Player 构建就会被阻止。
+构建时会检查已提交的本地快照、生成文件的归属，以及当前资产是否可用。这个过程不会重新导入 Excel 或访问 Google，也不需要密钥，因此无法发现尚未导入的源表修改。如果 UI 占位对应的资产仍然缺失、资产无效，或生成文件被修改，Player 构建就会被阻止。
 
 修改资源或切换平台后，要重新构建 Addressables。**Use Asset Database (fastest)** 只适用于 Editor 中的 Play 模式，Player 仍然需要构建好的资源内容。
 
@@ -50,7 +50,7 @@
 | 没有 Demo 菜单 | 打开 DemoStart.unity。InitScene 只负责初始化服务，不会打开菜单。 |
 | 缺少 GameConfig/UIName/MainResources | 从同一版本恢复生成文件和清单；也可以先注释相关调用，解决编译错误后执行 Update Config，再恢复调用。 |
 | Update Config 不可用 | 退出 Play，等待当前更新、导入或编译结束。Console 中有编译错误时，先修复再继续。 |
-| 点击工具栏却打开了 Config 设置 | 选择游戏，补齐 Google 设置，并确认本机密钥文件仍然存在。 |
+| 点击工具栏却打开了 Config 设置 | 选择游戏和源表文件夹；Google 来源还需要本机存在可用的密钥文件。 |
 | 预制体无效 | 引用已保存的预制体，确保根对象上只有一个 UIBase 派生组件。 |
 | 没有可加载地址 | 在 Project 中选中已保存的资产，勾选 Inspector 中的 Addressable，并检查组的 Include in Build 和 Include Addresses in Catalog。 |
 | 窗口打开失败 | 检查 Core 是否就绪、是否调用了 GameConfig.LoadAndRegister()、UI 表对应行和预制体是否正确，再查看 Console 中的第一条错误。 |
@@ -63,6 +63,19 @@
 <a id="验证范围"></a>
 
 ## 04 验证范围
+
+本轮于 **2026-10-25** 在 macOS、Unity **6000.6.5f1** 上验证：
+
+- **29 项配置集成检查通过**，涵盖本地 Excel、部分保留、文件损坏、来源切换和真实 Google 只读往返。数字单元格也在 Unity 的 Mono 环境下与 Google 读取结果一致。
+- 本地表格导入后，**81 项 Demo Play 检查通过**，覆盖生成表、UI、资源及两轮菜单／关卡往返。
+- 整体删除 Demo 后，独立游戏从自己的本地表格生成 UI、Resource、Scene 和 Item。其 **macOS Mono 开发版 Player** 构建成功，并在批处理模式通过配置查询、事件、资源加载、UI 和场景转场检查。
+- 移除所有验证辅助代码后，含 Demo／整体删除 Demo 两种情况下的最终默认编译均通过。
+- 真实 Unity 弹窗验证了成功导入、部分保留和恢复；保留的 Resource 文件内容及修改时间均未变化。测试后 Demo 表格已恢复。
+
+这些是针对性检查，不代表所有平台和发布模式都已验证。**其他平台、IL2CPP／正式发布构建、实际听音和完整原生鼠标／键盘闭环仍待验收。** 验证辅助代码只留在工程外。
+
+<details>
+<summary>此前的验证记录</summary>
 
 **2026-10-24**，使用 Unity **6000.6.5f1**、Addressables **2.11.2**、uGUI **2.6.0**：
 
@@ -79,6 +92,9 @@
 **v0.4.0 Editor 验证（2026-10-24）：** 31 项针对性检查通过，程序集重载后仍能显示更新结果。包含 Demo 的工程，以及删除 Demo、保留独立 MyGame 的副本，默认编译均通过。实际点击工具栏完成了首次连接（**3 updated**）、部分更新（**1 updated, 1 kept previous**）和 **Cancel** 检查。部分更新保留的 Resource 文件，以及取消后的全部生成文件，内容与修改时间均未变化。云端测试值已恢复。
 
 **v0.4.1 Editor 验证（2026-10-25）：** 按钮从已有的居中布局迁移到左侧工具栏，带有底板，Play 控件保持居中。macOS 上的 Unity 6000.6.5f1 已实测打开设置、脚本重载和播放时禁用；含 Demo、删除 Demo 后的默认编译均通过。更新流程和运行代码未变。
+
+
+</details>
 
 [Editor 升级](upgrading.zh-CN.md) · Unity 参考：[Build Profiles](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profiles.html)、[Scene List](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profile-scene-list.html)。
 

@@ -2,14 +2,14 @@
 
 [Overview](../README.md) · [Config setup](config-setup.md) · [简体中文](ui-tables.zh-CN.md)
 
-**Edit the UI tab → Update Config → Use UIName.** Making your first window? Follow [Quick start](quick-start.md). Connect Google Sheets once with [Config setup](config-setup.md#01-first-time-setup).
+**Edit the UI tab → Update Config → Use UIName.** Making your first window? Follow [Quick start](quick-start.md). Choose your source once with [Config setup](config-setup.md#01-first-time-setup).
 
 <a id="add-a-window"></a>
 
 ## 01 Add a window
 
 1. Save a UI prefab under your game's `Content/Prefabs/UI/`. Its RectTransform root must have exactly one UIBase-derived component. Select the saved prefab in **Project** and check **Addressable** in its Inspector.
-2. Here is the **UI** table. For your first connection, enter it at step 6 of [Config setup](config-setup.md). If already connected, open the existing **UI** tab or create one if missing. Enter all rows from A1 in a new tab; in an existing tab, keep its first two rows and add only the **Shop** data row.
+2. Here is the **UI** table. For your first setup, create a local workbook with these rows using [Config setup](config-setup.md). If already connected, open the active source's existing **UI** tab or create one if missing. Enter all rows from A1 in a new tab; in an existing tab, keep its first two rows and add only the **Shop** data row.
 
 | Id | Name | PrefabPath |
 | --- | --- | --- |
@@ -40,7 +40,7 @@ The ID is `Shop`; the generated registration resolves its Addressables address. 
 - **Add:** add a row, update config, then use `UIName.NewId`.
 - **Replace or move:** update PrefabPath and import again. Keeping Id preserves callers.
 - **Delete or rename Id:** update config, then fix callers and any saved IDs.
-- **Commit:** include generated CSV, manifest, C#, JSON and meta files together. Edit Google Sheets, not generated files.
+- **Commit:** include the local workbook, source settings, generated CSV, manifest, C#, JSON and meta files together. Edit the active source, not generated files.
 
 A missing prefab is an import warning: you can prepare its ID early, but opening it fails until the asset exists and you update config again. A wrong type, invalid UIBase root or unusable Addressables entry is an error. **Player builds reject missing UI prefabs**; finish or remove placeholders before building.
 

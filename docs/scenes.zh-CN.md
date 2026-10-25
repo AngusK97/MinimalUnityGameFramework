@@ -9,7 +9,7 @@
 ## 01 试试看
 
 1. 创建场景，放入相机和一个可见物体，保存为 `Assets/GameContent/MyGame/Content/Scenes/` 下的 **Level01.unity**。Core 已经有一个 AudioListener，所以要移除场景相机上多余的 AudioListener。然后在 **Project 中选中保存好的 Level01.unity 资产**，勾选 Inspector 中的 **Addressable**。
-2. 下面是 **Scene** 表的示例。第一次连接时，在[配置接入](config-setup.zh-CN.md)的第 6 步填写。已经连接过的话，打开现有的 **Scene** 工作表；没有这张表时再创建。新建的工作表从 A1 开始输入全部内容；已有工作表保留前两行，只添加 **Level01** 这一行数据。
+2. 下面是 **Scene** 表的示例。第一次使用时，按[配置接入](config-setup.zh-CN.md)新建本地工作簿，填入这张表。已经接入的话，在当前来源中打开现有的 **Scene** 工作表；没有这张表时再创建。新建的工作表从 A1 开始输入全部内容；已有工作表保留前两行，只添加 **Level01** 这一行数据。
 
 | Id | Name | ScenePath |
 | --- | --- | --- |

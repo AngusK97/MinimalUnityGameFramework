@@ -2,11 +2,11 @@
 
 [English](README.md) · 简体中文
 
-**框架版本：** v0.4.1（配置工具栏） · **Unity：** 6.6（6000.6.5f1，非 LTS）
+**框架版本：** v0.5.0（本地 Excel 配置） · **Unity：** 6.6（6000.6.5f1，非 LTS）
 
-[下载 v0.4.1（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.4.1.zip) · [开始使用](docs/quick-start.zh-CN.md)
+[下载 v0.5.0（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.5.0.zip) · [开始使用](docs/quick-start.zh-CN.md)
 
-这套教程适用于 **v0.4.1**。更新了什么，可以看[发布说明](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.4.1)；旧工程升级请看[迁移步骤](Build-in%20Managers%20Usage.zh-CN.md)。下载后，使用包内的文档即可。
+这套教程适用于 **v0.5.0**。更新了什么，可以看[发布说明](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.5.0)；旧工程升级请看[迁移步骤](Build-in%20Managers%20Usage.zh-CN.md)。下载后，使用包内的文档即可。
 
 Hello there ~ 我是 Angus，一名游戏开发者。这是我写的一个小型 Unity 框架，帮你处理 UI、事件、资源、场景和音频。可以先玩一下 Demo，再用同样的工具做自己的游戏。
 
@@ -28,7 +28,7 @@ Hello there ~ 我是 Angus，一名游戏开发者。这是我写的一个小型
 
 **GameCore** 提供五个公共模块，切换场景时也会保留。你自己的游戏和 Demo 都通过同一套 API 使用它们。
 
-配置从表格进入游戏：**Google Sheets → 点击顶部工具栏左侧的 Update Config → 生成本地数据 → 游戏读取**。运行游戏时不需要连接 Google。
+配置从表格进入游戏：**本地 Excel → 点击顶部工具栏左侧的 Update Config → 生成本地数据 → 游戏读取**。需要在线协作时也可以选择 Google Sheets，每个游戏只使用一个配置来源。
 
 ```mermaid
 flowchart TB
@@ -49,7 +49,7 @@ UI 通过 Resource 加载界面；Scene 负责场景加载、淡入淡出和旧�
 
 ## 03 按需要选择模块
 
-第一次使用，可以跟着教程做[自己的第一个窗口](docs/quick-start.zh-CN.md#02-创建第一个窗口)。有具体需求时，直接查下面的表。需要编辑配置表时，再完成一次 [Google 连接设置](docs/config-setup.zh-CN.md)。
+第一次使用，可以跟着教程做[自己的第一个窗口](docs/quick-start.zh-CN.md#02-创建第一个窗口)。有具体需求时，直接查下面的表。编辑配置表前，先在[配置接入](docs/config-setup.zh-CN.md)中指定本地 `.xlsx` 文件夹；需要在线协作时再选择 Google Sheets。
 
 | 我想…… | 教程 | 从哪里调用 |
 | --- | --- | --- |
@@ -80,13 +80,13 @@ Assets/
     └── MyGame/        自己的场景、内容、来源设置和生成数据
 ```
 
-想看 Demo 怎么写，可以从 [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs)、[UI.csv](Assets/GameContent/Demo/Editor/Tables/Generated/UI.csv) 或 [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs) 开始。CSV 保存的是导表结果；需要改配置时，去 Google Sheets 修改。自己的游戏跑通后，可以[整体删除 Demo](docs/quick-start.zh-CN.md#03-删除-demo)。
+想看 Demo 怎么写，可以从 [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs)、[Demo.xlsx](Assets/GameContent/Demo/Editor/Tables/Source/Demo.xlsx) 或 [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs) 开始。修改 Demo.xlsx 后点击 **Update Config** 即可更新配置，CSV 只保存导表结果。自己的游戏跑通后，可以[整体删除 Demo](docs/quick-start.zh-CN.md#03-删除-demo)。
 
 <a id="先体验一次"></a>
 
 ## 05 先体验一次
 
-Demo 自带运行所需的配置，不用设置 Google 账号或密钥。
+Demo 自带 Excel 源表和生成配置，本地编辑和运行都不需要 Google 账号。
 
 1. 在 Unity Hub 中，用上面的 Unity 版本打开工程根目录，等待导入和编译完成。
 2. 打开 `Assets/GameContent/Demo/Scenes/DemoStart.unity`，点击 Play。
@@ -104,7 +104,7 @@ Demo 自带运行所需的配置，不用设置 Google 账号或密钥。
 
 Addressables **2.11.2** · uGUI **2.6.0** · Built-in 渲染管线 · 旧 Input Manager。
 
-上面的下载链接和教程适用于 **v0.4.1**，可在顶部工具栏左侧直接更新 Google Sheets 配置。`0.x` 阶段的 API 仍可能调整，已有游戏可以继续使用原来的版本和文档。需要升级时，再查看 [Unity 升级](docs/upgrading.zh-CN.md)、[旧 API 迁移](Build-in%20Managers%20Usage.zh-CN.md)和[已验证范围](docs/build.zh-CN.md#04-验证范围)。
+上面的下载链接和教程适用于 **v0.5.0**，默认使用本地 Excel 配置，也可以选择 Google Sheets。`0.x` 阶段的 API 仍可能调整，已有游戏可以继续使用原来的版本和文档。需要升级时，再查看 [Unity 升级](docs/upgrading.zh-CN.md)、[旧 API 迁移](Build-in%20Managers%20Usage.zh-CN.md)和[已验证范围](docs/build.zh-CN.md#04-验证范围)。
 
 玩法参数可以继续放在 Inspector 或游戏自己的 ScriptableObject 中。文本／本地化和声音播放参数暂时没有专用表，AudioClip 资源已经可以在资源表中登记。存档、全局暂停、不同平台的输入，以及正式发布前的验证，按自己游戏的需要补充。
 

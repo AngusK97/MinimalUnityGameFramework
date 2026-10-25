@@ -2,14 +2,16 @@
 
 [框架总览](README.zh-CN.md) · [English](Build-in%20Managers%20Usage.md)
 
-**第一次使用，先跟着[开始使用](docs/quick-start.zh-CN.md)做一个窗口。** 之后需要哪个功能，再查下面的表。这套教程适用于 v0.4.1；[v0.2.0 教程](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.zh-CN.md)仍介绍旧的 Inspector/SO 配置方式。
+**第一次使用，先跟着[开始使用](docs/quick-start.zh-CN.md)做一个窗口。** 之后需要哪个功能，再查下面的表。这套教程适用于 v0.5.0；[v0.2.0 教程](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.zh-CN.md)仍介绍旧的 Inspector/SO 配置方式。
 
-**从 v0.3.x 升级到 v0.4.1：** 不需要迁移配置数据或修改运行时 API。日常更新改用 Unity 顶部工具栏左侧的 **Update Config**；换游戏和改设置仍在 **Framework → Config** 中完成。更新进度与结果改为独立窗口显示。v0.4.0 的按钮会自动移到左侧一次，其他工具栏控件的布局保留。
+**从 v0.3.x／v0.4.x 升级到 v0.5.0：** 旧设置中已有 Google `FolderId` 的游戏会继续使用 Google，不会在升级时自动改成本地 Excel。表格格式和运行 API 不变，新游戏默认使用 **Local Excel**。已有游戏想改用本地工作簿时，先将相同的表导出为 `.xlsx`，再按[切换已有来源](docs/config-setup.zh-CN.md#03-切换已有来源)操作；目标表必须全部通过检查，表名和结构与原配置一致。
+
+日常更新仍点击顶部工具栏左侧的 **Update Config**，在 **Framework → Config** 中选择游戏和来源。两种来源共用进度、结果及按表保留旧版的流程。
 
 | 想做什么 | 教程 |
 | --- | --- |
 | 准备公共服务 | [Core](docs/core.zh-CN.md) |
-| 连接 Google Sheets 并更新表格 | [配置](docs/config.zh-CN.md) |
+| 编辑 Excel 或 Google Sheets 并更新表格 | [配置](docs/config.zh-CN.md) |
 | 登记 UI 界面 | [UI 配置表](docs/ui-tables.zh-CN.md) |
 | 打开/关闭窗口 | [UI](docs/ui.zh-CN.md) |
 | 订阅/发送通知 | [事件](docs/events.zh-CN.md) |
@@ -23,14 +25,16 @@ Unity 和依赖包怎么升级，见[升级到 Unity 6.6](docs/upgrading.zh-CN.m
 
 <a id="从-v020-迁移到-google-sheets"></a>
 
-## 01 从 v0.2.0 迁移到 Google Sheets
+<a id="01-从-v020-迁移到-google-sheets"></a>
+
+## 01 从 v0.2.0 迁移到配置表
 
 1. 备份当前能运行的工程。删除旧配置前，记下 UI 名称、预制体路径、资源名称／类型和模块 ID。Unity 资产及其 meta 文件都要保留。
 2. 按[首次设置](docs/config-setup.zh-CN.md#01-首次设置)创建需要的 **UI**、**Resource**、**Scene** 工作表。把原来 UI 条目的 Name 填到新的 **Id** 列；新的 **Name** 列只写给人看的说明。各个资源模块合并到 Resource 表，用 **Module** 列区分。
 3. 确认旧配置已备份，再从工程副本中移除 UI.asset、资源模块 SO 和旧生成代码。旧生成的 C# 及其 meta 要备份到 Assets 外，新导表工具不会覆盖不归它管理的文件。如果是把新版框架复制进旧工程，还要移除旧 SO 编辑工具。删除旧类型后若出现编译错误，先暂时注释相关调用，完成首次更新后再恢复。
-4. 在 Config 设置窗口点击 **Update Config**，等待更新结果和编译完成，再按下表修改并恢复调用。配置来源设置、生成的 CSV／清单、C#、JSON 和 meta 文件一起提交。以后需要改表，只编辑 Google Sheets。
+4. 在 Config 设置窗口点击 **Update Config**，等待更新结果和编译完成，再按下表修改并恢复调用。本地工作簿、来源设置、生成的 CSV／清单、C#、JSON 和 meta 文件一起提交。以后在选定的来源中改表。
 
-| 旧调用或数据 | v0.4.1 |
+| 旧调用或数据 | v0.5.0 |
 | --- | --- |
 | `GameUI.RegisterAll()` / `DemoUI.RegisterAll()` | Core 就绪后调用 `GameConfig.LoadAndRegister()`，每个 Core 生命周期一次 |
 | `GameUI.Shop` / `DemoUI.Menu` | `UIName.Shop` / `UIName.Menu` |
@@ -42,7 +46,7 @@ Unity 和依赖包怎么升级，见[升级到 Unity 6.6](docs/upgrading.zh-CN.m
 
 创建资源模块前，先加载 GameConfig。资源仍需要在代码中登记和加载：`new MainResources()`、`GameCore.Resource.RegisterResourceModule(main)`，再调用 `main.LoadResources(...)`。完整写法见[资源](docs/resources.zh-CN.md)；访问 `main.Cue` 不会自动加载。
 
-Demo 自带配置数据，ConfigSource.json 默认没有绑定云端，所以不用 Google 密钥也能运行。想改 Demo 的配置时，把它的三份 CSV 导入 Google Sheets，工作表分别命名为 **UI**、**Resource**、**Scene**，再通过 Config 窗口连接自己的文件夹。首次连接时，三张表必须全部导入成功；只要有一张失败，就继续使用整套随包配置。连接成功后，再更新时才会按表保留旧版。CSV 只保存导表结果，日常改表仍在 Google Sheets 中进行。
+Demo 现在附带 `Editor/Tables/Source/Demo.xlsx`，默认从这个本地来源更新。在 **Framework → Config** 中选择 Demo，修改工作簿后更新即可。已有游戏继续使用各自的来源设置。生成的 CSV 仍是导表快照，不手动修改。
 
 <a id="较早的目录迁移"></a>
 

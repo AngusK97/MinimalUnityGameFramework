@@ -31,7 +31,8 @@ namespace FrameworkConfig.Editor
         private static bool _updating;
 
         public static async Task<ConfigUpdateResult> UpdateAsync(string sourcePath, string credentialPath,
-            CancellationToken cancellation, Action<string, float> progress = null)
+            CancellationToken cancellation, Action<string, float> progress = null,
+            ConfigSource requestedSource = null, bool switchSource = false)
         {
             var result = new ConfigUpdateResult();
             bool ownsUpdate = false;
@@ -49,9 +50,9 @@ namespace FrameworkConfig.Editor
                 ReportProgress("Checking config settings...", 0.02f);
 
                 string root = ConfigFiles.GameRoot(sourcePath);
-                byte[] sourceBefore = File.ReadAllBytes(sourcePath);
-                using var sourceReader = new StreamReader(new MemoryStream(sourceBefore));
-                var source = JsonConvert.DeserializeObject<ConfigSource>(sourceReader.ReadToEnd());
+                byte[] sourceBefore = File.Exists(sourcePath) ? File.ReadAllBytes(sourcePath) : null;
+                var source = requestedSource ?? (sourceBefore == null ? null
+                    : JsonConvert.DeserializeObject<ConfigSource>(ConfigFiles.Utf8.GetString(sourceBefore)));
                 ValidateSource(root, source);
                 string manifestPath = ConfigFiles.InGame(root, ConfigFiles.ManifestPath);
                 byte[] manifestBefore = File.Exists(manifestPath) ? File.ReadAllBytes(manifestPath) : null;
@@ -73,7 +74,7 @@ namespace FrameworkConfig.Editor
                 }
 
                 // Include applied sources when checking removals, even after a cache was deleted.
-                foreach (var table in string.IsNullOrEmpty(previous?.FolderId) ? new List<AppliedTable>() : previous.Tables)
+                foreach (var table in previous != null && previous.Identity == source.Identity ? previous.Tables : new List<AppliedTable>())
                 {
                     if (!cached.Any(sheet => sheet.Key == table.Source.Key))
                     {
@@ -81,19 +82,47 @@ namespace FrameworkConfig.Editor
                     }
                 }
 
-                using var client = new GoogleSheetsClient(credentialPath);
-                var read = await client.ReadFolderAsync(source.FolderId, cached, cancellation, ReportProgress);
+                ValidateSourceChange(previous, source, switchSource);
+                SourceReadResult read;
+
+                if (source.Kind == "LocalExcel")
+                {
+                    read = await LocalExcelReader.ReadFolderAsync(ConfigFiles.LocalSourceFolder(root, source),
+                        cancellation, ReportProgress);
+
+                    // A broken renamed workbook is indistinguishable from a deletion plus a new file.
+                    if (read.FailedWorkbookIds.Count > 0 && previous?.Identity == source.Identity)
+                    {
+                        var present = new HashSet<string>(read.Sheets.Select(sheet => sheet.WorkbookId));
+
+                        foreach (var table in previous.Tables.Where(table => !present.Contains(table.Source.WorkbookId)))
+                        {
+                            read.FailedWorkbookIds.Add(table.Source.WorkbookId);
+                        }
+                    }
+                }
+                else
+                {
+                    if (previous == null || previous.Identity != source.Identity)
+                    {
+                        cached.Clear();
+                    }
+
+                    using var client = new GoogleSheetsClient(credentialPath);
+                    read = await client.ReadFolderAsync(source.FolderId, cached, cancellation, ReportProgress);
+                }
+
                 cancellation.ThrowIfCancellationRequested();
                 RequireIdleEditor();
 
                 if (!SameFileBytes(sourcePath, sourceBefore) || !SameFileBytes(manifestPath, manifestBefore))
                 {
-                    throw new InvalidOperationException("Config settings or the applied snapshot changed while downloading. "
-                        + "No downloaded changes were applied. Update config again.");
+                    throw new InvalidOperationException("Config settings or the applied snapshot changed while reading tables. "
+                        + "No changes were applied. Update config again.");
                 }
 
                 ReportProgress("Validating and applying config...", 0.85f);
-                result = ApplySnapshots(root, source, read.Sheets, read.FailedWorkbookIds, read.Errors);
+                result = ApplySnapshots(root, source, read.Sheets, read.FailedWorkbookIds, read.Errors, switchSource);
 
                 if (!result.Failed)
                 {
@@ -159,23 +188,20 @@ namespace FrameworkConfig.Editor
         }
 
         public static ConfigUpdateResult ApplySnapshots(string root, ConfigSource source,
-            IReadOnlyList<SheetSnapshot> snapshots, ISet<string> failedWorkbooks, IReadOnlyList<string> readErrors)
+            IReadOnlyList<SheetSnapshot> snapshots, ISet<string> failedWorkbooks, IReadOnlyList<string> readErrors,
+            bool switchSource = false)
         {
             RequireIdleEditor();
             var result = new ConfigUpdateResult();
             var manifest = ConfigFiles.ReadManifest(root);
             var owned = ConfigFiles.ReadOwnedFiles(root, manifest);
 
-            if (manifest != null && (manifest.Namespace != source.Namespace
-                || (!string.IsNullOrEmpty(manifest.FolderId) && manifest.FolderId != source.FolderId)))
-            {
-                throw new InvalidOperationException("The source folder or namespace changed. Use a new game folder, "
-                    + "or restore the original ConfigSource.json. Existing generated files were kept.");
-            }
+            ValidateSourceChange(manifest, source, switchSource);
+            bool migrating = manifest != null && manifest.Identity != source.Identity;
 
             foreach (string error in readErrors)
             {
-                result.Issues.Add(new ConfigIssue { Table = "Google Sheets", Message = error });
+                result.Issues.Add(new ConfigIssue { Table = "Source", Message = error });
             }
 
             if (snapshots.Select(sheet => sheet.Key).Distinct().Count() != snapshots.Count
@@ -281,13 +307,9 @@ namespace FrameworkConfig.Editor
                     + string.Join("\n\n", retainedAssetIssues));
             }
 
-            if (manifest != null && string.IsNullOrEmpty(manifest.FolderId) && !string.IsNullOrEmpty(source.FolderId)
-                && manifest.Tables.Any(table => !finalModels.TryGetValue(table.Source.Name, out var model)
-                    || blocked.Contains(table.Source.Name) || string.IsNullOrEmpty(model.Source.WorkbookId)
-                    || model.Source.WorkbookId == table.Source.WorkbookId))
+            if (migrating)
             {
-                throw new InvalidOperationException("For the first connection, import all bundled tables into your Google folder "
-                    + "and fix their errors. The bundled snapshot was kept.\n" + string.Join("\n", result.Issues));
+                ValidateMigration(manifest, snapshots, finalModels, blocked, readErrors, failedWorkbooks, result.Issues);
             }
 
             if (!ConfigCompiler.ValidateNames(finalModels, source.Namespace, result.Issues, root))
@@ -297,7 +319,12 @@ namespace FrameworkConfig.Editor
             }
 
             var next = new Dictionary<string, string>(StringComparer.Ordinal);
-            var applied = new ConfigManifest { Namespace = source.Namespace, FolderId = source.FolderId };
+            var applied = new ConfigManifest
+            {
+                Namespace = source.Namespace,
+                FolderId = source.Kind == "GoogleSheets" ? source.FolderId : "",
+                SourceId = source.Identity
+            };
             int updated = 0;
             int kept = 0;
             int omitted = 0;
@@ -376,6 +403,22 @@ namespace FrameworkConfig.Editor
                 owned.Add(ConfigFiles.ManifestPath, File.ReadAllText(oldManifestPath));
             }
 
+            const string settingsPath = "Editor/ConfigSource.json";
+            string fullSettingsPath = ConfigFiles.InGame(root, settingsPath);
+
+            if (File.Exists(fullSettingsPath))
+            {
+                owned.Add(settingsPath, File.ReadAllText(fullSettingsPath));
+            }
+
+            var settings = new ConfigSource
+            {
+                Source = source.Kind,
+                LocalFolder = source.LocalFolder,
+                FolderId = source.Kind == "GoogleSheets" ? source.FolderId : "",
+                Namespace = source.Namespace
+            };
+            next.Add(settingsPath, ConfigFiles.Json(settings));
             ConfigFiles.Apply(root, owned, next);
             result.Partial = kept > 0 || omitted > 0 || readErrors.Count > 0;
             result.Summary = result.Partial
@@ -386,9 +429,23 @@ namespace FrameworkConfig.Editor
 
         public static void ValidateSource(string root, ConfigSource source)
         {
-            if (source == null || string.IsNullOrWhiteSpace(source.FolderId) || string.IsNullOrWhiteSpace(source.Namespace))
+            if (source == null || !ConfigCompiler.ValidNamespace(source.Namespace))
             {
-                throw new InvalidOperationException("Choose a Google Drive folder and a code namespace in Framework > Config.");
+                throw new InvalidOperationException("Choose a game and a C# namespace in Framework > Config.");
+            }
+
+            if (source.Kind == "LocalExcel")
+            {
+                string folder = ConfigFiles.LocalSourceFolder(root, source);
+
+                if (!Directory.Exists(folder))
+                {
+                    throw new InvalidOperationException("The Excel folder is missing. Create it, add your .xlsx files, then update again.");
+                }
+            }
+            else if (source.Kind != "GoogleSheets" || string.IsNullOrWhiteSpace(source.FolderId))
+            {
+                throw new InvalidOperationException("Choose Local Excel or enter a Google Drive folder ID in Framework > Config.");
             }
 
             foreach (string path in Directory.GetFiles("Assets/GameContent", "ConfigSource.json", SearchOption.AllDirectories))
@@ -406,6 +463,53 @@ namespace FrameworkConfig.Editor
                 {
                     throw new InvalidOperationException("Namespace " + source.Namespace + " is already used by " + otherRoot
                         + ". Give each game its own namespace.");
+                }
+            }
+        }
+
+        internal static void ValidateSourceChange(ConfigManifest manifest, ConfigSource source, bool switchSource)
+        {
+            if (manifest == null)
+            {
+                return;
+            }
+
+            if (manifest.Namespace != source.Namespace)
+            {
+                throw new InvalidOperationException("Keep the existing namespace, or choose a new game folder.");
+            }
+
+            if (!string.IsNullOrEmpty(manifest.Identity) && manifest.Identity != source.Identity && !switchSource)
+            {
+                throw new InvalidOperationException("The source changed. Use Switch Source in Framework > Config to validate and switch it.");
+            }
+        }
+
+        private static void ValidateMigration(ConfigManifest previous, IReadOnlyList<SheetSnapshot> incoming,
+            Dictionary<string, ConfigTableModel> models, HashSet<string> blocked, IReadOnlyList<string> readErrors,
+            ISet<string> failedWorkbooks, List<ConfigIssue> issues)
+        {
+            var previousNames = new HashSet<string>(previous.Tables.Select(table => table.Source.Name), StringComparer.Ordinal);
+            var incomingNames = new HashSet<string>(incoming.Select(sheet => sheet.Name), StringComparer.Ordinal);
+
+            if (readErrors.Count > 0 || failedWorkbooks.Count > 0 || blocked.Count > 0
+                || !previousNames.SetEquals(incomingNames) || issues.Any(issue => !issue.Warning))
+            {
+                throw new InvalidOperationException("Source not switched. Include all existing tables with the same names and fix errors first. "
+                    + "Previous settings and output were kept.\n" + string.Join("\n", issues));
+            }
+
+            foreach (var table in previous.Tables)
+            {
+                var errors = new List<ConfigIssue>();
+                var old = ConfigCompiler.Parse(table.Source, errors);
+                var next = models[table.Source.Name];
+
+                if (!old.Fields.Select(field => field.Name + ":" + field.Type)
+                    .SequenceEqual(next.Fields.Select(field => field.Name + ":" + field.Type)))
+                {
+                    throw new InvalidOperationException("Source not switched. " + table.Source.Name
+                        + " must keep the same fields and types. Switch first, then edit the table.");
                 }
             }
         }

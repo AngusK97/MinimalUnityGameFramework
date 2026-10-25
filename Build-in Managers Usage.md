@@ -2,14 +2,16 @@
 
 [Overview](README.md) · [简体中文](Build-in%20Managers%20Usage.zh-CN.md)
 
-**Start with [Quick start](docs/quick-start.md)** to build your first window; use these pages for daily work. These guides match v0.4.1. The fixed [v0.2.0 guides](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md) retain the earlier Inspector/SO workflow.
+**Start with [Quick start](docs/quick-start.md)** to build your first window; use these pages for daily work. These guides match v0.5.0. The fixed [v0.2.0 guides](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md) retain the earlier Inspector/SO workflow.
 
-**From v0.3.x to v0.4.1:** no configuration data or runtime API migration is needed. Daily updates move to **Update Config** on the left side of Unity's top toolbar; **Framework → Config** remains the place to change games and settings. The progress and result dialogs replace the old in-window status. The v0.4.0 button moves to the left toolbar once; other toolbar controls keep their layout.
+**From v0.3.x / v0.4.x to v0.5.0:** existing settings with a Google `FolderId` remain Google sources; upgrading does not silently change them to local Excel. Table format and runtime APIs stay the same. New games default to **Local Excel**. To migrate an existing game to a local workbook, export the same tables to `.xlsx`, then use [Switch Source](docs/config-setup.md#03-switch-an-existing-source). The destination must pass all checks with the same table names and schema.
+
+Daily updates still use **Update Config** on the left side of Unity's top toolbar. **Framework → Config** selects the game and source; progress, results and per-table retention work for either source.
 
 | Task | Guide |
 | --- | --- |
 | Prepare services | [Core](docs/core.md) |
-| Connect Google Sheets and update tables | [Config](docs/config.md) |
+| Edit Excel or Google Sheets and update tables | [Config](docs/config.md) |
 | Define windows | [UI tables](docs/ui-tables.md) |
 | Open/close windows | [UI](docs/ui.md) |
 | Subscribe/send notifications | [Events](docs/events.md) |
@@ -23,14 +25,16 @@ For the Editor/package upgrade, see [Moving to Unity 6.6](docs/upgrading.md). Ex
 
 <a id="from-v020-to-google-sheets"></a>
 
-## 01 From v0.2.0 to Google Sheets
+<a id="01-from-v020-to-google-sheets"></a>
+
+## 01 From v0.2.0 to config tables
 
 1. Back up the working game. Before removing the old setup, copy its UI names, prefab paths, resource names/types and module IDs. Keep the Unity assets and their meta files.
 2. Follow [Config setup](docs/config-setup.md#01-first-time-setup). Create the **UI**, **Resource** and **Scene** tabs you need. The old UI entry Name becomes the new **Id**; the new **Name** column is only a description. Combine resource modules into the Resource tab using its **Module** column.
 3. Remove the old UI.asset, resource module SO assets and their obsolete generated definitions from the migration copy after preserving their values. Back up old generated C# and meta files outside Assets before importing: the new importer does not overwrite files it does not own. Remove obsolete SO editor tools if you copied framework files over an older installation. If missing generated types prevent compilation, temporarily comment their callers until the first update completes.
-4. In the Config dialog, click **Update Config**, then wait for the result and compilation. Restore and update callers as below. Commit the new source settings, generated CSV/manifest, C#, JSON and meta files together. Google Sheets is now the editing source.
+4. In the Config dialog, click **Update Config**, then wait for the result and compilation. Restore and update callers as below. Commit the local workbook, source settings, generated CSV/manifest, C#, JSON and meta files together. Make later edits in the selected source.
 
-| Earlier call or data | v0.4.1 |
+| Earlier call or data | v0.5.0 |
 | --- | --- |
 | `GameUI.RegisterAll()` / `DemoUI.RegisterAll()` | `GameConfig.LoadAndRegister()` after Core is ready, once per Core lifetime |
 | `GameUI.Shop` / `DemoUI.Menu` | `UIName.Shop` / `UIName.Menu` |
@@ -42,7 +46,7 @@ Old prefixed UI IDs are not preserved automatically. Migrate IDs in saves/messag
 
 Load GameConfig before creating resource modules. Resource registration and loading remain explicit: `new MainResources()`, `GameCore.Resource.RegisterResourceModule(main)`, then `main.LoadResources(...)`. Follow [Resources](docs/resources.md); accessing `main.Cue` does not load it.
 
-The Demo includes generated local data and an initially unbound ConfigSource.json, so it runs without Google credentials. To edit its tables, import its three CSV snapshots into Sheets tabs named **UI**, **Resource** and **Scene**, then bind your own folder through the Config window. The first connection requires all three tables to import successfully or keeps the entire bundled snapshot; later updates can retain individual tables. The CSV files are snapshots, not a second editing source.
+The Demo now includes `Editor/Tables/Source/Demo.xlsx` and uses that local source by default. Select Demo in **Framework → Config**, edit its workbook, and update. Existing games keep their own source settings. Generated CSV files remain snapshots and should not be edited.
 
 <a id="earlier-directory-migration"></a>
 

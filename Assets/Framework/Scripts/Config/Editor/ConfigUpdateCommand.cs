@@ -77,10 +77,17 @@ namespace FrameworkConfig.Editor
             try
             {
                 source = JsonConvert.DeserializeObject<ConfigSource>(File.ReadAllText(gameRoot + "/Editor/ConfigSource.json"));
-                return source != null && !string.IsNullOrWhiteSpace(source.FolderId)
-                    && ConfigCompiler.ValidNamespace(source.Namespace) && File.Exists(credentialPath);
+                if (source == null || !ConfigCompiler.ValidNamespace(source.Namespace))
+                {
+                    return false;
+                }
+
+                return source.Kind == "LocalExcel"
+                    ? Directory.Exists(ConfigFiles.LocalSourceFolder(gameRoot, source))
+                    : source.Kind == "GoogleSheets" && !string.IsNullOrWhiteSpace(source.FolderId) && File.Exists(credentialPath);
             }
-            catch (Exception exception) when (exception is IOException || exception is UnauthorizedAccessException || exception is JsonException)
+            catch (Exception exception) when (exception is IOException || exception is UnauthorizedAccessException || exception is JsonException
+                || exception is InvalidOperationException || exception is ArgumentException)
             {
                 return false;
             }
@@ -104,7 +111,7 @@ namespace FrameworkConfig.Editor
             Run(gameRoot, source, credentialPath);
         }
 
-        public static async void Run(string gameRoot, ConfigSource source, string credentialPath)
+        public static async void Run(string gameRoot, ConfigSource source, string credentialPath, bool switchSource = false)
         {
             if (!CanUpdate)
             {
@@ -137,24 +144,10 @@ namespace FrameworkConfig.Editor
                 }
 
                 var manifest = ConfigFiles.ReadManifest(gameRoot);
-
-                if (manifest != null && (manifest.Namespace != source.Namespace
-                    || (!string.IsNullOrEmpty(manifest.FolderId) && manifest.FolderId != source.FolderId)))
-                {
-                    throw new InvalidOperationException("This game already has a different source or namespace. "
-                        + "Keep its settings or choose a new game folder.");
-                }
-
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
-                string json = ConfigFiles.Json(source);
-
-                if (!File.Exists(path) || File.ReadAllText(path) != json)
-                {
-                    File.WriteAllText(path, json, ConfigFiles.Utf8);
-                }
-
+                ConfigUpdater.ValidateSourceChange(manifest, source, switchSource);
                 SelectGame(gameRoot);
-                var result = await ConfigUpdater.UpdateAsync(path, credentialPath, _cancellation.Token, SetProgress);
+                var result = await ConfigUpdater.UpdateAsync(path, credentialPath, _cancellation.Token, SetProgress,
+                    source, switchSource);
                 SessionState.SetString(PendingResultKey, ConfigFiles.Json(result));
             }
             catch (Exception exception)

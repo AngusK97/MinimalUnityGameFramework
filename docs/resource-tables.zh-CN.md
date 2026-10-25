@@ -9,7 +9,7 @@
 ## 01 添加资源
 
 1. 将 **cue.wav** 放入 `Assets/GameContent/MyGame/Content/Audio/`。在 **Project** 选中它，勾选 Inspector 中的 **Addressable**。
-2. 下面是 **Resource** 表的示例。第一次连接时，在[配置接入](config-setup.zh-CN.md)的第 6 步填入这些内容。如果已经连接，打开已有的 **Resource** 工作表标签，没有就创建一个。新建的工作表从 A1 开始填入全部内容；已有的工作表保留前两行，只添加 **Cue** 这一行数据。
+2. 下面是 **Resource** 表的示例。第一次使用时，按[配置接入](config-setup.zh-CN.md)新建本地工作簿，填入这些内容。如果已经接入，在当前来源中打开已有的 **Resource** 工作表标签，没有就创建一个。新建的工作表从 A1 开始填入全部内容；已有的工作表保留前两行，只添加 **Cue** 这一行数据。
 
 | Id | Name | Type | Module | AssetPath |
 | --- | --- | --- | --- | --- |
@@ -49,7 +49,7 @@ GameCore.Sound.PlaySound(SoundLayer.UI, main.Cue);
 - **新增或替换：** 修改对应行，更新配置，再使用生成的属性。只要 Id 不变，原有调用就不用改。
 - **移动资产：** 修改 AssetPath，再次导入。
 - **重命名或删除 Id/Module：** 更新配置后，同步修改调用代码和模块登记。模块 ID 为 `<namespace>.<Module>`。
-- **提交：** 把生成的 CSV、清单、C#、JSON、资产和 meta 一起提交。如果有冲突，先在 Sheets 中解决，再重新导入，不要手工拼接生成文件。
+- **提交：** 把本地工作簿、来源设置、生成的 CSV、清单、C#、JSON、资产和 meta 一起提交。如果有冲突，先在当前源表中解决，再重新导入，不要手工拼接生成文件。
 
 先用 **Main** 就可以。等到有些资产需要单独加载和释放时，再使用 **Level01** 等其他 Module 值。资产缺失或类型错误都会报错；保留旧版和恢复的方法见[配置表](config.zh-CN.md)。生成的内部资源编号不能用作存档或网络 ID。
 

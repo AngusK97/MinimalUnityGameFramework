@@ -9,7 +9,7 @@
 ## 01 Build the Demo
 
 1. Open **File → Build Profiles**. Under **Platforms**, select an installed target and **Switch Platform** if needed.
-2. Exit Play and wait for compilation. The bundled Demo config is ready; no cloud setup is needed. If you changed its connected Sheets source, select Demo in **Framework → Config**, then click **Update Config** on the left side of Unity's top toolbar first.
+2. Exit Play and wait for compilation. The bundled Demo config is ready; no cloud setup is needed. If you changed its source workbook, select Demo in **Framework → Config**, then click **Update Config** on the left side of Unity's top toolbar first.
 3. Choose **Demo → Build Player**, then select an output location.
 4. Open the app. Check the menu, then Start → keyboard win → Play again → Menu → Settings → Quit.
 
@@ -21,7 +21,7 @@ The helper builds Addressables and uses DemoStart without changing the saved sce
 
 1. Open **File → Build Profiles**. Select your target under **Platforms** and **Switch Platform** if needed.
 2. Select **Scene List** on the left. Add `MyGame/Scenes/Start.unity`, put it first and enable it. Remove InitScene if unneeded; keep other native scenes your game uses. **Open Scene List** opens this same shared list.
-3. If you changed Google Sheets or local asset paths, select your game in **Framework → Config**, then click **Update Config** on the left side of Unity's top toolbar and wait for compilation. Review any retained-table warnings before building.
+3. If you changed the active source tables or local asset paths, select your game in **Framework → Config**, then click **Update Config** on the left side of Unity's top toolbar and wait for compilation. Review any retained-table warnings before building.
 4. Open **Window → Asset Management → Addressables → Groups**. Choose **Build → New Build → Default Build Script** and wait for success.
 5. Return to your target under **Platforms**, choose **Build** and an output location.
 6. Open the built app. Your own first screen should appear. Try its UI, input, sound and transitions.
@@ -30,7 +30,7 @@ The helper builds Addressables and uses DemoStart without changing the saved sce
 
 *Step 2 example — Build Profiles → Scene List: MyGame/Scenes/Start is enabled as the first scene.*
 
-The build checks committed local snapshots, generated file ownership and current assets. It does not contact Google or need a key. It cannot detect cloud edits you have not imported. Missing UI placeholders, invalid assets or altered generated files block the Player build.
+The build checks committed local snapshots, generated file ownership and current assets. It does not reimport Excel or contact Google, and needs no key. It cannot detect source edits you have not imported. Missing UI placeholders, invalid assets or altered generated files block the Player build.
 
 Rebuild Addressables after resource or platform changes. **Use Asset Database (fastest)** is for Editor Play only; Player still needs built content.
 
@@ -50,7 +50,7 @@ Add a custom Build Profile. The shared list is enough for your first build.
 | No Demo menu | Open DemoStart.unity. InitScene deliberately initializes services only. |
 | GameConfig/UIName/MainResources is missing | Restore generated files and manifest from the same revision, or temporarily comment callers, fix compilation and run Update Config; then restore callers. |
 | Update Config is disabled | Exit Play and wait for any update, import or compilation to finish. Resolve Console compile errors before continuing. |
-| The toolbar opens Config instead of updating | Select a game and complete its Google settings, including an existing local key file. |
+| The toolbar opens Config instead of updating | Select a game and its source folder. A Google source also needs an existing local key file. |
 | Invalid prefab | Reference a saved prefab with one UIBase-derived component on its root. |
 | No loadable address | Select the saved asset in Project, check Addressable in its Inspector, and check group Include in Build and Include Addresses in Catalog. |
 | Window fails to open | Check Core readiness, GameConfig.LoadAndRegister(), the UI row, its prefab and the first Console error. |
@@ -63,6 +63,19 @@ Add a custom Build Profile. The shared list is enough for your first build.
 <a id="verification-scope"></a>
 
 ## 04 Verification scope
+
+Checked on **2026-10-25**, using Unity **6000.6.5f1** on macOS:
+
+- **29 config integration checks passed**, including local Excel import, partial retention, corruption, source switching and a real read-only Google roundtrip. Numeric cells also matched Google's reader under Unity's Mono.
+- **81 Demo Play assertions passed** after importing the local workbook: generated tables, UI, resources and two Menu ↔ Example cycles.
+- After deleting Demo, an independent game generated UI, Resource, Scene and Item from its own local workbook. Its **macOS Mono development Player** built and passed config queries, events, resource loading, UI and scene transitions in batch mode.
+- Final default compilation passed with Demo and after deleting it, with all validation helpers removed.
+- Real Unity dialogs passed successful import, partial retention and recovery; retained Resource files kept their contents and modification times. The Demo workbook was restored after testing.
+
+These are targeted checks, not a claim of every platform or shipping configuration. **Other platforms, IL2CPP/release builds, audible output and the full native mouse/keyboard loop remain unverified.** Validation helpers stay outside the framework.
+
+<details>
+<summary>Earlier verification</summary>
 
 Checked on **2026-10-24** with Unity **6000.6.5f1**, Addressables **2.11.2** and uGUI **2.6.0**:
 
@@ -79,6 +92,9 @@ Validation helpers ran only in temporary copies and are not part of the framewor
 **v0.4.0 Editor verification (2026-10-24):** 31 targeted checks and result recovery after a domain reload passed. Default compilation passed with Demo and in an independent MyGame copy after removing Demo. Real toolbar updates passed first connection (**3 updated**), partial update (**1 updated, 1 kept previous**) and **Cancel**. Retained Resource files, and all generated files after cancellation, kept the same contents and modification times. Cloud test values were restored.
 
 **v0.4.1 Editor verification (2026-10-25):** the button moves from the saved center layout to the left toolbar, with a visible background and centered Play controls. Opening Config, script reload and Play-mode disabling passed in Unity 6000.6.5f1 on macOS. Default compilation passed with and without Demo. The update pipeline and runtime code are unchanged.
+
+
+</details>
 
 [Editor upgrades](upgrading.md) · Unity references: [Build Profiles](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profiles.html) and [Scene List](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profile-scene-list.html).
 

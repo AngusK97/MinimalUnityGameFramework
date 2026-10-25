@@ -9,7 +9,7 @@ Load a level behind an overlay, close the old UI and wait for your scene prepara
 ## 01 Try it
 
 1. Save **Level01.unity** in `Assets/GameContent/MyGame/Content/Scenes/` with a camera and visible object. Remove the camera's extra AudioListener; Core has one. Select the saved **Level01.unity asset in Project** and check **Addressable** in its Inspector.
-2. Here is the **Scene** table. For your first connection, enter it at step 6 of [Config setup](config-setup.md). If already connected, open the existing **Scene** tab or create one if missing. Enter all rows from A1 in a new tab; in an existing tab, keep its first two rows and add only the **Level01** data row.
+2. Here is the **Scene** table. For your first setup, create a local workbook with these rows using [Config setup](config-setup.md). If already connected, open the active source's existing **Scene** tab or create one if missing. Enter all rows from A1 in a new tab; in an existing tab, keep its first two rows and add only the **Level01** data row.
 
 | Id | Name | ScenePath |
 | --- | --- | --- |

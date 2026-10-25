@@ -2,23 +2,23 @@
 
 [Overview](../README.md) · [Quick start](quick-start.md) · [简体中文](config.zh-CN.md)
 
-**Edit Google Sheets → Update Config → Use the generated data.** The Editor downloads and validates tables; the game reads local generated files. Players do not connect to Google.
+**Edit local Excel → Update Config → Use the generated data.** Google Sheets is optional. Both sources use the same format, validation and runtime API; each game has one active source.
 
-The bundled Demo already includes generated configuration. You can run it without a Google account, credentials or an internet connection. Set up your own source below when you want to change tables.
+The Demo includes `Editor/Tables/Source/Demo.xlsx` and generated configuration. Edit and run it locally without a Google account or credentials.
 
 <a id="daily-workflow"></a>
 
 ## 01 Daily workflow
 
-1. Edit the Google Sheets tabs in your configuration folder.
+1. Edit and save the `.xlsx` workbooks in your configuration folder, or edit Google Sheets if that is your active source.
 2. On the left side of Unity's top toolbar, click **Update Config**.
-3. Wait for the progress window to close, then read the result. Fix reported errors in Sheets or Unity and update again.
+3. Wait for the progress window to close, then read the result. Fix reported errors in the source table or Unity and update again.
 
-The toolbar uses the last game selected on this computer for this project. If no game is selected or its Google settings are missing, it opens the Config dialog. Use **Framework → Config** to change games or edit settings.
+The toolbar uses the last game selected on this computer for this project. If no game is selected or its source settings are incomplete, it opens the Config dialog. Use **Framework → Config** to change games or edit settings.
 
 <img src="images/config-toolbar.jpg" alt="Unity top toolbar with Update Config on the left and Play centered" width="900">
 
-Each update reads the current table contents from Google Sheets and writes only generated outputs whose contents have changed.
+Each update reads the current contents of the active source and writes only generated outputs whose contents have changed.
 
 There is no completed-table selection or extra publish step. A valid row can be imported while someone is still editing it, so agree with teammates before importing an unfinished change.
 
@@ -26,7 +26,7 @@ There is no completed-table selection or extra publish step. A valid row can be 
 
 ### 1.1 Read the result
 
-The native progress window stays open while Unity downloads, checks and applies tables. You can **Cancel** before changes are applied; cancellation leaves this update's table changes unapplied.
+The native progress window stays open while Unity reads, checks and applies tables. You can **Cancel** before changes are applied; cancellation leaves this update's table changes unapplied.
 
 After progress closes, a result dialog shows **success**, **partial update** or **failure**. Use **Open report** for details. If generated C# triggers compilation, the result appears after compilation; you do not need to update again to see it.
 
@@ -35,7 +35,7 @@ Valid tables update; an invalid table keeps its last successful version. Fix its
 <details>
 <summary>See progress and result examples</summary>
 
-The progress window shows the current stage:
+The same progress window is used for both sources. This example shows a Google Sheets update:
 
 <img src="images/config-progress.jpg" alt="Unity native Update Config progress window" width="600">
 
@@ -53,13 +53,13 @@ These examples use the Demo tables. **Successful update:** all tables passed val
 
 ## 02 First-time setup
 
-Follow [Config setup](config-setup.md#01-first-time-setup) to prepare Google access and connect Unity. Use the UI table from Quick start or the Item example below as your first table.
+Follow [Config setup](config-setup.md#01-first-time-setup) to create a local workbook and select its folder in Unity. Use the UI table from Quick start or the Item example below as your first table.
 
 <a id="add-a-table"></a>
 
 ## 03 Add a table
 
-This **Item** example is for ordinary game data. On your first connection, follow [Config setup](config-setup.md#01-first-time-setup) and use these rows in step 6. If Unity is already connected, use a workbook directly inside your configuration folder and a tab named **Item**. Enter the three rows from A1:
+This **Item** example is for ordinary game data. Create or open a `.xlsx` workbook directly inside your source folder and name a sheet **Item**. Enter these three rows from A1, then save. For a first connection, follow [Config setup](config-setup.md#01-first-time-setup) using this table.
 
 | Id | Name | Price |
 | --- | --- | --- |
@@ -105,11 +105,11 @@ Use one tab per table. Table names must be unique across all workbooks in the se
 | 2 | Field types: `string`, `int`, `float`, `bool`, or `ref:TableName` |
 | 3 onward | Data; each `Id` is non-empty and unique within the table |
 
-The Demo's **UI** tab shows this layout in Google Sheets: field names in row 1, types in row 2, and data from row 3. The ordinary-data example above uses Item.
+The Demo.xlsx **UI** sheet, shown here in WPS, demonstrates this layout: field names in row 1, types in row 2, and data from row 3. The ordinary-data example above uses Item.
 
-<img src="images/config-sheet.jpg" alt="Demo UI table in Google Sheets showing field names, string types and UI data rows" width="900">
+<img src="images/config-local-sheet.jpg" alt="Demo.xlsx UI sheet open in WPS showing field names, string types and UI data rows" width="900">
 
-`Id` must be `string` or `int`. Use ASCII C# identifiers for table and field names. Enter literal values, with `true` / `false` for booleans and a dot for decimals. Formulas are not supported in this version. `ref:Item` means that cell must contain an existing Item ID.
+`Id` must be `string` or `int`. Use ASCII C# identifiers for table and field names. Enter literal values, with `true` / `false` for booleans and a dot for decimals. Formulas are rejected, including formulas with cached results; paste values before importing. `ref:Item` means that cell must contain an existing Item ID.
 
 <a id="ui-resources-and-scenes"></a>
 
@@ -132,22 +132,24 @@ A missing UI prefab produces a warning, so its ID can be prepared before the pre
 
 Each table updates as a unit. An invalid table keeps its last successful code and data; on the first import it has no older version to keep. If a new table depends on a rejected change through `ref:TableName`, the dependent change also stays back. The final combination must have valid references. This does not restore a Unity asset someone deleted. Retained tables are checked against local assets too; an unusable retained resource or scene stops the update.
 
-The result can therefore contain both updated and retained tables. Authentication or folder-listing failures stop the update. Read the report before committing; successful validation checks structure and references, not whether the game design is finished.
+The result can therefore contain both updated and retained tables. An unreadable source folder stops the update; Google authentication or folder-listing failures do too. Read the report before committing; successful validation checks structure and references, not whether the game design is finished.
 
 Generated outputs belong to the selected game:
 
 ```text
 Assets/GameContent/MyGame/
 ├── Editor/
-│   ├── ConfigSource.json         Folder ID and namespace
-│   └── Tables/Generated/         CSV snapshots and applied manifest
+│   ├── ConfigSource.json         Source, folder and namespace
+│   └── Tables/
+│       ├── Source/              Editable local .xlsx workbooks
+│       └── Generated/           CSV snapshots and applied manifest
 ├── Scripts/Generated/           C# tables, row types and registration
 └── Resources/Config/MyGame/     Local JSON data (namespace folder)
 ```
 
-Treat generated CSV, C# and JSON as read-only. Commit them together with the manifest, source settings and Unity meta files so teammates can run the same version without cloud access. The manifest records the source and applied versions. Local import reports stay under `Library/FrameworkConfig/Reports/`, outside Git.
+Treat generated CSV, C# and JSON as read-only. Commit them together with the manifest, source settings, local source workbooks and Unity meta files so teammates can run the same version without source access. The manifest records the source and applied versions. Local import reports stay under `Library/FrameworkConfig/Reports/`, outside Git.
 
-Edit or resolve conflicts in the Google Sheets source, then run **Update Config** again; do not combine generated files by hand. Renaming or deleting fields, tables, IDs or modules can break handwritten C# callers. Fix those compile errors after generation. Moving an asset also requires updating its path in Sheets and importing again.
+Edit or resolve conflicts in the active source, then run **Update Config** again; do not combine generated files by hand. Renaming or deleting fields, tables, IDs or modules can break handwritten C# callers. Fix those compile errors after generation. Moving an asset also requires updating its path in the source table and importing again.
 
 </details>
 

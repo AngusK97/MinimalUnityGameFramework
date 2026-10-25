@@ -2,12 +2,13 @@
   "GeneratorVersion": 1,
   "Namespace": "Demo",
   "FolderId": "",
+  "SourceId": "local:Editor/Tables/Source",
   "Tables": [
     {
       "Source": {
-        "WorkbookId": "",
-        "WorkbookName": "Bundled Demo template",
-        "Version": "template-v1",
+        "WorkbookId": "local:Demo.xlsx",
+        "WorkbookName": "Demo.xlsx",
+        "Version": "c0a51d11cd01d3e52a70a58955bc72364fbdac0c88be3d8f47d25633f34593b0",
         "SheetId": 2,
         "Name": "Resource",
         "Rows": [
@@ -46,9 +47,9 @@
     },
     {
       "Source": {
-        "WorkbookId": "",
-        "WorkbookName": "Bundled Demo template",
-        "Version": "template-v1",
+        "WorkbookId": "local:Demo.xlsx",
+        "WorkbookName": "Demo.xlsx",
+        "Version": "c0a51d11cd01d3e52a70a58955bc72364fbdac0c88be3d8f47d25633f34593b0",
         "SheetId": 3,
         "Name": "Scene",
         "Rows": [
@@ -86,9 +87,9 @@
     },
     {
       "Source": {
-        "WorkbookId": "",
-        "WorkbookName": "Bundled Demo template",
-        "Version": "template-v1",
+        "WorkbookId": "local:Demo.xlsx",
+        "WorkbookName": "Demo.xlsx",
+        "Version": "c0a51d11cd01d3e52a70a58955bc72364fbdac0c88be3d8f47d25633f34593b0",
         "SheetId": 1,
         "Name": "UI",
         "Rows": [

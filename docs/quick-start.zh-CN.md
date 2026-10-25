@@ -6,13 +6,13 @@
 
 直接用下载的框架工程开始制作游戏。按下面的步骤操作，会保留工程原有的依赖和设置，把自己的内容放进 `GameContent/MyGame/`。
 
-本页对应 **v0.4.1**。使用 SO 配置的旧版本请看 [v0.2.0 教程](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.zh-CN.md)。
+本页对应 **v0.5.0**。使用 SO 配置的旧版本请看 [v0.2.0 教程](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.zh-CN.md)。
 
 <a id="运行-demo"></a>
 
 ## 01 运行 Demo
 
-1. [下载 v0.4.1（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.4.1.zip)并解压。用 Unity Hub 打开包含 Assets、Packages、ProjectSettings 的目录，等待导入和编译完成。
+1. [下载 v0.5.0（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.5.0.zip)并解压。用 Unity Hub 打开包含 Assets、Packages、ProjectSettings 的目录，等待导入和编译完成。
 2. 打开 **Window → Asset Management → Addressables → Groups**，把 **Play Mode Script** 设为 **Use Asset Database (fastest)**。
 3. 打开 `Assets/GameContent/Demo/Scenes/DemoStart.unity`，点击 Play，再点 **Start**，用 **WASD / 方向键**移动到 GOAL。
 4. 点击 **Play again** 重新开始，点击 **Menu** 返回菜单。用 **Settings / Escape** 打开音量设置，再用 **Done / Escape** 保存并关闭。
@@ -24,9 +24,9 @@
 
 ## 02 创建第一个窗口
 
-第一次跟着做时，先保留示例中的名称，按这个顺序完成：**视图 → Prefab → Google Sheets → Update Config → 启动入口**。
+第一次跟着做时，先保留示例中的名称，按这个顺序完成：**视图 → Prefab → 本地 Excel → Update Config → 启动入口**。
 
-开始前，准备好 Google 账号，并确认有权限创建 Cloud 项目和服务账号密钥。如果小组已经在用配置表，沿用现有的连接信息即可。[首次连接](config-setup.zh-CN.md)会在[第 2.3 节](#23-连接并更新-ui-配置表)用你的 UI 表完成。
+准备一个能保存 `.xlsx` 的表格编辑器即可，不需要 Google 账号。[第 2.3 节](#23-连接并更新-ui-配置表)会创建自己的 UI 工作簿并接入 Unity。
 
 <a id="1-创建视图"></a>
 
@@ -37,7 +37,7 @@
 ```text
 Scenes/
 Content/Prefabs/UI/
-Editor/Tables/
+Editor/Tables/Source/
 Scripts/
 ```
 
@@ -73,15 +73,18 @@ namespace MyGame
 
 ### 2.3 连接并更新 UI 配置表
 
-第一张配置表使用 **UI**。从 A1 开始填入下面三行：
+在表格编辑器中新建空白工作簿，把第一张工作表改名为 **UI**。从 A1 开始填写下面三行：第 1 行是字段名，第 2 行是类型，第 3 行是你的第一个窗口。
 
 | Id | Name | PrefabPath |
 | --- | --- | --- |
 | string | string | string |
 | Menu | My first menu | Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab |
 
-- **第一次连接：** 按[连接 Google Sheets](config-setup.zh-CN.md)操作。到第 6 步时，填入上面这三行 UI 配置。完成更新后，再回到这里继续。
-- **已经连接：** 打开直接放在配置来源文件夹中的工作簿，使用已有的 UI 工作表标签，没有就创建一个。保留原表头，新增或修改 Menu 行。在 Unity 点击顶部工具栏左侧的 **Update Config**，等待更新结果和编译完成。如果之前选的是其他游戏，先在 **Framework → Config** 中切换到 **MyGame**。
+1. 将工作簿保存为 `Assets/GameContent/MyGame/Editor/Tables/Source/MyGame.xlsx`。单元格直接填写值，不使用公式，删除多余的空白工作表。
+2. 打开 **Framework → Config**，设置 **Game = MyGame**、**Namespace = MyGame**、**Source = Local Excel**。保留 **Excel folder = Editor/Tables/Source**；需要手动选择时，点击 **Choose folder…**。
+3. 点击 **Update Config**，等待更新结果和编译完成。以后改表，保存工作簿后点击顶部工具栏左侧的 **Update Config** 即可。
+
+也可以把 `Demo/Editor/Tables/Source/Demo.xlsx` 中的 UI 工作表复制到自己的工作簿，参考它的格式，再把数据替换成上面的 Menu 行。自己的游戏使用自己的 Prefab 和生成代码。Google Sheets 接入及来源切换见[配置接入](config-setup.zh-CN.md)。
 
 **成功标志：** UI 表更新成功，`Assets/GameContent/MyGame/Scripts/Generated/UIName.g.cs` 中出现 `Menu = "Menu"`。
 

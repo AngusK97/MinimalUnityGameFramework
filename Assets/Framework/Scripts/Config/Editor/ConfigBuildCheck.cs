@@ -58,7 +58,7 @@ namespace FrameworkConfig.Editor
             var source = JsonConvert.DeserializeObject<ConfigSource>(File.ReadAllText(root + "/Editor/ConfigSource.json"));
 
             if (source == null || source.Namespace != manifest.Namespace
-                || (!string.IsNullOrEmpty(manifest.FolderId) && source.FolderId != manifest.FolderId))
+                || (!string.IsNullOrEmpty(manifest.Identity) && source.Identity != manifest.Identity))
             {
                 throw new InvalidOperationException(root + " source settings do not match its generated snapshot. Restore them from Git or update config.");
             }
