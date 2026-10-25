@@ -8,31 +8,48 @@
 
 ## 01 试试看
 
-1. 创建场景，放入相机和一个可见物体，保存为 `Assets/GameContent/MyGame/Content/Scenes/` 下的 **Level01.unity**。Core 已经有一个 AudioListener，所以要移除场景相机上多余的 AudioListener。然后在 **Project 中选中保存好的 Level01.unity 资产**，勾选 Inspector 中的 **Addressable**。
-2. 下面是 **Scene** 表的示例。第一次使用时，按[配置接入](config-setup.zh-CN.md)新建本地工作簿，填入这张表。已经接入的话，在当前来源中打开现有的 **Scene** 工作表；没有这张表时再创建。新建的工作表从 A1 开始输入全部内容；已有工作表保留前两行，只添加 **Level01** 这一行数据。
+先完成[第一个窗口](quick-start.zh-CN.md#02-创建第一个窗口)。接下来给已有的 **MyMenuView.prefab** 加一个进入关卡的按钮，继续用 **MyGameEntry.cs** 加载配置。
+
+1. 创建场景，放入相机，以及一个位于 **Default** 层、能被相机看到的物体。将相机的 **Depth 设为 2**、**Culling Mask 设为 Default**，并移除它的 **AudioListener**，Core 已经有一个。Core 的背景相机 Depth 为 1，如果保留新相机的默认 Depth，关卡画面会被背景盖住。保存为 `Assets/GameContent/MyGame/Content/Scenes/Level01.unity`，再到 Project 选中这个场景资产，勾选 Inspector 中的 **Addressable**。
+
+<details>
+<summary>查看相机设置（Demo 实景）</summary>
+
+<img src="images/scene-camera.jpg" alt="Demo 的 WorldCamera Inspector，Depth 为 2、Culling Mask 为 Default" width="360">
+
+图中是 Demo 的 WorldCamera。本例只需参考 Depth 和 Culling Mask，其他参数按自己的场景调整。
+
+</details>
+
+2. 打开 `Assets/GameContent/MyGame/Editor/Tables/Source/MyGame.xlsx`；如果已选 Google Sheets，就打开当前使用的云端工作簿。添加 **Scene** 工作表，从 A1 开始填入下面的内容。如果已经有 Scene 表，保留前两行，只添加 **Level01** 这一行数据。保留原来的 UI 表。
 
 | Id | Name | ScenePath |
 | --- | --- | --- |
 | string | string | string |
 | Level01 | First level | Assets/GameContent/MyGame/Content/Scenes/Level01.unity |
 
-3. 第一次连接时，按[配置接入](config-setup.zh-CN.md)的步骤，用这张 Scene 表完成设置。已经连接过的话，点击顶部工具栏左侧的 **Update Config**，等待更新结果和编译完成。需要切换游戏时，先在 **Framework → Config** 中选择 **MyGame**。在启动代码中，等 Core 就绪后调用一次 `MyGame.GameConfig.LoadAndRegister()`，将 `SceneName.Level01 = "Level01"` 与实际的 Addressables 地址关联起来。
-
-启动完成后，在菜单按钮的点击处理方法中调用下面的代码，不要放进 Update（需要 `using Core; using UnityEngine;`）：
+3. 保存本地工作簿（Google Sheets 则等云端保存完成），在 **Framework → Config** 中选择 **MyGame**，点击 **Update Config**，等待更新结果和编译完成。这会生成 `SceneName.Level01 = "Level01"`。已有的 **MyGameEntry.cs** 会在 Core 就绪后调用 `GameConfig.LoadAndRegister()`，将这个 ID 与 Addressables 地址关联起来，保留这一处调用即可。
+4. 打开 `Assets/GameContent/MyGame/Scripts/MyMenuView.cs`，在文件顶部添加 `using Core;`，保留 `using UnityEngine;`。将下面的方法放进 **MyMenuView 类内部**，与 `OnShow()` 并列：
 
 ```csharp
-GameCore.Scene.TryTransition(
-    MyGame.SceneName.Level01,
-    completed: (succeeded, error) =>
-    {
-        if (!succeeded)
+public void GoToLevel()
+{
+    GameCore.Scene.TryTransition(
+        MyGame.SceneName.Level01,
+        completed: (succeeded, error) =>
         {
-            Debug.LogWarning(error);
-        }
-    });
+            if (!succeeded)
+            {
+                Debug.LogWarning(error);
+            }
+        });
+}
 ```
 
-**预期结果：** 点击一次按钮后，遮罩出现，旧窗口关闭，然后显示目标场景。Single 模式会用新场景替换旧场景，Core 则会保留下来。在 Editor 外测试前，先为 Player 的目标平台构建 Addressables。如果加载失败，旧 UI 会保留，并显示 Retry 面板；错误原因可以在 Console 和面板中查看。
+5. 保存脚本，等待编译完成。双击 `Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab` 进入 Prefab Mode，选中根对象，通过 **GameObject → UI → Legacy → Button** 添加按钮。把按钮放到能看见的位置，将文字改为 **Go to level**。在 Button 的 **On Click ()** 中点击 **+**，把 **预制体 Hierarchy 中的 MyMenuView 根对象**拖入对象栏，选择 **MyMenuView → GoToLevel()**，然后保存预制体并退出 Prefab Mode。
+6. 打开 `Assets/GameContent/MyGame/Scenes/Start.unity`，按 Play，再点击菜单中的 **Go to level**。从这个入口开始运行，Core 和配置才会在点击按钮前准备好。
+
+**预期结果：** 点击一次按钮后，遮罩出现，旧窗口关闭，然后显示 Level01 中的物体。Single 模式会用新场景替换旧场景，Core 则会保留下来。在 Editor 外测试前，先为 Player 的目标平台构建 Addressables。如果加载失败，旧 UI 会保留，并显示 Retry 面板；错误原因可以在 Console 和面板中查看。
 
 <a id="使用约定"></a>
 

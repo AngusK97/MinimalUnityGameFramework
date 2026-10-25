@@ -8,31 +8,48 @@ Load a level behind an overlay, close the old UI and wait for your scene prepara
 
 ## 01 Try it
 
-1. Save **Level01.unity** in `Assets/GameContent/MyGame/Content/Scenes/` with a camera and visible object. Remove the camera's extra AudioListener; Core has one. Select the saved **Level01.unity asset in Project** and check **Addressable** in its Inspector.
-2. Here is the **Scene** table. For your first setup, create a local workbook with these rows using [Config setup](config-setup.md). If already connected, open the active source's existing **Scene** tab or create one if missing. Enter all rows from A1 in a new tab; in an existing tab, keep its first two rows and add only the **Level01** data row.
+Start with the [first-window example](quick-start.md#02-create-your-first-window). This adds a level button to your existing **MyMenuView.prefab** and uses **MyGameEntry.cs** to load your config.
+
+1. Create a scene with a camera and a visible object on the **Default** layer. On the camera, set **Depth = 2** and **Culling Mask = Default**, then remove its **AudioListener**; Core already has one. Core's background camera renders at Depth 1, so a default camera would be covered by its background. Save as `Assets/GameContent/MyGame/Content/Scenes/Level01.unity`, select the saved asset in Project, and check **Addressable** in its Inspector.
+
+<details>
+<summary>See the camera settings in the Demo</summary>
+
+<img src="images/scene-camera.jpg" alt="Demo WorldCamera Inspector with Depth 2 and Culling Mask Default" width="360">
+
+This is the Demo's WorldCamera. Match its Depth and Culling Mask for this example; adjust other camera settings for your own scene.
+
+</details>
+
+2. Open `Assets/GameContent/MyGame/Editor/Tables/Source/MyGame.xlsx`, or your connected workbook if Google Sheets is your active source. Add a **Scene** sheet and enter the rows below from A1. If Scene already exists, keep its first two rows and add only the **Level01** data row. Keep the existing UI sheet.
 
 | Id | Name | ScenePath |
 | --- | --- | --- |
 | string | string | string |
 | Level01 | First level | Assets/GameContent/MyGame/Content/Scenes/Level01.unity |
 
-3. For your first connection, follow [Config setup](config-setup.md) using this Scene table. If already connected, click **Update Config** on the left side of Unity's top toolbar and wait for the result and compilation. If needed, first select **MyGame** in **Framework → Config**. In startup, after Core is ready, call `MyGame.GameConfig.LoadAndRegister()` once. This registers `SceneName.Level01 = "Level01"` to its Addressables address.
-
-Add this to a menu button handler after startup, not Update (`using Core; using UnityEngine;`):
+3. Save the local workbook, or wait for Google Sheets to finish saving. Select **MyGame** in **Framework → Config**, click **Update Config**, and wait for the result and compilation. This generates `SceneName.Level01 = "Level01"`. Your existing **MyGameEntry.cs** calls `GameConfig.LoadAndRegister()` after Core is ready, registering this ID with its Addressables address; keep that single call.
+4. Open `Assets/GameContent/MyGame/Scripts/MyMenuView.cs`. Add `using Core;` at the top, keep `using UnityEngine;`, and add this method **inside the MyMenuView class**, alongside `OnShow()`:
 
 ```csharp
-GameCore.Scene.TryTransition(
-    MyGame.SceneName.Level01,
-    completed: (succeeded, error) =>
-    {
-        if (!succeeded)
+public void GoToLevel()
+{
+    GameCore.Scene.TryTransition(
+        MyGame.SceneName.Level01,
+        completed: (succeeded, error) =>
         {
-            Debug.LogWarning(error);
-        }
-    });
+            if (!succeeded)
+            {
+                Debug.LogWarning(error);
+            }
+        });
+}
 ```
 
-**Expected result:** one click shows the overlay, closes the old window and displays the target scene. Single loading replaces the old scene; Core persists. Build Addressables for the Player target before testing outside the Editor. A load failure preserves old UI and shows Retry; check Console and the panel's error.
+5. Save the script and wait for compilation. Double-click `Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab` to open Prefab Mode. Select its root and choose **GameObject → UI → Legacy → Button**. Place the button where you can see it and set its text to **Go to level**. In the Button's **On Click ()**, click **+**, drag the **MyMenuView root from the prefab Hierarchy** into the object field, and select **MyMenuView → GoToLevel()**. Save the prefab and leave Prefab Mode.
+6. Open `Assets/GameContent/MyGame/Scenes/Start.unity` and press Play. Click **Go to level** in your menu. Start from this entry scene so Core and config are ready before the button runs.
+
+**Expected result:** one click shows the overlay, closes the old window and displays Level01's visible object. Single loading replaces the old scene; Core persists. Build Addressables for the Player target before testing outside the Editor. A load failure preserves old UI and shows Retry; check Console and the panel's error.
 
 <a id="conventions"></a>
 

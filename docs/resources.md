@@ -2,15 +2,17 @@
 
 [Overview](../README.md) · [Quick start](quick-start.md) · [简体中文](resources.zh-CN.md)
 
-**Register → Load → Use → Unload.** Resource modules own shared assets; your game decides their lifetime. UIManager loads its own windows, so UI-only projects can skip this page.
+**Register → Load → Use → Unload.** Put shared assets in a module, then choose when to load and unload them. UIManager loads its own windows, so UI-only projects can skip this page.
 
 <a id="try-it"></a>
 
 ## 01 Try it
 
-First add the Cue row to your [Resource table](resource-tables.md), with **Type = AudioClip** and **Module = Main**, then click **Update Config** on the left side of Unity's top toolbar. This generates `MyGame.MainResources` with ID `MyGame.Main`. Wait for compilation.
+First add the Cue row to your [Resource table](resource-tables.md), with **Type = AudioClip** and **Module = Main**, save the workbook (or wait for Google Sheets to finish saving), then click **Update Config** on the left side of Unity's top toolbar. This generates `MyGame.MainResources` with ID `MyGame.Main`. Wait for compilation.
 
-Create **MyResourceStartup.cs** in `Assets/GameContent/MyGame/Scripts/`. Use it as the startup owner on one empty object alongside the shared GameCore prefab. If MyGameEntry already loads config, merge this example into that entry so `GameConfig.LoadAndRegister()` runs only once:
+For a separate example, create **MyResourceStartup.cs** in `Assets/GameContent/MyGame/Scripts/` and attach it to an empty root object beside the shared GameCore prefab.
+
+If you already have **MyGameEntry.cs**, use that script instead. Add `using Sound;`, copy the `main` field and the `PlayCue`, `OnLoadFailed`, `OnDestroy` methods into the class. Add the three lines from `main = new MainResources()` to `Start()`, after the existing `GameConfig.LoadAndRegister()`. Keep that config call only once; do not add a second startup component:
 
 ```csharp
 using Core;
@@ -64,7 +66,7 @@ namespace MyGame
 
 **Expected result:** cue.wav plays after the entire module loads. Failure or cancellation logs an error. Removing this owner stops the UI audio layer and unloads its module. In your own game, wait until all borrowers finish and dependent instances are destroyed before unloading; choose an owner that lives as long as those users.
 
-The Resource service retains the registered module after Start returns. Another component can retrieve the same instance once and keep it; lookup does not load it (`using Core;`):
+The Resource service retains the registered module after Start returns. After startup has registered it, another component can retrieve and keep the same instance. Lookup does not load it (`using Core;`):
 
 ```csharp
 var main = GameCore.Resource.GetResourceModule<MyGame.MainResources>(MyGame.MainResources.Id);
@@ -78,7 +80,7 @@ After successful loading, gameplay uses `main.Cue` directly. Before loading or a
 
 - Keep game-owned Module Ids stable. Generated internal resource numbers are not save/network IDs.
 - Commit generated snapshots, manifest, code and JSON together; see [Resource tables](resource-tables.md). Handwritten BaseResourceModule subclasses remain supported.
-- Borrow only in or after a successful load callback; handle failure with `failedCallback`.
+- Use the assets only in or after a successful load callback; handle failure with `failedCallback`.
 - Only the owner unloads shared modules, after stopping related audio and destroying dependent instances. Do not unload a playing clip.
 - Use the actual Addressables key. Rebuild content for the current target after changing resources or platform.
 

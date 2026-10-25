@@ -8,9 +8,9 @@
 
 ## 01 Open a window
 
-Complete [Quick start](quick-start.md) or create a [UI table](ui-tables.md). Call `MyGame.GameConfig.LoadAndRegister()` once after Core is ready; this example uses `MyGame.UIName.Menu`.
+This example uses the `Menu` window from [Quick start](quick-start.md). If you followed [UI tables](ui-tables.md) instead, replace `Menu` with `Shop` in the open and close examples below.
 
-With `using Core; using UI;`, add this to a button handler or startup `Start()` after `GameConfig.LoadAndRegister()`:
+In **MyGameEntry.cs**, replace the existing OpenUI call in `Start()` with this code, after `GameConfig.LoadAndRegister()`. Keep that config call only once per Core lifetime. You can also open the window from a button handler after startup (`using Core; using UI;`):
 
 ```csharp
 GameCore.UI.OpenUI(UILayer.First, MyGame.UIName.Menu, callback: view =>
@@ -34,7 +34,7 @@ Use `First` for a normal screen, `Second` for a popup. Reserve `Transition` for 
 | --- | --- |
 | Game code | `GameCore.UI.CloseUI(MyGame.UIName.Menu)` |
 | Inside the view | `CloseSelf()` |
-| Close current requests together | `GameCore.UI.CloseAll()` |
+| Close all, including loading windows | `GameCore.UI.CloseAll()` |
 
 **Expected result:** close and reopen the window. It disappears, its instance is released, then a new instance appears.
 
@@ -42,7 +42,7 @@ Use `First` for a normal screen, `Second` for a popup. Reserve `Transition` for 
 
 ## 03 Put logic in the right hook
 
-| Hook on your `UIBase` subclass | Use it for |
+| Method on your `UIBase` subclass | Use it for |
 | --- | --- |
 | `OnInit()` | Cache references and read inherited `Data` |
 | `OnShow()` | Bind buttons and subscribe to events |
@@ -58,7 +58,7 @@ Duplicate opens share a pending load; an open window returns its instance withou
 
 CloseUI cancels queued/loading requests and releases late instances. IsOpen includes queued/loading states, not just visible windows. CloseAll handles its initial request snapshot; requests explicitly opened by close hooks/callbacks survive.
 
-Close, Release and CloseSelf settle the owning request. There is no window pool. OnClose must tolerate partial OnShow setup. After your OnDestroy cleanup, call base.OnDestroy(). Do not manually call Update.
+Close, Release and CloseSelf all end the window’s open request. Windows are released, not pooled. OnClose must also work if OnShow only finished some of its setup. If you override OnDestroy, call base.OnDestroy() after your cleanup. Do not manually call Update.
 
 For manual registration instead of a generated table:
 

@@ -8,9 +8,9 @@
 
 ## 01 打开窗口
 
-先完成[开始使用](quick-start.zh-CN.md)，或创建 [UI 配置表](ui-tables.zh-CN.md)。等 Core 就绪后，调用一次 `MyGame.GameConfig.LoadAndRegister()`。下面的示例使用 `MyGame.UIName.Menu`。
+下面沿用[开始使用](quick-start.zh-CN.md)中的 `Menu` 窗口。如果你只做了 [UI 配置表](ui-tables.zh-CN.md)教程，把下方打开、关闭示例中的 `Menu` 换成 `Shop`。
 
-需要 `using Core; using UI;`。把下面的代码放到按钮点击方法中，或者放进启动脚本的 `Start()`，接在 `GameConfig.LoadAndRegister()` 后面：
+在 **MyGameEntry.cs** 的 `Start()` 中，用下面的代码替换原来的 OpenUI 调用，放在 `GameConfig.LoadAndRegister()` 后面。每次 Core 启动只保留一次配置加载。也可以在启动完成后的按钮点击方法中打开窗口（需要 `using Core; using UI;`）：
 
 ```csharp
 GameCore.UI.OpenUI(UILayer.First, MyGame.UIName.Menu, callback: view =>
@@ -58,7 +58,7 @@ GameCore.UI.OpenUI(UILayer.First, MyGame.UIName.Menu, callback: view =>
 
 CloseUI 会取消仍在排队或加载中的请求；如果实例在取消后才加载完成，也会被释放。IsOpen 会把排队和加载中的请求算作已打开，所以返回 true 不代表窗口已经可见。CloseAll 只处理调用那一刻已有的请求；如果在关闭方法或回调中又主动打开了窗口，这些新请求会保留。
 
-Close、Release、CloseSelf 都会结束对应的打开请求，框架不提供窗口池。编写 OnClose 时，要考虑 OnShow 可能只完成了一部分初始化。重写 OnDestroy 时，完成自己的清理后，再调用 base.OnDestroy()。不要手动调用 Update。
+Close、Release、CloseSelf 都会结束这次打开，窗口会被释放，不会放进池中复用。编写 OnClose 时，要考虑 OnShow 可能只完成了一部分初始化。重写 OnDestroy 时，完成自己的清理后，再调用 base.OnDestroy()。不要手动调用 Update。
 
 也可以不用生成的配置表，直接在代码中登记：
 

@@ -2,7 +2,7 @@
 
 [Overview](../README.md) · [Quick start](quick-start.md) · [简体中文](events.zh-CN.md)
 
-**Define a name → Subscribe → Broadcast → Unsubscribe.** Send a notification without knowing who listens. This example prints a message in Console; it needs no UI or configuration table.
+**Define a name → Subscribe → Broadcast → Unsubscribe.** Events let you send a notification without knowing who listens. Let's try it with a Console message; you won't need a UI or configuration table.
 
 <a id="try-it"></a>
 
@@ -12,13 +12,17 @@
 
 ### 1.1 Prepare the scene
 
-Use this repository's Unity project. Create an empty scene, drag [GameCore.prefab](../Assets/Framework/Prefabs/GameCore.prefab) into Hierarchy at the top level, and keep its settings. Create an empty GameObject named **EventExample**.
+Open the framework project and stop Play mode if it is running.
+
+1. Create an empty scene and drag [GameCore.prefab](../Assets/Framework/Prefabs/GameCore.prefab) into Hierarchy at the top level. Keep its settings.
+2. Create an empty GameObject named **EventExample**, beside GameCore.
+3. Save the scene as `Assets/GameContent/MyGame/Scenes/EventExample.unity`. Create the folders if needed.
 
 <a id="2-define-the-name"></a>
 
 ### 1.2 Define the name
 
-Save **GameEvents.cs** in `Assets/GameContent/MyGame/Scripts/` (create the folders if needed). The string constant is the event's name; no enum, table or advance registration is needed.
+In `Assets/GameContent/MyGame/Scripts/` (create it if needed), choose **Create → Scripting → MonoBehaviour Script** and name it **GameEvents**. Replace all of GameEvents.cs with the code below and save. This file just holds the event name, so it doesn't go on a GameObject. No enum, table or advance registration is needed.
 
 ```csharp
 namespace MyGame
@@ -34,7 +38,7 @@ namespace MyGame
 
 ### 1.3 Subscribe and broadcast
 
-Save **EventExample.cs** beside it, then attach it to the EventExample object:
+Use the same script menu to create **EventExample.cs** beside GameEvents.cs. Replace the whole file with this code and save:
 
 ```csharp
 using Core;
@@ -79,13 +83,15 @@ namespace MyGame
 }
 ```
 
-Press Play. **Console should print `Level completed.` once.** Start subscribes before broadcasting, so the first notification cannot be missed. GameCore initializes in Awake; a different object's OnEnable may run before that, so this example waits for Start and checks readiness.
+Wait for compilation, then drag **EventExample.cs** onto the EventExample object's Inspector. Save the scene and press Play.
+
+**Success:** Console prints `Level completed.` once. Start subscribes before broadcasting, so the first notification cannot be missed. GameCore initializes in Awake; a different object's OnEnable may run before that, so this example waits for Start and checks readiness.
 
 <a id="4-broadcast-from-your-game"></a>
 
 ### 1.4 Broadcast from your game
 
-In a level-completion method or another game script, use this line after Core is ready (`using Core; using MyGame;`):
+When you add this to your game, put the following line inside a level-completion method or wherever you want to send the notification. Core must be ready; add `using Core;` and `using MyGame;` at the top of that script:
 
 ```csharp
 GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
@@ -93,7 +99,7 @@ GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 
 Each broadcast invokes the listener once. The sender only needs the event name, not the EventExample object. RegisterEvent subscribes a listener; it does not define the name.
 
-Destroying the EventExample object calls OnDestroy and removes its subscription. To check cleanup, broadcast from your game, delete EventExample in Hierarchy during Play, then broadcast again: its message should stop. Disabling the component alone does not unsubscribe it.
+Destroying the EventExample object calls OnDestroy and removes its subscription. Once your game sends this notification, you can check cleanup: broadcast once, delete EventExample in Hierarchy during Play, then broadcast again. Its message should stop. Disabling the component alone does not unsubscribe it.
 
 <a id="choose-the-notification"></a>
 

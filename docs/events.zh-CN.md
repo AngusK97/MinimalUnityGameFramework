@@ -2,7 +2,7 @@
 
 [框架总览](../README.zh-CN.md) · [开始使用](quick-start.zh-CN.md) · [English](events.md)
 
-**定义名称 → 订阅 → 广播 → 退订。** 用事件发送通知时，不必知道谁在监听。下面的例子只在 Console 打印消息，不需要 UI 或配置表。
+**定义名称 → 订阅 → 广播 → 退订。** 用事件发送通知时，不必知道谁在监听。我们先在 Console 打印一条消息试试，不需要 UI 或配置表。
 
 <a id="试试看"></a>
 
@@ -12,13 +12,17 @@
 
 ### 1.1 准备场景
 
-打开本仓库的 Unity 工程，新建一个空场景。将 [GameCore.prefab](../Assets/Framework/Prefabs/GameCore.prefab) 拖到 Hierarchy 最外层，保留已有设置，再新建一个名为 **EventExample** 的空 GameObject。
+打开框架工程。如果正在 Play，先停止运行。
+
+1. 新建一个空场景，将 [GameCore.prefab](../Assets/Framework/Prefabs/GameCore.prefab) 拖到 Hierarchy 最外层，保留已有设置。
+2. 新建一个名为 **EventExample** 的空 GameObject，与 GameCore 放在同一层级。
+3. 将场景保存为 `Assets/GameContent/MyGame/Scenes/EventExample.unity`，缺少的目录先建好。
 
 <a id="2-定义名称"></a>
 
 ### 1.2 定义名称
 
-在 `Assets/GameContent/MyGame/Scripts/` 中创建 **GameEvents.cs**；如果目录还不存在，先创建目录。这里用字符串常量作为事件名称，不需要枚举、配置表，也不用提前登记。
+在 `Assets/GameContent/MyGame/Scripts/` 中选择 **Create → Scripting → MonoBehaviour Script**，命名为 **GameEvents**；缺少的目录先建好。用下面的代码替换 GameEvents.cs 的全部内容并保存。这个文件只保存事件名称，不用挂到 GameObject 上，也不需要枚举、配置表或提前登记。
 
 ```csharp
 namespace MyGame
@@ -34,7 +38,7 @@ namespace MyGame
 
 ### 1.3 订阅并广播
 
-在同一目录中创建 **EventExample.cs**，然后挂到 EventExample 对象上：
+用同一个脚本菜单，在 GameEvents.cs 旁边创建 **EventExample.cs**。用下面的代码替换整个文件并保存：
 
 ```csharp
 using Core;
@@ -79,13 +83,15 @@ namespace MyGame
 }
 ```
 
-按下 Play，**Console 应输出一次 `Level completed.`。** Start 中先订阅、再广播，所以不会漏掉第一次通知。GameCore 在 Awake 中初始化，而其他对象的 OnEnable 可能更早执行，因此本例等到 Start 时才使用服务，并先检查 Core 是否就绪。
+等待编译完成，将 **EventExample.cs** 拖到 EventExample 对象的 Inspector 上。保存场景，按下 Play。
+
+**成功标志：** Console 输出一次 `Level completed.`。Start 中先订阅、再广播，所以不会漏掉第一次通知。GameCore 在 Awake 中初始化，而其他对象的 OnEnable 可能更早执行，因此这里等到 Start 再使用服务，并先检查 Core 是否就绪。
 
 <a id="4-从游戏中广播"></a>
 
 ### 1.4 从游戏中广播
 
-Core 就绪后，可以在通关方法或其他游戏脚本中用下面这一行发送通知（需要 `using Core; using MyGame;`）：
+接到自己的游戏里时，把下面这一行放进通关方法，或其他需要发通知的方法中。调用时 Core 必须已经就绪；脚本顶部加上 `using Core;` 和 `using MyGame;`：
 
 ```csharp
 GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
@@ -93,7 +99,7 @@ GameCore.Event.DispatchNow(GameEvents.LevelCompleted);
 
 每广播一次，监听方法就会执行一次。发送方只需要知道事件名称，不需要拿到 EventExample 对象。RegisterEvent 的作用是订阅监听方法，事件名称已经由前面的字符串常量定义好了。
 
-销毁 EventExample 对象时，OnDestroy 会移除订阅。可以这样检查：先从游戏脚本广播一次，再在 Play 期间从 Hierarchy 中删除 EventExample，然后再次广播。这时应该不再输出它的消息。仅仅禁用组件不会退订。
+销毁 EventExample 对象时，OnDestroy 会移除订阅。等游戏接上这条通知后，可以这样检查：先广播一次，再在 Play 期间从 Hierarchy 中删除 EventExample，然后再次广播。这时应该不再输出它的消息。仅仅禁用组件不会退订。
 
 <a id="选择通知方式"></a>
 

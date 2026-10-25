@@ -4,7 +4,7 @@
 
 **先运行 Demo，再做一个自己的窗口。** 你需要 Unity Hub、Unity 6.6（6000.6.5f1）和 C# 编辑器，会 Unity 的基本操作就可以开始。
 
-直接用下载的框架工程开始制作游戏。按下面的步骤操作，会保留工程原有的依赖和设置，把自己的内容放进 `GameContent/MyGame/`。
+继续在刚下载的工程里做就好。我们会在 Demo 旁边创建 `Assets/GameContent/MyGame/`，放自己的游戏内容，沿用工程已有的依赖和设置。
 
 本页对应 **v0.5.0**。使用 SO 配置的旧版本请看 [v0.2.0 教程](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.zh-CN.md)。
 
@@ -32,7 +32,7 @@
 
 ### 2.1 创建视图
 
-在 `Assets/GameContent/MyGame/` 下创建这些目录：
+在 `Assets/GameContent/` 下新建 **MyGame** 文件夹，再在里面创建这些目录：
 
 ```text
 Scenes/
@@ -41,7 +41,7 @@ Editor/Tables/Source/
 Scripts/
 ```
 
-在 Scripts 目录中选择 **Create → Scripting → MonoBehaviour Script**，命名为 **MyMenuView**。用下面的代码替换整个文件，保存后等待编译完成：
+在 `MyGame/Scripts/` 中选择 **Create → Scripting → MonoBehaviour Script**，命名为 **MyMenuView**。打开 MyMenuView.cs，用下面的代码替换整个文件，保存后等待编译完成：
 
 ```csharp
 using UI;
@@ -81,7 +81,7 @@ namespace MyGame
 | Menu | My first menu | Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab |
 
 1. 将工作簿保存为 `Assets/GameContent/MyGame/Editor/Tables/Source/MyGame.xlsx`。单元格直接填写值，不使用公式，删除多余的空白工作表。
-2. 打开 **Framework → Config**，设置 **Game = MyGame**、**Namespace = MyGame**、**Source = Local Excel**。保留 **Excel folder = Editor/Tables/Source**；需要手动选择时，点击 **Choose folder…**。
+2. 打开 **Framework → Config**，把 Project 中的 **MyGame 文件夹**拖到 **Game** 栏，填写 **Namespace = MyGame**，选择 **Source = Local Excel**。保留 **Excel folder = Editor/Tables/Source**；需要手动选择时，点击 **Choose folder…**。
 3. 点击 **Update Config**，等待更新结果和编译完成。以后改表，保存工作簿后点击顶部工具栏左侧的 **Update Config** 即可。
 
 也可以把 `Demo/Editor/Tables/Source/Demo.xlsx` 中的 UI 工作表复制到自己的工作簿，参考它的格式，再把数据替换成上面的 Menu 行。自己的游戏使用自己的 Prefab 和生成代码。Google Sheets 接入及来源切换见[配置接入](config-setup.zh-CN.md)。
@@ -94,7 +94,7 @@ namespace MyGame
 
 ### 2.4 添加游戏入口
 
-在 Scripts 目录中，用刚才的脚本菜单创建 **MyGameEntry.cs**，用下面的代码替换整个文件：
+在 `MyGame/Scripts/` 中，用刚才的脚本菜单创建 **MyGameEntry.cs**。用下面的代码替换整个文件，保存后等待编译完成：
 
 ```csharp
 using Core;
@@ -143,7 +143,7 @@ namespace MyGame
 
 ## 03 删除 Demo
 
-在 Unity 的 Project 窗口中删除 `Assets/GameContent/Demo`。如果从磁盘删除，先关闭 Unity，再同时删除**这个目录和 Demo.meta**。保留 GameContent、`.gitkeep`、公共框架和自己的游戏内容。
+自己的窗口跑起来后，就可以在 Unity 的 Project 窗口中删除 `Assets/GameContent/Demo`。如果从磁盘删除，先关闭 Unity，再同时删除**这个目录和 Demo.meta**。保留 GameContent、`.gitkeep`、公共框架和自己的游戏内容。
 
 再次运行自己的 Start.unity，确认使用的都是自己游戏的 ID 和资产，没有引用 Demo 命名空间、DemoGame 或 Demo 资产。公共场景 `Assets/Framework/Scenes/InitScene.unity` 只负责准备服务，不会打开菜单。
 

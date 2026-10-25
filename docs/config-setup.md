@@ -2,7 +2,7 @@
 
 [Overview](../README.md) · [Config tables](config.md) · [Quick start](quick-start.md) · [简体中文](config-setup.zh-CN.md)
 
-**Choose a source once, then use Update Config for later edits.** Local Excel is the default. Google Sheets is available for online collaboration; each game uses one active source.
+**Choose a source once. After that, edit, save and click Update Config.** Local Excel is the default. Google Sheets is available for online collaboration; each game uses one active source.
 
 <a id="first-time-setup"></a>
 
@@ -19,7 +19,7 @@ The bundled `Assets/GameContent/Demo/Editor/Tables/Source/Demo.xlsx` is a workin
 
 ### 1.2 Connect Unity
 
-1. Open **Framework → Config**. Set **Game = MyGame**, **Namespace = MyGame**, and **Source = Local Excel**.
+1. Open **Framework → Config**. Drag the **MyGame folder** from Project into **Game**. Enter **Namespace = MyGame** and choose **Source = Local Excel**. Namespace is the C# namespace for generated code; keep it the same for this game.
 2. Keep **Excel folder = Editor/Tables/Source**, or click **Choose folder…** to select another folder inside this game's Editor directory. The path is relative to the game root; the generated-output folder cannot be used as a source.
 3. Click **Update Config**. Wait for the progress window, result and any compilation. Use **Open report** for details, then return to your table's tutorial to check its generated output.
 

@@ -2,7 +2,7 @@
 
 [Overview](../README.md) · [Config setup](config-setup.md) · [简体中文](resource-tables.zh-CN.md)
 
-**Edit the Resource tab → Update Config → Load a module → Use main.Cue.** A module groups assets with the same loading lifetime. For a component's own fixed asset, an Inspector reference may be enough.
+**Edit and save the Resource tab → Update Config → Load a module → Use main.Cue.** Put assets in one module when you want to load and release them together. For a component's own fixed asset, an Inspector reference may be enough.
 
 <a id="add-resources"></a>
 
@@ -16,7 +16,7 @@
 | string | string | string | string | string |
 | Cue | Button sound | AudioClip | Main | Assets/GameContent/MyGame/Content/Audio/cue.wav |
 
-3. For your first connection, follow [Config setup](config-setup.md) using the table above. If already connected, click **Update Config** on the left side of Unity's top toolbar and wait for the result and compilation. To switch games first, choose **MyGame** in **Framework → Config**.
+3. For your first connection, follow [Config setup](config-setup.md) using the table above. If already connected, check that **MyGame** is selected in **Framework → Config**. Save the workbook (or wait for Google Sheets to finish saving), then click **Update Config** on the left side of Unity's top toolbar. Wait for the result and compilation.
 
 **Success:** `MyGame/Scripts/Generated/MainResources.g.cs` exists. It exposes `Id = "MyGame.Main"` and an `AudioClip Cue` property. The tool also generates ResourceTable, ResourceConfig and local JSON. `Name` is a description for people; it is not a generated field.
 
@@ -32,24 +32,24 @@ Assets must exist and have loadable Addressables entries. Check **Addressable** 
 
 ## 02 Use a module
 
-After Core is ready, call `GameConfig.LoadAndRegister()`. Create and register each required resource module once, then load it explicitly. Follow the complete [Resources example](resources.md) for startup, failure and cleanup.
+Follow the [Resources example](resources.md) to create, register and load a module. If you already have **MyGameEntry.cs**, use the merge instructions in that example. Load config and register each module only once per Core lifetime.
 
-Once MainResources is loaded, gameplay can use:
+In that example, `main` is a `MainResources` field. Its `PlayCue()` callback runs after loading succeeds, so this line goes inside that callback:
 
 ```csharp
 GameCore.Sound.PlaySound(SoundLayer.UI, main.Cue);
 ```
 
-This line needs `using Core; using Sound;`. Property access does not trigger loading. Adding a row requires no new startup registration; a new module needs explicit integration.
+This line needs `using Core; using Sound;`. Property access does not trigger loading. Adding a row to an existing module needs no extra startup code; adding a new module needs its own registration and load call.
 
 <a id="change-resources"></a>
 
 ## 03 Change resources
 
-- **Add or replace:** edit the row, update config, then use the generated property. Keeping Id preserves callers.
-- **Move an asset:** update AssetPath and import again.
+- **Add or replace:** edit the row, save, update config, then use the generated property. Keeping Id preserves callers.
+- **Move an asset:** update AssetPath, save and update config.
 - **Rename or delete Id/Module:** update config, then fix callers and module registration. The module ID is `<namespace>.<Module>`.
-- **Commit:** include the local workbook, source settings, generated CSV, manifest, C#, JSON, assets and meta files together. Resolve the active source and import again instead of merging generated bodies by hand.
+- **Commit:** include the local workbook, source settings, generated CSV, manifest, C#, JSON, assets and meta files together. Resolve conflicts in the active source and update config again; do not merge generated files by hand.
 
 Start with **Main**. Use other Module values, such as **Level01**, when assets need a different lifetime. Missing or wrong-type assets are errors; [Config tables](config.md) explains retained versions and recovery. Generated internal resource numbers are not save or network IDs.
 

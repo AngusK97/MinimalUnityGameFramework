@@ -8,7 +8,7 @@
 
 这套教程适用于 **v0.5.0**。更新了什么，可以看[发布说明](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.5.0)；旧工程升级请看[迁移步骤](Build-in%20Managers%20Usage.zh-CN.md)。下载后，使用包内的文档即可。
 
-Hello there ~ 我是 Angus，一名游戏开发者。这是我写的一个小型 Unity 框架，帮你处理 UI、事件、资源、场景和音频。可以先玩一下 Demo，再用同样的工具做自己的游戏。
+Hello there ~ 我是 Angus，一名游戏开发者。我把做小型 Unity 游戏时常用的 UI、事件、资源、场景和音频整理成了这个框架。希望它能帮你少做一些重复工作，多花点时间在自己的玩法上。
 
 > **简单即美。** 容易上手，容易理解，也容易修改。
 
@@ -28,7 +28,7 @@ Hello there ~ 我是 Angus，一名游戏开发者。这是我写的一个小型
 
 **GameCore** 提供五个公共模块，切换场景时也会保留。你自己的游戏和 Demo 都通过同一套 API 使用它们。
 
-配置从表格进入游戏：**本地 Excel → 点击顶部工具栏左侧的 Update Config → 生成本地数据 → 游戏读取**。需要在线协作时也可以选择 Google Sheets，每个游戏只使用一个配置来源。
+配置的流程是：**改表 → Update Config → 生成代码和数据 → 游戏读取**。默认用本地 Excel，需要多人在线编辑时可以换成 Google Sheets。运行游戏只读取已生成的数据，不需要联网。
 
 ```mermaid
 flowchart TB
@@ -49,7 +49,7 @@ UI 通过 Resource 加载界面；Scene 负责场景加载、淡入淡出和旧�
 
 ## 03 按需要选择模块
 
-第一次使用，可以跟着教程做[自己的第一个窗口](docs/quick-start.zh-CN.md#02-创建第一个窗口)。有具体需求时，直接查下面的表。编辑配置表前，先在[配置接入](docs/config-setup.zh-CN.md)中指定本地 `.xlsx` 文件夹；需要在线协作时再选择 Google Sheets。
+第一次使用，先跟着[开始使用](docs/quick-start.zh-CN.md)跑 Demo、做一个自己的窗口。有具体需求时，再查下面的表。配置来源的设置与切换放在[配置接入](docs/config-setup.zh-CN.md)。
 
 | 我想…… | 教程 | 从哪里调用 |
 | --- | --- | --- |
@@ -80,7 +80,7 @@ Assets/
     └── MyGame/        自己的场景、内容、来源设置和生成数据
 ```
 
-想看 Demo 怎么写，可以从 [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs)、[Demo.xlsx](Assets/GameContent/Demo/Editor/Tables/Source/Demo.xlsx) 或 [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs) 开始。修改 Demo.xlsx 后点击 **Update Config** 即可更新配置，CSV 只保存导表结果。自己的游戏跑通后，可以[整体删除 Demo](docs/quick-start.zh-CN.md#03-删除-demo)。
+想看 Demo 怎么写，可以从 [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs)、[Demo.xlsx](Assets/GameContent/Demo/Editor/Tables/Source/Demo.xlsx) 或 [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs) 开始。第一次改表时，在 **Framework → Config** 中选择 Demo；以后保存 Demo.xlsx，再点 **Update Config**。自己的游戏跑通后，可以[整体删除 Demo](docs/quick-start.zh-CN.md#03-删除-demo)。
 
 <a id="先体验一次"></a>
 

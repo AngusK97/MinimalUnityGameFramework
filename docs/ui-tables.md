@@ -2,7 +2,7 @@
 
 [Overview](../README.md) · [Config setup](config-setup.md) · [简体中文](ui-tables.zh-CN.md)
 
-**Edit the UI tab → Update Config → Use UIName.** Making your first window? Follow [Quick start](quick-start.md). Choose your source once with [Config setup](config-setup.md#01-first-time-setup).
+**Edit and save the UI tab → Update Config → Use UIName.** Making your first window? Follow [Quick start](quick-start.md). Choose your source once with [Config setup](config-setup.md#01-first-time-setup).
 
 <a id="add-a-window"></a>
 
@@ -16,7 +16,7 @@
 | string | string | string |
 | Shop | Shop window | Assets/GameContent/MyGame/Content/Prefabs/UI/ShopView.prefab |
 
-3. For your first connection, follow [Config setup](config-setup.md) using the table above. If already connected, click **Update Config** on the left side of Unity's top toolbar and wait for the result and compilation. To switch games first, choose **MyGame** in **Framework → Config**.
+3. For your first connection, follow [Config setup](config-setup.md) using the table above. If already connected, check that **MyGame** is selected in **Framework → Config**. Save the workbook (or wait for Google Sheets to finish saving), then click **Update Config** on the left side of Unity's top toolbar. Wait for the result and compilation.
 
 **Success:** `MyGame/Scripts/Generated/UIName.g.cs` contains `Shop = "Shop"`. The tool also generates UITable, UIConfig and local JSON data. `Name` is a description for people; it is not a generated field.
 
@@ -24,24 +24,23 @@
 
 ## 02 Use it
 
-In game startup, load config once after Core is ready. Then open windows by ID (`using Core; using UI;`):
+In **MyGameEntry.cs** from Quick start, put this in `Start()` after the existing `GameConfig.LoadAndRegister()` call. Replace the Menu OpenUI call if you want Shop to be the first window. Do not load config again; it runs once per Core lifetime (`using Core; using UI;`):
 
 ```csharp
-MyGame.GameConfig.LoadAndRegister();
 GameCore.UI.OpenUI(UILayer.First, MyGame.UIName.Shop);
 ```
 
-The ID is `Shop`; the generated registration resolves its Addressables address. The game namespace keeps C# types separate, but does not prefix UI IDs at runtime.
+The generated config connects `Shop` to its Addressables address. The game namespace keeps C# types separate, but does not prefix UI IDs at runtime.
 
 <a id="change-a-window"></a>
 
 ## 03 Change a window
 
-- **Add:** add a row, update config, then use `UIName.NewId`.
-- **Replace or move:** update PrefabPath and import again. Keeping Id preserves callers.
+- **Add:** add a row, save, update config, then use `UIName.NewId`.
+- **Replace or move:** update PrefabPath, save and update config. Keeping Id preserves callers.
 - **Delete or rename Id:** update config, then fix callers and any saved IDs.
 - **Commit:** include the local workbook, source settings, generated CSV, manifest, C#, JSON and meta files together. Edit the active source, not generated files.
 
 A missing prefab is an import warning: you can prepare its ID early, but opening it fails until the asset exists and you update config again. A wrong type, invalid UIBase root or unusable Addressables entry is an error. **Player builds reject missing UI prefabs**; finish or remove placeholders before building.
 
-For partial updates, output ownership and recovery, see [Config tables](config.md). For window behavior, see [UI](ui.md).
+For partial updates, generated files and recovery, see [Config tables](config.md). For window behavior, see [UI](ui.md).

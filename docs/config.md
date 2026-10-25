@@ -59,14 +59,14 @@ Follow [Config setup](config-setup.md#01-first-time-setup) to create a local wor
 
 ## 03 Add a table
 
-This **Item** example is for ordinary game data. Create or open a `.xlsx` workbook directly inside your source folder and name a sheet **Item**. Enter these three rows from A1, then save. For a first connection, follow [Config setup](config-setup.md#01-first-time-setup) using this table.
+This **Item** example is for ordinary game data. Create or open a `.xlsx` workbook directly inside your source folder, or open your connected workbook if Google Sheets is your active source. Add an **Item** sheet, enter these three rows from A1, then save. For a first connection, follow [Config setup](config-setup.md#01-first-time-setup) using this table.
 
 | Id | Name | Price |
 | --- | --- | --- |
 | string | string | int |
 | Potion | Small potion | 20 |
 
-Click **Update Config** on the left side of Unity's top toolbar and wait for the result and any compilation. If another game is selected, first choose **MyGame** in **Framework → Config**. The final update in first-time setup also covers this step.
+Check that **MyGame** is selected in **Framework → Config**, then click **Update Config** on the left side of Unity's top toolbar. Wait for the result and any compilation. If you just updated during first-time setup, you can skip this step.
 
 **Success:** `Assets/GameContent/MyGame/Scripts/Generated/ItemTable.g.cs` exists and the result reports the Item table. Continue below to load and read it.
 
@@ -74,12 +74,11 @@ Click **Update Config** on the left side of Unity's top toolbar and wait for the
 
 ## 04 Read a table
 
-In your game's startup, **after Core is ready and before opening UI or changing scenes**, load the generated configuration once per Core lifetime:
+If you have finished Quick start, open **MyGameEntry.cs** and add this code inside `Start()`, after its existing `GameConfig.LoadAndRegister()` call. Keep that one call; do not add another.
+
+No startup script yet? Follow the [Core entry steps](core.md#01-set-it-up). After the `GameCore.IsReady` check passes, call `MyGame.GameConfig.LoadAndRegister()` once, then run the query below:
 
 ```csharp
-// In startup, after GameCore.IsReady:
-MyGame.GameConfig.LoadAndRegister();
-
 var potion = MyGame.ItemTable.Get("Potion");
 UnityEngine.Debug.Log(potion.Price);
 
@@ -89,7 +88,9 @@ foreach (var item in MyGame.ItemTable.All)
 }
 ```
 
-The tab **Item** generates the query entry **ItemTable** and row type **ItemConfig**. `Get` throws if the ID does not exist; use `TryGet(id, out var row)` when absence is expected. Reading before loading is an error.
+Save the script, wait for compilation, then run your entry scene. **Console should print `20`, then `Small potion`.** Change the price to 30 in the table, save, update configuration and run again: it should now print 30.
+
+**ItemTable** looks up rows; **ItemConfig** represents one row. `Get` throws if the ID does not exist; use `TryGet(id, out var row)` when absence is expected. Reading before loading is an error.
 
 `GameConfig.LoadAndRegister()` loads local table data and registers UI and scene IDs. Resource modules still need explicit registration and loading; follow [Resources](resources.md) before using `main.Cue`.
 
@@ -109,7 +110,7 @@ The Demo.xlsx **UI** sheet, shown here in WPS, demonstrates this layout: field n
 
 <img src="images/config-local-sheet.jpg" alt="Demo.xlsx UI sheet open in WPS showing field names, string types and UI data rows" width="900">
 
-`Id` must be `string` or `int`. Use ASCII C# identifiers for table and field names. Enter literal values, with `true` / `false` for booleans and a dot for decimals. Formulas are rejected, including formulas with cached results; paste values before importing. `ref:Item` means that cell must contain an existing Item ID.
+`Id` must be `string` or `int`. For table and field names, use English letters, digits and underscores; do not start with a digit or use a C# keyword. Enter literal values, with `true` / `false` for booleans and a dot for decimals. Formulas are rejected, including formulas with cached results; paste values before importing. `ref:Item` means that cell must contain an existing Item ID.
 
 <a id="ui-resources-and-scenes"></a>
 
@@ -123,7 +124,7 @@ These tables use fixed headers. Follow the matching guide:
 | Resource | `main.Cue` | [Add resources](resource-tables.md) |
 | Scene | `SceneName.Level01` | [Add a scene](scenes.md) |
 
-All fields in these tables use `string`. Their `Name` column is for people and generates no field; an ordinary table's Name remains data. Use ASCII C# identifiers for IDs and resource module names, with asset paths starting at `Assets/`.
+All fields in these tables use `string`. Their `Name` column is for people and generates no field; an ordinary table's Name remains data. For IDs and resource module names, use English letters, digits and underscores; do not start with a digit or use a C# keyword. Asset paths start at `Assets/`.
 
 <details>
 <summary>Validation, partial updates and generated files</summary>

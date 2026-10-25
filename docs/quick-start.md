@@ -4,9 +4,9 @@
 
 **Run the Demo, then make your first window.** You'll need Unity Hub, Unity 6.6 (6000.6.5f1), a C# editor and basic Unity knowledge.
 
-Use the downloaded framework project as the starting point for your game. The steps below keep its packages and settings, and add your content under `GameContent/MyGame/`.
+Keep working in the project you downloaded. We'll add your game under `Assets/GameContent/MyGame/`, alongside the Demo, and use the project's existing packages and settings.
 
-This page follows **v0.5.0**. For the fixed SO-based release, use the [v0.2.0 guide](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md).
+This page follows **v0.5.0**. For the older ScriptableObject-based version, use the [v0.2.0 guide](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md).
 
 <a id="run-the-demo"></a>
 
@@ -32,7 +32,7 @@ You need a spreadsheet editor that can save `.xlsx` files. No Google account is 
 
 ### 2.1 Create the view
 
-Create these folders under `Assets/GameContent/MyGame/`:
+Create a **MyGame** folder inside `Assets/GameContent/`, then add these folders inside it:
 
 ```text
 Scenes/
@@ -41,7 +41,7 @@ Editor/Tables/Source/
 Scripts/
 ```
 
-In Scripts, choose **Create → Scripting → MonoBehaviour Script** and name it **MyMenuView**. Replace the whole file with this code, save and wait for compilation:
+In `MyGame/Scripts/`, choose **Create → Scripting → MonoBehaviour Script** and name it **MyMenuView**. Open MyMenuView.cs, replace the whole file with this code, save and wait for compilation:
 
 ```csharp
 using UI;
@@ -81,7 +81,7 @@ Create a blank workbook in your spreadsheet editor and rename its first sheet **
 | Menu | My first menu | Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab |
 
 1. Save the workbook as `Assets/GameContent/MyGame/Editor/Tables/Source/MyGame.xlsx`. Use literal values, without formulas, and remove unused blank sheets.
-2. Open **Framework → Config**. Set **Game = MyGame**, **Namespace = MyGame**, and **Source = Local Excel**. Keep **Excel folder = Editor/Tables/Source**; **Choose folder…** lets you select the folder on disk if needed.
+2. Open **Framework → Config**. Drag the **MyGame folder** from Project into **Game**, enter **Namespace = MyGame**, and choose **Source = Local Excel**. Keep **Excel folder = Editor/Tables/Source**; **Choose folder…** lets you select the folder on disk if needed.
 3. Click **Update Config**, then wait for the result and compilation. For later edits, save the workbook and use **Update Config** on the left side of Unity's top toolbar.
 
 You can also copy the UI sheet from `Demo/Editor/Tables/Source/Demo.xlsx` into your workbook as a layout example. Replace its data rows with the Menu row above; your game uses its own prefab and generated code. For Google Sheets or source switching, see [Config setup](config-setup.md).
@@ -94,7 +94,7 @@ You can also copy the UI sheet from `Demo/Editor/Tables/Source/Demo.xlsx` into y
 
 ### 2.4 Add your game entry
 
-Create **MyGameEntry.cs** in Scripts with the same script menu. Replace its whole contents with:
+Create **MyGameEntry.cs** in `MyGame/Scripts/` with the same script menu. Replace its whole contents with this code, save and wait for compilation:
 
 ```csharp
 using Core;
@@ -143,7 +143,7 @@ If it fails, check GameCore, the MyGameEntry attachment and the UI table's gener
 
 ## 03 Remove the Demo
 
-Delete `Assets/GameContent/Demo` in Unity's Project window. If deleting on disk, close Unity and remove **both the folder and Demo.meta**. Keep GameContent, `.gitkeep`, the shared framework and your game.
+Once your own window works, you can delete `Assets/GameContent/Demo` in Unity's Project window. If deleting on disk, close Unity and remove **both the folder and Demo.meta**. Keep GameContent, `.gitkeep`, the shared framework and your game.
 
 Run your own Start.unity again. It must use its own IDs and assets, with no Demo namespace, DemoGame or Demo asset references. The shared `Assets/Framework/Scenes/InitScene.unity` prepares services only; it does not open a menu.
 

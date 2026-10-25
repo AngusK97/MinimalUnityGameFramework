@@ -2,15 +2,17 @@
 
 [框架总览](../README.zh-CN.md) · [开始使用](quick-start.zh-CN.md) · [English](resources.md)
 
-**登记 → 加载 → 使用 → 卸载。** 资源模块统一管理共用的资源，什么时候加载和卸载由游戏决定。UIManager 会自行加载窗口，如果只用 UI，可以跳过本页。
+**登记 → 加载 → 使用 → 卸载。** 把共用的资产放进模块，再由游戏决定什么时候加载和卸载。UIManager 会自行加载窗口，如果只用 UI，可以跳过本页。
 
 <a id="试试看"></a>
 
 ## 01 试试看
 
-先在当前来源的[资源表](resource-tables.zh-CN.md)中添加 Cue 行，填写 **Type = AudioClip**、**Module = Main**，再点击顶部工具栏左侧的 **Update Config**。工具会生成 `MyGame.MainResources`，ID 为 `MyGame.Main`。等编译完成后再继续。
+先在当前来源的[资源表](resource-tables.zh-CN.md)中添加 Cue 行，填写 **Type = AudioClip**、**Module = Main**，保存工作簿（Google Sheets 则等云端保存完成），再点击顶部工具栏左侧的 **Update Config**。工具会生成 `MyGame.MainResources`，ID 为 `MyGame.Main`。等编译完成后再继续。
 
-在 `Assets/GameContent/MyGame/Scripts/` 创建 **MyResourceStartup.cs**，挂到一个空对象上，作为启动入口和资源的所有者。同一场景中还需要放入共用的 GameCore 预制体。如果 MyGameEntry 已经加载了配置，把本例合并到原来的入口中，确保 `GameConfig.LoadAndRegister()` 只执行一次：
+单独试这个例子时，在 `Assets/GameContent/MyGame/Scripts/` 创建 **MyResourceStartup.cs**，挂到空的根对象上，与共用的 GameCore 预制体并排放置。
+
+如果已有 **MyGameEntry.cs**，直接改那个脚本。补上 `using Sound;`，把 `main` 字段和 `PlayCue`、`OnLoadFailed`、`OnDestroy` 方法放进类中，再把从 `main = new MainResources()` 开始的三行接在 `Start()` 已有的 `GameConfig.LoadAndRegister()` 后面。只保留原来那次配置加载，不再挂第二个启动脚本：
 
 ```csharp
 using Core;
@@ -64,7 +66,7 @@ namespace MyGame
 
 **预期结果：** 整个模块加载成功后，会播放 cue.wav；加载失败或被取消时，会输出错误。销毁这个资源所有者时，会停止整个 UI 音频层并卸载模块。在自己的游戏中，要等所有借用者用完资源、依赖这些资源的实例也销毁后，再卸载模块。因此，资源所有者至少要存活到这些使用者不再需要资源为止。
 
-Resource 服务会保留已登记的模块，Start 结束后仍然可以访问。其他组件可以查找并保存同一个模块实例；查找本身不会加载资源（需要 `using Core;`）：
+Resource 服务会保留已登记的模块，Start 结束后仍然可以访问。启动代码登记后，其他组件可以查找并保存同一个模块实例；查找本身不会加载资源（需要 `using Core;`）：
 
 ```csharp
 var main = GameCore.Resource.GetResourceModule<MyGame.MainResources>(MyGame.MainResources.Id);
@@ -78,7 +80,7 @@ var main = GameCore.Resource.GetResourceModule<MyGame.MainResources>(MyGame.Main
 
 - 模块 ID 由游戏定义，确定后应保持稳定。生成的内部资源编号不能用作存档或网络通信中的标识。
 - 生成的快照、清单、代码和 JSON 要一起提交，详见[资源配置表](resource-tables.zh-CN.md)。你也可以继续手写 BaseResourceModule 派生类。
-- 等加载成功的回调执行时或执行后，再借用资产；加载失败由 `failedCallback` 处理。
+- 等加载成功的回调执行时或执行后，再使用资产；加载失败由 `failedCallback` 处理。
 - 共用模块只能由所有者卸载。卸载前，先停止相关音频，并销毁依赖这些资源的实例，不要卸载正在播放的 clip。
 - 使用实际的 Addressables Key。修改资源或目标平台后，重新构建对应平台的资源内容。
 

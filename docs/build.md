@@ -58,6 +58,7 @@ Add a custom Build Profile. The shared list is enough for your first build.
 | Edited/missing output blocks build | Restore generated outputs and manifest from the same revision, or fix the source and update config. |
 | Missing UI placeholder blocks build | Create the prefab or remove its UI row, then update config. Import allows this warning; Player builds require usable assets. |
 | Player shows only a background | Put your own entry first; the default saved list contains only InitScene. |
+| Scene loads but the world stays hidden | Set the world camera to Depth 2 and include the objects’ layer in its Culling Mask; see [Scenes](scenes.md). Core’s background camera renders at Depth 1. |
 | Scene load fails | Check startup config loading, the Scene row and Addressables content for the selected target. Raw string keys use TryTransitionAddress. |
 
 <a id="verification-scope"></a>

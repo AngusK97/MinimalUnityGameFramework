@@ -59,14 +59,14 @@ Demo 已附带 `Editor/Tables/Source/Demo.xlsx` 和生成配置，本地编辑�
 
 ## 03 添加一张表
 
-下面用 **Item** 表配置普通游戏数据。在源表文件夹中创建或打开一个 `.xlsx`，把工作表命名为 **Item**。从 A1 开始输入下面三行并保存。第一次接入时，按[配置接入](config-setup.zh-CN.md#01-首次设置)选择这个文件夹。
+下面用 **Item** 表配置普通游戏数据。在源表文件夹中直接创建或打开一个 `.xlsx`；如果已选 Google Sheets，就打开当前使用的云端工作簿。添加 **Item** 工作表，从 A1 开始输入下面三行并保存。第一次接入时，按[配置接入](config-setup.zh-CN.md#01-首次设置)选择这个文件夹。
 
 | Id | Name | Price |
 | --- | --- | --- |
 | string | string | int |
 | Potion | Small potion | 20 |
 
-在 Unity 点击顶部工具栏左侧的 **Update Config**，等待更新结果和编译完成。如果之前选的是其他游戏，先在 **Framework → Config** 中切换到 **MyGame**。如果刚在首次设置的最后一步更新过，就不用重复操作。
+先确认 **Framework → Config** 中选的是 **MyGame**，再点击 Unity 顶部工具栏左侧的 **Update Config**，等待更新结果和编译完成。如果刚在首次设置的最后一步更新过，就不用重复操作。
 
 **成功标志：** 已生成 `Assets/GameContent/MyGame/Scripts/Generated/ItemTable.g.cs`，结果报告中也列出了 Item 表。接着按下面的示例加载和读取数据。
 
@@ -74,12 +74,11 @@ Demo 已附带 `Editor/Tables/Source/Demo.xlsx` 和生成配置，本地编辑�
 
 ## 04 读取一张表
 
-在游戏启动代码中，等 **Core 就绪后、打开 UI 或切换场景前**加载生成的配置。每次 Core 启动后只执行一次：
+如果已经做完快速开始，打开 **MyGameEntry.cs**，把下面的代码加到 `Start()` 中，接在已有的 `GameConfig.LoadAndRegister()` 后面。保留那一处加载调用，不要再加一次。
+
+还没有启动脚本的话，先按 [Core 的入口步骤](core.zh-CN.md#01-配置入口)准备。在 `GameCore.IsReady` 检查通过后，调用一次 `MyGame.GameConfig.LoadAndRegister()`，再执行下面的查询：
 
 ```csharp
-// In startup, after GameCore.IsReady:
-MyGame.GameConfig.LoadAndRegister();
-
 var potion = MyGame.ItemTable.Get("Potion");
 UnityEngine.Debug.Log(potion.Price);
 
@@ -89,7 +88,9 @@ foreach (var item in MyGame.ItemTable.All)
 }
 ```
 
-**Item** 工作表会生成用于查询的 **ItemTable**，每行数据的类型是 **ItemConfig**。如果 ID 不存在，`Get` 会抛出异常；查询的 ID 可能不存在时，用 `TryGet(id, out var row)`。没有加载配置就读取数据，也会报错。
+保存脚本，等待编译完成，再从自己的入口场景运行。**Console 应先显示 `20`，再显示 `Small potion`。** 将表中的价格改为 30，保存并更新配置，重新运行后应显示 30。
+
+**ItemTable** 用来查表，**ItemConfig** 代表其中一行。如果 ID 不存在，`Get` 会抛出异常；查询的 ID 可能不存在时，用 `TryGet(id, out var row)`。没有加载配置就读取数据，也会报错。
 
 `GameConfig.LoadAndRegister()` 加载本地表数据，并登记 UI 和场景 ID。资源模块还需要在代码中登记和加载；使用 `main.Cue` 前，先按[资源教程](resources.zh-CN.md)完成这些步骤。
 
@@ -109,7 +110,7 @@ foreach (var item in MyGame.ItemTable.All)
 
 <img src="images/config-local-sheet.jpg" alt="WPS 中打开的 Demo.xlsx UI 工作表，显示字段名、string 类型和 UI 数据行" width="900">
 
-`Id` 的类型必须是 `string` 或 `int`。表名和字段名必须是合法的 C# 标识符，并且只使用 ASCII 字符。单元格中直接填写数值或文本：布尔值用 `true` / `false`，小数用英文句点。公式会被拒绝，即使它已有缓存结果；导入前请粘贴为值。`ref:Item` 表示这一格必须填写 Item 表中已有的 ID。
+`Id` 的类型必须是 `string` 或 `int`。表名和字段名用于生成代码，只用英文字母、数字和下划线，且不能以数字开头或使用 C# 关键字。单元格中直接填写数值或文本：布尔值用 `true` / `false`，小数用英文句点。公式会被拒绝，即使它已有缓存结果；导入前请粘贴为值。`ref:Item` 表示这一格必须填写 Item 表中已有的 ID。
 
 <a id="ui资源与场景"></a>
 
@@ -123,7 +124,7 @@ foreach (var item in MyGame.ItemTable.All)
 | Resource | `main.Cue` | [添加资源](resource-tables.zh-CN.md) |
 | Scene | `SceneName.Level01` | [添加场景](scenes.zh-CN.md) |
 
-这三张表的字段类型都是 `string`。其中的 `Name` 只用于说明，不会生成字段；普通表中的 Name 仍然是数据字段。ID 和资源模块名必须是合法的 C# 标识符，并且只使用 ASCII 字符。资产路径从 `Assets/` 开始。
+这三张表的字段类型都是 `string`。其中的 `Name` 只用于说明，不会生成字段；普通表中的 Name 仍然是数据字段。ID 和资源模块名用于生成代码，只用英文字母、数字和下划线，且不能以数字开头或使用 C# 关键字。资产路径从 `Assets/` 开始。
 
 <details>
 <summary>校验、部分更新与生成文件</summary>

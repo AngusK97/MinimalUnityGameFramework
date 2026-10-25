@@ -2,7 +2,7 @@
 
 [框架总览](../README.zh-CN.md) · [配置接入](config-setup.zh-CN.md) · [English](resource-tables.md)
 
-**编辑 Resource 工作表 → Update Config → 加载模块 → 使用 main.Cue。** 一个模块用来管理需要一起加载、一起释放的资产。如果只是组件固定使用的资产，通常在 Inspector 中直接引用就够了。
+**编辑并保存 Resource 工作表 → Update Config → 加载模块 → 使用 main.Cue。** 一个模块用来管理需要一起加载、一起释放的资产。如果只是组件固定使用的资产，通常在 Inspector 中直接引用就够了。
 
 <a id="添加资源"></a>
 
@@ -16,7 +16,7 @@
 | string | string | string | string | string |
 | Cue | Button sound | AudioClip | Main | Assets/GameContent/MyGame/Content/Audio/cue.wav |
 
-3. 第一次连接时，用上面的表按[配置接入](config-setup.zh-CN.md)完成设置。如果已经连接，点击顶部工具栏左侧的 **Update Config**，等待更新结果和编译完成。需要切换游戏时，先在 **Framework → Config** 中选择 **MyGame**。
+3. 第一次连接时，用上面的表按[配置接入](config-setup.zh-CN.md)完成设置。如果已经连接，先确认 **Framework → Config** 中选的是 **MyGame**。保存工作簿（Google Sheets 则等云端保存完成），再点击顶部工具栏左侧的 **Update Config**，等待更新结果和编译完成。
 
 **成功标志：** 已生成 `MyGame/Scripts/Generated/MainResources.g.cs`，其中包含 `Id = "MyGame.Main"` 和 `AudioClip Cue` 属性。工具还会生成 ResourceTable、ResourceConfig 和本地 JSON。`Name` 只用于说明，不会生成字段。
 
@@ -32,22 +32,22 @@
 
 ## 02 使用模块
 
-Core 就绪后，先调用 `GameConfig.LoadAndRegister()`，然后创建并登记需要的资源模块，每个模块只登记一次，再调用加载方法。启动、失败处理和清理的完整写法见[资源示例](resources.zh-CN.md)。
+先按[资源示例](resources.zh-CN.md)创建、登记并加载模块。如果已有 **MyGameEntry.cs**，按其中的合并说明接入即可。每次 Core 启动，配置只加载一次，每个模块只登记一次。
 
-MainResources 加载成功后，就可以在玩法代码中使用：
+示例中的 `main` 是一个 `MainResources` 字段。加载成功后会调用 `PlayCue()`，把下面这行放在这个回调方法中：
 
 ```csharp
 GameCore.Sound.PlaySound(SoundLayer.UI, main.Cue);
 ```
 
-这行代码需要 `using Core; using Sound;`。访问属性不会自动加载资源。在已有模块中新增一行资源时，不用修改启动时的登记代码；新增模块时，才需要在代码中接入。
+这行代码需要 `using Core; using Sound;`。访问属性不会自动加载资源。给已有模块新增一行资源，不用修改启动代码；新增模块时，才需要另写登记和加载代码。
 
 <a id="修改资源"></a>
 
 ## 03 修改资源
 
-- **新增或替换：** 修改对应行，更新配置，再使用生成的属性。只要 Id 不变，原有调用就不用改。
-- **移动资产：** 修改 AssetPath，再次导入。
+- **新增或替换：** 修改对应行，保存并更新配置，再使用生成的属性。只要 Id 不变，原有调用就不用改。
+- **移动资产：** 修改 AssetPath，保存并更新配置。
 - **重命名或删除 Id/Module：** 更新配置后，同步修改调用代码和模块登记。模块 ID 为 `<namespace>.<Module>`。
 - **提交：** 把本地工作簿、来源设置、生成的 CSV、清单、C#、JSON、资产和 meta 一起提交。如果有冲突，先在当前源表中解决，再重新导入，不要手工拼接生成文件。
 

@@ -2,7 +2,7 @@
 
 [总览](../README.zh-CN.md) · [配置表](config.zh-CN.md) · [快速开始](quick-start.zh-CN.md) · [English](config-setup.md)
 
-**选好配置来源，之后改表只需点击 Update Config。** 默认使用本地 Excel；需要在线协作时可以选择 Google Sheets。每个游戏只使用一个配置来源。
+**第一次选好来源，以后改表、保存，再点 Update Config。** 默认使用本地 Excel；需要在线协作时可以选择 Google Sheets。每个游戏只使用一个配置来源。
 
 <a id="首次设置"></a>
 
@@ -19,7 +19,7 @@
 
 ### 1.2 接入 Unity
 
-1. 打开 **Framework → Config**，设置 **Game = MyGame**、**Namespace = MyGame**、**Source = Local Excel**。
+1. 打开 **Framework → Config**，把 Project 中的 **MyGame 文件夹**拖到 **Game** 栏。填写 **Namespace = MyGame**，选择 **Source = Local Excel**。Namespace 是生成代码的 C# 命名空间，同一个游戏保持不变。
 2. 保留 **Excel folder = Editor/Tables/Source**，或点击 **Choose folder…** 选择这个游戏 Editor 目录内的其他文件夹。路径以游戏根目录为起点，不能把生成文件目录当作来源。
 3. 点击 **Update Config**，等待进度窗口、更新结果和编译完成。用 **Open report** 查看详情，再回到对应教程检查生成结果。
 

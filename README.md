@@ -8,7 +8,7 @@ English · [简体中文](README.zh-CN.md)
 
 These guides match **v0.5.0**. See the [release notes](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.5.0) and [migration steps](Build-in%20Managers%20Usage.md). Keep downloaded code and guides together.
 
-Hello there ~ I'm Angus, a game developer. This is a small Unity framework for UI, events, resources, scenes and audio. Try the Demo, then use the same tools to make your own game.
+Hello there ~ I'm Angus, a game developer. I put this framework together to handle UI, events, resources, scenes and audio in small Unity games. I hope it saves you some repeated work and leaves more time for your own gameplay.
 
 > **Simple is beautiful.** Easy to start, easy to understand, easy to change.
 
@@ -28,7 +28,7 @@ Hello there ~ I'm Angus, a game developer. This is a small Unity framework for U
 
 **GameCore** provides five services and stays alive across scene changes. Your game and the removable Demo use the same API.
 
-Configuration follows a separate path: **Local Excel → Update Config in the left toolbar → generated data → your game**. Google Sheets is optional; each game uses one active source. The running game reads generated local data.
+For configuration: **edit a table → Update Config → generated code and data → your game**. Start with local Excel; choose Google Sheets when your team needs shared editing. The running game reads the generated data, without a network connection.
 
 ```mermaid
 flowchart TB
@@ -49,7 +49,7 @@ UI loads windows through Resource. Scene coordinates loading, fades and UI clean
 
 ## 03 Pick the module you need
 
-New here? Start with [your first window](docs/quick-start.md#02-create-your-first-window). For a specific task, pick a guide below. [Config setup](docs/config-setup.md) connects your local `.xlsx` folder, or Google Sheets when your team needs online editing.
+New here? Follow [Quick start](docs/quick-start.md) to play the Demo and make your first window. Then pick a guide below for what you want to add. [Config setup](docs/config-setup.md) covers choosing and switching sources.
 
 | I want to… | Guide | Entry |
 | --- | --- | --- |
@@ -80,7 +80,7 @@ Assets/
     └── MyGame/        Your scenes, content, source settings and generated data
 ```
 
-Start reading the Demo at [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs), [Demo.xlsx](Assets/GameContent/Demo/Editor/Tables/Source/Demo.xlsx) or [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs). Edit Demo.xlsx to change its configuration, then click **Update Config**. Generated CSV files are snapshots. Once your own game runs, you can [delete the whole Demo](docs/quick-start.md#03-remove-the-demo).
+Start reading the Demo at [DemoGame.cs](Assets/GameContent/Demo/Scripts/DemoGame.cs), [Demo.xlsx](Assets/GameContent/Demo/Editor/Tables/Source/Demo.xlsx) or [MenuView.cs](Assets/GameContent/Demo/Scripts/UI/MenuView.cs). Choose Demo in **Framework → Config** before your first table edit. After that, save Demo.xlsx and click **Update Config**. Once your own game runs, you can [delete the whole Demo](docs/quick-start.md#03-remove-the-demo).
 
 <a id="try-it"></a>
 
