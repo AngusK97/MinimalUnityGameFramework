@@ -2,9 +2,9 @@
 
 [框架总览](README.zh-CN.md) · [English](Build-in%20Managers%20Usage.md)
 
-**第一次使用，先跟着[开始使用](docs/quick-start.zh-CN.md)做一个窗口。** 之后需要哪个功能，再查下面的表。这套教程适用于 v0.4.0；[v0.2.0 教程](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.zh-CN.md)仍介绍旧的 Inspector/SO 配置方式。
+**第一次使用，先跟着[开始使用](docs/quick-start.zh-CN.md)做一个窗口。** 之后需要哪个功能，再查下面的表。这套教程适用于 v0.4.1；[v0.2.0 教程](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.zh-CN.md)仍介绍旧的 Inspector/SO 配置方式。
 
-**从 v0.3.x 升级到 v0.4.0：** 不需要迁移配置数据或修改运行时 API。日常更新改用紧挨着 **Play** 左侧的 **Update Config**；换游戏和改设置仍在 **Framework → Config** 中完成。更新进度与结果改为独立窗口显示。
+**从 v0.3.x 升级到 v0.4.1：** 不需要迁移配置数据或修改运行时 API。日常更新改用 Unity 顶部工具栏左侧的 **Update Config**；换游戏和改设置仍在 **Framework → Config** 中完成。更新进度与结果改为独立窗口显示。v0.4.0 的按钮会自动移到左侧一次，其他工具栏控件的布局保留。
 
 | 想做什么 | 教程 |
 | --- | --- |
@@ -30,7 +30,7 @@ Unity 和依赖包怎么升级，见[升级到 Unity 6.6](docs/upgrading.zh-CN.m
 3. 确认旧配置已备份，再从工程副本中移除 UI.asset、资源模块 SO 和旧生成代码。旧生成的 C# 及其 meta 要备份到 Assets 外，新导表工具不会覆盖不归它管理的文件。如果是把新版框架复制进旧工程，还要移除旧 SO 编辑工具。删除旧类型后若出现编译错误，先暂时注释相关调用，完成首次更新后再恢复。
 4. 在 Config 设置窗口点击 **Update Config**，等待更新结果和编译完成，再按下表修改并恢复调用。配置来源设置、生成的 CSV／清单、C#、JSON 和 meta 文件一起提交。以后需要改表，只编辑 Google Sheets。
 
-| 旧调用或数据 | v0.4.0 |
+| 旧调用或数据 | v0.4.1 |
 | --- | --- |
 | `GameUI.RegisterAll()` / `DemoUI.RegisterAll()` | Core 就绪后调用 `GameConfig.LoadAndRegister()`，每个 Core 生命周期一次 |
 | `GameUI.Shop` / `DemoUI.Menu` | `UIName.Shop` / `UIName.Menu` |

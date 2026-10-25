@@ -2,11 +2,11 @@
 
 English · [简体中文](README.zh-CN.md)
 
-**Version:** v0.4.0 (Config toolbar) · **Unity:** 6.6 (6000.6.5f1, not LTS)
+**Version:** v0.4.1 (Config toolbar) · **Unity:** 6.6 (6000.6.5f1, not LTS)
 
-[Download v0.4.0 (ZIP)](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.4.0.zip) · [Quick start](docs/quick-start.md)
+[Download v0.4.1 (ZIP)](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.4.1.zip) · [Quick start](docs/quick-start.md)
 
-These guides match **v0.4.0**. See the [release notes](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.4.0) and [migration steps](Build-in%20Managers%20Usage.md). Keep downloaded code and guides together.
+These guides match **v0.4.1**. See the [release notes](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.4.1) and [migration steps](Build-in%20Managers%20Usage.md). Keep downloaded code and guides together.
 
 Hello there ~ I'm Angus, a game developer. This is a small Unity framework for UI, events, resources, scenes and audio. Try the Demo, then use the same tools to make your own game.
 
@@ -28,7 +28,7 @@ Hello there ~ I'm Angus, a game developer. This is a small Unity framework for U
 
 **GameCore** provides five services and stays alive across scene changes. Your game and the removable Demo use the same API.
 
-Configuration follows a separate path: **Google Sheets → Update Config beside Play → local data → your game**. The running game reads local data and needs no Google connection.
+Configuration follows a separate path: **Google Sheets → Update Config in the left toolbar → local data → your game**. The running game reads local data and needs no Google connection.
 
 ```mermaid
 flowchart TB
@@ -104,7 +104,7 @@ The Demo includes local generated data. No Google account or credentials are nee
 
 Addressables **2.11.2** · uGUI **2.6.0** · Built-in rendering · old Input Manager.
 
-The download and guides above use **v0.4.0**, which adds the Config toolbar to the Google Sheets workflow. `0.x` APIs may change. Existing games can keep their pinned version and its bundled guides. See [Editor upgrades](docs/upgrading.md), [older API migration](Build-in%20Managers%20Usage.md) and [what has been verified](docs/build.md#04-verification-scope).
+The download and guides above use **v0.4.1**, with the Google Sheets update button on the left side of Unity's top toolbar. `0.x` APIs may change. Existing games can keep their pinned version and its bundled guides. See [Editor upgrades](docs/upgrading.md), [older API migration](Build-in%20Managers%20Usage.md) and [what has been verified](docs/build.md#04-verification-scope).
 
 Gameplay parameters can stay in the Inspector or game-owned ScriptableObjects. Text/localization and sound-playback tables are deferred; AudioClip resource registration is included. Saves, full-game pause, platform input and release validation are left to your game's needs.
 

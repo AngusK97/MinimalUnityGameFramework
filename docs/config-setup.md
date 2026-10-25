@@ -36,7 +36,7 @@ You need a Google account and permission to create a Cloud project and a service
 
 The folder ID and namespace are saved in `Assets/GameContent/MyGame/Editor/ConfigSource.json`. The last selected game and the key's file path stay in this computer's Unity Editor preferences; the key is not copied into the project. On another computer, select a locally stored key again.
 
-For later edits, click **Update Config** immediately left of **Play** in the top toolbar. It uses the selected game and opens this dialog if setup is incomplete or the key file is missing. Return to **Framework → Config** whenever you need to change games or settings.
+For later edits, click **Update Config** on the left side of Unity's top toolbar. It uses the selected game and opens this dialog if setup is incomplete or the key file is missing. Return to **Framework → Config** whenever you need to change games or settings.
 
 <img src="images/config-update.jpg" alt="Unity Config dialog with Game, Namespace, Google Drive Folder ID, Service Account JSON and Update Config" width="480">
 

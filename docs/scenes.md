@@ -16,7 +16,7 @@ Load a level behind an overlay, close the old UI and wait for your scene prepara
 | string | string | string |
 | Level01 | First level | Assets/GameContent/MyGame/Content/Scenes/Level01.unity |
 
-3. For your first connection, follow [Config setup](config-setup.md) using this Scene table. If already connected, click **Update Config** beside Play and wait for the result and compilation. If needed, first select **MyGame** in **Framework → Config**. In startup, after Core is ready, call `MyGame.GameConfig.LoadAndRegister()` once. This registers `SceneName.Level01 = "Level01"` to its Addressables address.
+3. For your first connection, follow [Config setup](config-setup.md) using this Scene table. If already connected, click **Update Config** on the left side of Unity's top toolbar and wait for the result and compilation. If needed, first select **MyGame** in **Framework → Config**. In startup, after Core is ready, call `MyGame.GameConfig.LoadAndRegister()` once. This registers `SceneName.Level01 = "Level01"` to its Addressables address.
 
 Add this to a menu button handler after startup, not Update (`using Core; using UnityEngine;`):
 

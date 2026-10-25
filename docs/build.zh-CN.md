@@ -9,7 +9,7 @@
 ## 01 构建 Demo
 
 1. 打开 **File → Build Profiles**，在 **Platforms** 中选择已安装的目标平台，需要切换时点击 **Switch Platform**。
-2. 退出 Play，等待编译完成。Demo 已经附带可用配置，不用先设置云端来源。如果修改过它连接的 Sheets 内容，先在 **Framework → Config** 中选择 Demo，再点击 Play 左侧的 **Update Config**。
+2. 退出 Play，等待编译完成。Demo 已经附带可用配置，不用先设置云端来源。如果修改过它连接的 Sheets 内容，先在 **Framework → Config** 中选择 Demo，再点击顶部工具栏左侧的 **Update Config**。
 3. 选择 **Demo → Build Player**，再选择输出位置。
 4. 打开构建好的游戏，检查菜单，再按这个顺序试一遍：Start → 用键盘通关 → Play again → Menu → Settings → Quit。
 
@@ -21,7 +21,7 @@
 
 1. 打开 **File → Build Profiles**，在 **Platforms** 中选择目标平台，需要切换时点击 **Switch Platform**。
 2. 点击左侧的 **Scene List**，添加 `MyGame/Scenes/Start.unity`，将它移到第一项并勾选。如果不需要 InitScene，就从列表中移除它，保留游戏使用的其他原生场景。**Open Scene List** 打开的也是这份共享列表。
-3. 如果 Google Sheets 内容或本地资产路径有变化，先在 **Framework → Config** 中选择自己的游戏，再点击 Play 左侧的 **Update Config**，等待编译完成。构建前，检查导入报告里是否有保留旧版表的警告，并确认这些表的状态。
+3. 如果 Google Sheets 内容或本地资产路径有变化，先在 **Framework → Config** 中选择自己的游戏，再点击顶部工具栏左侧的 **Update Config**，等待编译完成。构建前，检查导入报告里是否有保留旧版表的警告，并确认这些表的状态。
 4. 打开 **Window → Asset Management → Addressables → Groups**，选择 **Build → New Build → Default Build Script**，等待成功。
 5. 回到 **Platforms**，选中目标平台，点击 **Build** 并选择输出位置。
 6. 打开构建好的游戏，应该能看到自己的第一个界面。再试试 UI、输入、声音和场景切换。
@@ -77,6 +77,8 @@
 验证用的辅助内容只放在临时副本中，不会随框架一起交付。以上结果对应 v0.3.1 包含的代码，旧版本仍保留各自的教程。
 
 **v0.4.0 Editor 验证（2026-10-24）：** 31 项针对性检查通过，程序集重载后仍能显示更新结果。包含 Demo 的工程，以及删除 Demo、保留独立 MyGame 的副本，默认编译均通过。实际点击工具栏完成了首次连接（**3 updated**）、部分更新（**1 updated, 1 kept previous**）和 **Cancel** 检查。部分更新保留的 Resource 文件，以及取消后的全部生成文件，内容与修改时间均未变化。云端测试值已恢复。
+
+**v0.4.1 Editor 验证（2026-10-25）：** 按钮从已有的居中布局迁移到左侧工具栏，带有底板，Play 控件保持居中。macOS 上的 Unity 6000.6.5f1 已实测打开设置、脚本重载和播放时禁用；含 Demo、删除 Demo 后的默认编译均通过。更新流程和运行代码未变。
 
 [Editor 升级](upgrading.zh-CN.md) · Unity 参考：[Build Profiles](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profiles.html)、[Scene List](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profile-scene-list.html)。
 

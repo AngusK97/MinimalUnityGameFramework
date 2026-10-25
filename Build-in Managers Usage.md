@@ -2,9 +2,9 @@
 
 [Overview](README.md) · [简体中文](Build-in%20Managers%20Usage.zh-CN.md)
 
-**Start with [Quick start](docs/quick-start.md)** to build your first window; use these pages for daily work. These guides match v0.4.0. The fixed [v0.2.0 guides](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md) retain the earlier Inspector/SO workflow.
+**Start with [Quick start](docs/quick-start.md)** to build your first window; use these pages for daily work. These guides match v0.4.1. The fixed [v0.2.0 guides](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md) retain the earlier Inspector/SO workflow.
 
-**From v0.3.x to v0.4.0:** no configuration data or runtime API migration is needed. Daily updates move to **Update Config** immediately left of **Play**; **Framework → Config** remains the place to change games and settings. The progress and result dialogs replace the old in-window status.
+**From v0.3.x to v0.4.1:** no configuration data or runtime API migration is needed. Daily updates move to **Update Config** on the left side of Unity's top toolbar; **Framework → Config** remains the place to change games and settings. The progress and result dialogs replace the old in-window status. The v0.4.0 button moves to the left toolbar once; other toolbar controls keep their layout.
 
 | Task | Guide |
 | --- | --- |
@@ -30,7 +30,7 @@ For the Editor/package upgrade, see [Moving to Unity 6.6](docs/upgrading.md). Ex
 3. Remove the old UI.asset, resource module SO assets and their obsolete generated definitions from the migration copy after preserving their values. Back up old generated C# and meta files outside Assets before importing: the new importer does not overwrite files it does not own. Remove obsolete SO editor tools if you copied framework files over an older installation. If missing generated types prevent compilation, temporarily comment their callers until the first update completes.
 4. In the Config dialog, click **Update Config**, then wait for the result and compilation. Restore and update callers as below. Commit the new source settings, generated CSV/manifest, C#, JSON and meta files together. Google Sheets is now the editing source.
 
-| Earlier call or data | v0.4.0 |
+| Earlier call or data | v0.4.1 |
 | --- | --- |
 | `GameUI.RegisterAll()` / `DemoUI.RegisterAll()` | `GameConfig.LoadAndRegister()` after Core is ready, once per Core lifetime |
 | `GameUI.Shop` / `DemoUI.Menu` | `UIName.Shop` / `UIName.Menu` |

@@ -45,7 +45,7 @@ namespace FrameworkConfig.Editor
 
             EditorGUILayout.Space(10);
             EditorGUILayout.LabelField("Connect Google Sheets", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("Set up once. Then use Update Config beside Play.", EditorStyles.wordWrappedLabel);
+            EditorGUILayout.LabelField("Set up once. Then use Update Config on the left side of the top toolbar.", EditorStyles.wordWrappedLabel);
             EditorGUILayout.Space(10);
 
             using (new EditorGUI.DisabledScope(!ConfigUpdateCommand.CanUpdate))

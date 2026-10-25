@@ -36,7 +36,7 @@
 
 文件夹 ID 和命名空间保存在 `Assets/GameContent/MyGame/Editor/ConfigSource.json`。最后选择的游戏和密钥文件路径只保存在这台电脑的 Unity Editor 偏好设置中，密钥不会复制进工程。换电脑后重新选择本机保存的密钥即可。
 
-以后改表，直接点击顶部工具栏中紧挨着 **Play** 左侧的 **Update Config**。它会更新已选游戏；设置不完整或密钥文件丢失时，会先打开这个设置窗口。需要换游戏或修改设置时，仍从 **Framework → Config** 进入。
+以后改表，直接点击Unity 顶部工具栏左侧的 **Update Config**。它会更新已选游戏；设置不完整或密钥文件丢失时，会先打开这个设置窗口。需要换游戏或修改设置时，仍从 **Framework → Config** 进入。
 
 <img src="images/config-update.jpg" alt="Unity Config 设置窗口直接显示 Game、Namespace、Google Drive Folder ID、Service Account JSON 和 Update Config" width="480">
 

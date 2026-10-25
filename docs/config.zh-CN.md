@@ -11,12 +11,12 @@
 ## 01 日常操作
 
 1. 编辑配置文件夹中的 Google Sheets 工作表。
-2. 在 Unity 顶部工具栏，点击紧挨着 **Play** 左侧的 **Update Config**。
+2. 在 Unity 顶部工具栏，点击左侧的 **Update Config**。
 3. 等待进度窗口关闭，再查看更新结果。有错误时，修正 Sheets 或 Unity 中对应的问题，再更新一次。
 
 工具栏会记住这台电脑上当前工程最后选择的游戏。还没选游戏、Google 设置不完整或密钥文件丢失时，会先打开 Config 设置窗口。需要切换游戏或修改设置时，打开 **Framework → Config**。
 
-<img src="images/config-toolbar.jpg" alt="Unity 顶部工具栏，Update Config 按钮紧挨着 Play 左侧" width="900">
+<img src="images/config-toolbar.jpg" alt="Unity 顶部工具栏左侧的 Update Config 按钮，Play 保持居中" width="900">
 
 每次更新都会读取 Google Sheets 中当前的表格内容，只写入内容有变化的生成文件。
 
@@ -66,7 +66,7 @@
 | string | string | int |
 | Potion | Small potion | 20 |
 
-在 Unity 点击 Play 左侧的 **Update Config**，等待更新结果和编译完成。如果之前选的是其他游戏，先在 **Framework → Config** 中切换到 **MyGame**。如果刚在首次设置的最后一步更新过，就不用重复操作。
+在 Unity 点击顶部工具栏左侧的 **Update Config**，等待更新结果和编译完成。如果之前选的是其他游戏，先在 **Framework → Config** 中切换到 **MyGame**。如果刚在首次设置的最后一步更新过，就不用重复操作。
 
 **成功标志：** 已生成 `Assets/GameContent/MyGame/Scripts/Generated/ItemTable.g.cs`，结果报告中也列出了 Item 表。接着按下面的示例加载和读取数据。
 

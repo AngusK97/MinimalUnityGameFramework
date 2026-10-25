@@ -11,12 +11,12 @@ The bundled Demo already includes generated configuration. You can run it withou
 ## 01 Daily workflow
 
 1. Edit the Google Sheets tabs in your configuration folder.
-2. In Unity's top toolbar, click **Update Config**, immediately left of **Play**.
+2. On the left side of Unity's top toolbar, click **Update Config**.
 3. Wait for the progress window to close, then read the result. Fix reported errors in Sheets or Unity and update again.
 
 The toolbar uses the last game selected on this computer for this project. If no game is selected or its Google settings are missing, it opens the Config dialog. Use **Framework → Config** to change games or edit settings.
 
-<img src="images/config-toolbar.jpg" alt="Unity top toolbar with Update Config immediately left of Play" width="900">
+<img src="images/config-toolbar.jpg" alt="Unity top toolbar with Update Config on the left and Play centered" width="900">
 
 Each update reads the current table contents from Google Sheets and writes only generated outputs whose contents have changed.
 
@@ -66,7 +66,7 @@ This **Item** example is for ordinary game data. On your first connection, follo
 | string | string | int |
 | Potion | Small potion | 20 |
 
-In Unity, click **Update Config** beside Play and wait for the result and any compilation. If another game is selected, first choose **MyGame** in **Framework → Config**. The final update in first-time setup also covers this step.
+Click **Update Config** on the left side of Unity's top toolbar and wait for the result and any compilation. If another game is selected, first choose **MyGame** in **Framework → Config**. The final update in first-time setup also covers this step.
 
 **Success:** `Assets/GameContent/MyGame/Scripts/Generated/ItemTable.g.cs` exists and the result reports the Item table. Continue below to load and read it.
 

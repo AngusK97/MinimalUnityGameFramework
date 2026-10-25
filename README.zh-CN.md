@@ -2,11 +2,11 @@
 
 [English](README.md) · 简体中文
 
-**框架版本：** v0.4.0（配置工具栏） · **Unity：** 6.6（6000.6.5f1，非 LTS）
+**框架版本：** v0.4.1（配置工具栏） · **Unity：** 6.6（6000.6.5f1，非 LTS）
 
-[下载 v0.4.0（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.4.0.zip) · [开始使用](docs/quick-start.zh-CN.md)
+[下载 v0.4.1（ZIP）](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.4.1.zip) · [开始使用](docs/quick-start.zh-CN.md)
 
-这套教程适用于 **v0.4.0**。更新了什么，可以看[发布说明](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.4.0)；旧工程升级请看[迁移步骤](Build-in%20Managers%20Usage.zh-CN.md)。下载后，使用包内的文档即可。
+这套教程适用于 **v0.4.1**。更新了什么，可以看[发布说明](https://github.com/AngusK97/MinimalUnityGameFramework/releases/tag/v0.4.1)；旧工程升级请看[迁移步骤](Build-in%20Managers%20Usage.zh-CN.md)。下载后，使用包内的文档即可。
 
 Hello there ~ 我是 Angus，一名游戏开发者。这是我写的一个小型 Unity 框架，帮你处理 UI、事件、资源、场景和音频。可以先玩一下 Demo，再用同样的工具做自己的游戏。
 
@@ -28,7 +28,7 @@ Hello there ~ 我是 Angus，一名游戏开发者。这是我写的一个小型
 
 **GameCore** 提供五个公共模块，切换场景时也会保留。你自己的游戏和 Demo 都通过同一套 API 使用它们。
 
-配置从表格进入游戏：**Google Sheets → 点击 Play 左侧的 Update Config → 生成本地数据 → 游戏读取**。运行游戏时不需要连接 Google。
+配置从表格进入游戏：**Google Sheets → 点击顶部工具栏左侧的 Update Config → 生成本地数据 → 游戏读取**。运行游戏时不需要连接 Google。
 
 ```mermaid
 flowchart TB
@@ -104,7 +104,7 @@ Demo 自带运行所需的配置，不用设置 Google 账号或密钥。
 
 Addressables **2.11.2** · uGUI **2.6.0** · Built-in 渲染管线 · 旧 Input Manager。
 
-上面的下载链接和教程适用于 **v0.4.0**，可在工具栏直接更新 Google Sheets 配置。`0.x` 阶段的 API 仍可能调整，已有游戏可以继续使用原来的版本和文档。需要升级时，再查看 [Unity 升级](docs/upgrading.zh-CN.md)、[旧 API 迁移](Build-in%20Managers%20Usage.zh-CN.md)和[已验证范围](docs/build.zh-CN.md#04-验证范围)。
+上面的下载链接和教程适用于 **v0.4.1**，可在顶部工具栏左侧直接更新 Google Sheets 配置。`0.x` 阶段的 API 仍可能调整，已有游戏可以继续使用原来的版本和文档。需要升级时，再查看 [Unity 升级](docs/upgrading.zh-CN.md)、[旧 API 迁移](Build-in%20Managers%20Usage.zh-CN.md)和[已验证范围](docs/build.zh-CN.md#04-验证范围)。
 
 玩法参数可以继续放在 Inspector 或游戏自己的 ScriptableObject 中。文本／本地化和声音播放参数暂时没有专用表，AudioClip 资源已经可以在资源表中登记。存档、全局暂停、不同平台的输入，以及正式发布前的验证，按自己游戏的需要补充。
 

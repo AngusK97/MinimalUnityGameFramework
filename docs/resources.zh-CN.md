@@ -8,7 +8,7 @@
 
 ## 01 试试看
 
-先在 Google Sheets 的[资源表](resource-tables.zh-CN.md)中添加 Cue 行，填写 **Type = AudioClip**、**Module = Main**，再点击 Play 左侧的 **Update Config**。工具会生成 `MyGame.MainResources`，ID 为 `MyGame.Main`。等编译完成后再继续。
+先在 Google Sheets 的[资源表](resource-tables.zh-CN.md)中添加 Cue 行，填写 **Type = AudioClip**、**Module = Main**，再点击顶部工具栏左侧的 **Update Config**。工具会生成 `MyGame.MainResources`，ID 为 `MyGame.Main`。等编译完成后再继续。
 
 在 `Assets/GameContent/MyGame/Scripts/` 创建 **MyResourceStartup.cs**，挂到一个空对象上，作为启动入口和资源的所有者。同一场景中还需要放入共用的 GameCore 预制体。如果 MyGameEntry 已经加载了配置，把本例合并到原来的入口中，确保 `GameConfig.LoadAndRegister()` 只执行一次：
 

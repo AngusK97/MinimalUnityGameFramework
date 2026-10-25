@@ -6,13 +6,13 @@
 
 Use the downloaded framework project as the starting point for your game. The steps below keep its packages and settings, and add your content under `GameContent/MyGame/`.
 
-This page follows **v0.4.0**. For the fixed SO-based release, use the [v0.2.0 guide](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md).
+This page follows **v0.4.1**. For the fixed SO-based release, use the [v0.2.0 guide](https://github.com/AngusK97/MinimalUnityGameFramework/blob/v0.2.0/docs/quick-start.md).
 
 <a id="run-the-demo"></a>
 
 ## 01 Run the Demo
 
-1. [Download v0.4.0 (ZIP)](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.4.0.zip) and extract it. In Unity Hub, open the folder containing Assets, Packages and ProjectSettings. Wait for import and compilation.
+1. [Download v0.4.1 (ZIP)](https://github.com/AngusK97/MinimalUnityGameFramework/archive/refs/tags/v0.4.1.zip) and extract it. In Unity Hub, open the folder containing Assets, Packages and ProjectSettings. Wait for import and compilation.
 2. Open **Window → Asset Management → Addressables → Groups**. Set **Play Mode Script → Use Asset Database (fastest)**.
 3. Open `Assets/GameContent/Demo/Scenes/DemoStart.unity` and press Play. Choose **Start** and move to GOAL with **WASD / arrows**.
 4. **Play again** restarts; **Menu** returns; **Settings / Escape** opens volume settings; **Done / Escape** saves and closes them.
@@ -81,7 +81,7 @@ Your first table is **UI**. Use these three rows, starting at A1:
 | Menu | My first menu | Assets/GameContent/MyGame/Content/Prefabs/UI/MyMenuView.prefab |
 
 - **First connection:** follow [Connect Google Sheets](config-setup.md). In its step 6, enter the UI rows above. Finish the update, then return here.
-- **Already connected:** open the UI tab in a workbook directly inside your source folder; create it if needed. Keep existing headers and add or update the Menu row. In Unity, click **Update Config** beside Play and wait for the result and compilation. If another game is selected, first choose **MyGame** in **Framework → Config**.
+- **Already connected:** open the UI tab in a workbook directly inside your source folder; create it if needed. Keep existing headers and add or update the Menu row. Click **Update Config** on the left side of Unity's top toolbar and wait for the result and compilation. If another game is selected, first choose **MyGame** in **Framework → Config**.
 
 **Success:** the UI table updated and `Assets/GameContent/MyGame/Scripts/Generated/UIName.g.cs` contains `Menu = "Menu"`.
 
